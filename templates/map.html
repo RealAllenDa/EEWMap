@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/index.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/index.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/eew-display.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/intensity-display.css') }}"/>
     <title>EEWMap</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.min.css" rel="stylesheet">
@@ -12,44 +15,74 @@
     <script src="{{ url_for('static', filename='js/map/jma_xml_parse.js') }}"></script>
 </head>
 <body>
-    <script src="{{ url_for('static', filename='js/map/index.js') }}"></script>
-    <div id="main-container">
-        <!-- TODO: EEW -->
-        <div id="eew-display" class="window" style="display:none;"></div>
-        <div id="intensity-display" class="window">
-            <div id="earthquake-description">
-                <div id="intensity-icon" class="sub-window">
-                    <span id="intensity-label">Maximum Int.</span>
-                    <span id="intensity" class="intensity-display margin-add"></span>
-                    <span id="intensity-add" class="intensity-display"></span>
+<script src="{{ url_for('static', filename='js/map/index.js') }}"></script>
+<div id="main-container">
+    <div id="intensity-display" class="window">
+        <div id="earthquake-description">
+            <div id="intensity-icon" class="sub-window">
+                <span id="intensity-label">Maximum Int.</span>
+                <span id="intensity" class="intensity-display margin-add"></span>
+                <span id="intensity-add" class="intensity-display"></span>
+            </div>
+            <div id="earthquake-info" class="sub-window">
+                <div id="intensity-report" class="sub-window" style="display:none;">
+                    <span id="intensity-report-label">Intensity Report</span>
+                    <span class="occur-label">Occurred at <span
+                            id="int-report-occur-time">XXXX-XX-XX XX:XX</span></span>
                 </div>
-                <div id="earthquake-info" class="sub-window">
-                    <div id="intensity-report" class="sub-window" style="display:none;">
-                        <span id="intensity-report-label">Intensity Report</span>
-                        <span class="occur-label">Occurred at <span id="int-report-occur-time">XXXX-XX-XX XX:XX</span></span>
+                <div id="earthquake-report" class="sub-window">
+                    <span class="occur-label">Occurred at <span id="occur-time">XXXX-XX-XX XX:XX</span></span>
+                    <div style="margin-top: 9px;">
+                        <span class="label">Epicenter</span>
+                        <span id="epicenter" class="label-content">---</span>
                     </div>
-                    <div id="earthquake-report" class="sub-window">
-                        <span class="occur-label">Occurred at <span id="occur-time">XXXX-XX-XX XX:XX</span></span>
-                        <div style="margin-top: 9px;">
-                            <span class="label">Epicenter</span>
-                            <span id="epicenter" class="label-content">---</span>
-                        </div>
-                        <div>
-                            <span class="label">Depth</span>
-                            <span id="depth" class="label-content">---</span>
-                        </div>
-                        <div>
-                            <span class="label">M</span>
-                            <span id="magnitude" class="label-content">---</span>
-                        </div>
+                    <div>
+                        <span class="label">Depth</span>
+                        <span id="depth" class="label-content">---</span>
+                    </div>
+                    <div>
+                        <span class="label">M</span>
+                        <span id="magnitude" class="label-content">---</span>
                     </div>
                 </div>
             </div>
-            <div id="banner-description" class="sub-window">
-                <span id="banner-text">Fetching information...</span>
-            </div>
-            <div id="map" class="sub-window"></div>
+        </div>
+        <div id="banner-description" class="sub-window">
+            <span id="banner-text">Fetching information...</span>
         </div>
     </div>
+    <div id="map" class="sub-window"></div>
+    <div id="eew-display" class="window" style="display: none">
+        <div id="eew-banner" class="sub-window">
+            <span id="eew-level">Fetching Information...</span>
+        </div>
+        <div id="eew-information" class="sub-window">
+            <span id="report-number">#0</span>
+            <span id="eew-advice">Fetching Information...</span>
+        </div>
+        <div id="eew-earthquake" class="sub-window">
+            <div id="eew-intensity-icon" class="sub-window">
+                <span id="eew-intensity-label">Maximum Int.</span>
+                <span id="eew-intensity" class="intensity-display margin-add"></span>
+                <span id="eew-intensity-add" class="intensity-display"></span>
+            </div>
+            <div id="eew-earthquake-info" class="sub-window">
+                <span class="occur-label">Received at <span id="eew-receive-time">XXXX/XX/XX XX:XX</span></span>
+                <div style="margin-top: 9px;">
+                    <span class="label">Epicenter</span>
+                    <span id="eew-epicenter" class="label-content">---</span>
+                </div>
+                <div>
+                    <span class="label">Depth</span>
+                    <span id="eew-depth" class="label-content">---</span>
+                </div>
+                <div>
+                    <span class="label">M</span>
+                    <span id="eew-magnitude" class="label-content">---</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

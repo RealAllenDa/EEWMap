@@ -1,4 +1,5 @@
 /test.xml
 /__main__.py
-/a.json
 /.idea
+__pycache__
+/tests

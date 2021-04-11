@@ -1,5 +1,4 @@
 window.layers = [];
-window.iconGroup = undefined;
 window.intensity_area_icons = {
     1: new L.Icon({
         iconUrl: "../static/image/intensity_area/1.png",
@@ -48,7 +47,9 @@ var initializeMap = function () {
         zoomControl: false
     }).setView([38.272688535980976, 137], 5);
     L.tileLayer(map_url, {
-        maxZoom: 8
+        maxZoom: 8,
+        attribution: "Map&Data by <a href='http://www.jma.go.jp/jma/index.html'>JMA</a> | " +
+            "<a href='https://github.com/RealAllenDa/EEWMap'>EEWMap</a> by AllenDa"
     }).addTo(window.map);
 };
 var addMapIntensities = function (intensityList) {
@@ -79,67 +80,86 @@ var addEpicenter = function (latitude, longitude) {
     window.epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon}).addTo(window.map);
     window.epicenterMarker.setZIndexOffset(10000);
 };
-var deleteAllIcons = function () {
+var deleteAllLayers = function () {
     try {
-        window.map.removeLayer(window.epicenterMarker);
-        window.iconGroup.clearLayers();
-        window.layers = [];
-    } catch {}
+        if (window.epicenterMarker != undefined) {
+            window.map.removeLayer(window.epicenterMarker);
+        }
+        if (window.colorMapLayer != undefined) {
+            window.colorMapLayer.removeFrom(window.map);
+        }
+        if (window.iconGroup != undefined) {
+            window.iconGroup.clearLayers();
+            window.layers = [];
+        }
+    } catch (e){
+        console.error("Failed to remove layers.", e);
+    }
 };
 var parseMapScale = function (earthquakePoints, epicenterlat, epicenterlong) {
-    var longitude = [parseInt(epicenterlong), parseInt(epicenterlong)];
-    var latitude = [parseInt(epicenterlat), parseInt(epicenterlat)];
-    var sum_longitude = parseInt(epicenterlong);
-    var sum_latitude = parseInt(epicenterlat);
-    var point_count = 1;
-    if (epicenterlong == 0 && epicenterlat == 0) {
-        point_count--;
+    if (epicenterlat == undefined || epicenterlong == undefined) {
+        epicenterlat = 0;
+        epicenterlong = 0;
+        console.warn("No epicenter is defined. Check backend code.");
     }
-    var point_scale = 8;
+    var longitude = [parseFloat(epicenterlong), parseFloat(epicenterlong)];
+    var latitude = [parseFloat(epicenterlat), parseFloat(epicenterlat)];
+    var sum_longitude = parseFloat(epicenterlong);
+    var sum_latitude = parseFloat(epicenterlat);
+    var point_count = 1;
+    if (epicenterlat == 0 && epicenterlong == 0) {
+        point_count = 0; // Without epicenter
+    }
+    var point_scale;
     for (var i in earthquakePoints) {
-        sum_longitude += parseInt(earthquakePoints[i]["longitude"]);
-        sum_latitude += parseInt(earthquakePoints[i]["latitude"]);
-        longitude = [Math.max(longitude[0], parseInt(earthquakePoints[i]["longitude"])), Math.min(longitude[1], parseInt(earthquakePoints[i]["longitude"]))];
-        latitude = [Math.max(latitude[0], parseInt(earthquakePoints[i]["latitude"])), Math.min(latitude[1], parseInt(earthquakePoints[i]["latitude"]))];
+        sum_longitude += parseFloat(earthquakePoints[i]["longitude"]);
+        sum_latitude += parseFloat(earthquakePoints[i]["latitude"]);
+        longitude = [Math.max(longitude[0], parseFloat(earthquakePoints[i]["longitude"])), Math.min(longitude[1], parseFloat(earthquakePoints[i]["longitude"]))];
+        latitude = [Math.max(latitude[0], parseFloat(earthquakePoints[i]["latitude"])), Math.min(latitude[1], parseFloat(earthquakePoints[i]["latitude"]))];
         point_count++;
     }
     var center = [sum_latitude / point_count, sum_longitude / point_count];
+    if (epicenterlong == 0 && epicenterlat == 0) {
+        latitude[1] = center[0];
+        longitude[1] = center[1];
+    }
     var distance = Math.sqrt(Math.pow((latitude[0]-latitude[1]), 2) + Math.pow((longitude[0]-longitude[1]), 2));
     console.log(latitude, longitude, [sum_latitude, sum_longitude], point_count, center, distance);
     if(distance < 1){
         point_scale = 8;
-    }
-    if(distance >= 1 && distance < 2){
+    } else if (distance >= 1 && distance < 2) {
         point_scale = 7;
-    }
-    if(distance >= 2 && distance < 3){
+    } else if (distance >= 2 && distance < 3){
+        point_scale = 7;
+    } else if (distance >= 3 && distance < 4){
         point_scale = 6;
-    }
-    if(distance >= 3 && distance < 4){
-        point_scale = 5;
-    }
-    if(distance >= 4 && distance < 5){
-        point_scale = 5;
-    }
-    if(distance >= 5 && distance < 6){
-        point_scale = 5;
-    }
-    if(distance >= 6 && distance < 7){
-        point_scale = 5;
-    }
-    if(distance >= 7 && distance < 8){
-        point_scale = 5;
-    }
-    if(distance >= 8 && distance < 9){
-        point_scale = 5;
-    }
-    if(distance >= 9 && distance < 10){
-        point_scale = 5;
-    }
-    if(distance >= 10){
+    } else if (distance >= 100) {
+        // Abnormal scaling, probably because less points are involved
+        point_scale = 8;
+    } else {
         point_scale = 5;
     }
     console.log(center, point_scale);
     window.map.setZoom(point_scale, {animate: false});
     window.map.panTo(center, {animate: false});
+};
+var addMapColoring = function (geojson_content) {
+    window.colorMapLayer = L.geoJson(geojson_content,
+        {style: parseColorStyle}
+    );
+    window.colorMapLayer.addTo(window.map);
+};
+var parseColorStyle = function (feature) {
+    /**
+     * @typedef {Object} feature
+     * @property {Object} properties
+     * @property {String} intensity_color
+    */
+    return {
+        fillColor: feature.properties.intensity_color,
+        fillOpacity: 1.0,
+        stroke: true,
+        color: "#000000",
+        weight: 2
+    }
 };

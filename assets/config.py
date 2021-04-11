@@ -1,0 +1,4 @@
+proxies = {
+    "http": "",
+    "https": "",
+}

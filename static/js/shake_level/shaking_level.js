@@ -43,7 +43,7 @@ var shakeLevelShow = function (result) {
 var getShakeLevel = function () {
     $.ajax({
         type: "GET",
-        url: "/get_shake_level",
+        url: "/api/get_shake_level",
         dataType: "JSON",
         cache: false,
         timeout: 3000,
