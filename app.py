@@ -4,6 +4,9 @@ from assets.export_api.get_jma_info import get_jma_info
 
 app = Flask("EEWMap")
 # Renderers
+@app.route("/previous_eq")
+def previous_earthquake_render():
+    return render_template("previous_earthquake.html")
 @app.route("/shake_level")
 def shake_level_render():
     return render_template("shaking_level.html")

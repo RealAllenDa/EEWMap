@@ -16,8 +16,13 @@ def get_basic_information(response_earthquake, response_comment):
     """
      Get basic information (time, M, tsunami comments) for VXSE53, VXSE52.
     """
-    earthquake_tsunami_comment_text = response_comment["ForecastComment"]["Text"]
-    earthquake_tsunami_comment_code = response_comment["ForecastComment"]["Code"]
+    try:
+        earthquake_tsunami_comment_text = response_comment["ForecastComment"]["Text"]
+        earthquake_tsunami_comment_code = response_comment["ForecastComment"]["Code"]
+    except:
+        # VXSE61
+        earthquake_tsunami_comment_text = ""
+        earthquake_tsunami_comment_code = "99999"
     # Earthquake time transform
     earthquake_parse_time = response_earthquake["OriginTime"]
     earthquake_date = earthquake_parse_time.split("T")[0]
@@ -36,10 +41,14 @@ def get_basic_information(response_earthquake, response_comment):
     }
     # Convert coordinates like +<latitude>+<longitude>-<depth>/
     try:
-        if response_earthquake["Hypocenter"]["Area"]["jmx_eb:Coordinate"]["@description"] == "震源要素不明":
+        if type(response_earthquake["Hypocenter"]["Area"]["jmx_eb:Coordinate"]) == list:
+            to_parse_hypocenter = response_earthquake["Hypocenter"]["Area"]["jmx_eb:Coordinate"][0]
+        else:
+            to_parse_hypocenter = response_earthquake["Hypocenter"]["Area"]["jmx_eb:Coordinate"]
+        if to_parse_hypocenter["@description"] == "震源要素不明":
             earthquake_hypocenter["depth"] = "Unknown"
         else:
-            earthquake_hc_coordinate = response_earthquake["Hypocenter"]["Area"]["jmx_eb:Coordinate"]["#text"]
+            earthquake_hc_coordinate = to_parse_hypocenter["#text"]
             earthquake_match_a = re.split(r"[-](.*)[-](.*)[-](.*)/", earthquake_hc_coordinate)
             earthquake_match_b = re.split(r"[+](.*)[-](.*)[-](.*)/", earthquake_hc_coordinate)
             earthquake_match_c = re.split(r"[+](.*)[+](.*)[-](.*)/", earthquake_hc_coordinate)

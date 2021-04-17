@@ -2,3 +2,31 @@
     font-family: B612;
     src: url("../font/B612-Regular.ttf");
 }
+body {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    color: white;
+    font-family: B612, sans-serif;
+    --info-background-color: rgb(61, 67, 68);
+    --shake-50: rgb(30, 110, 230);
+    --shake-100: rgb(255, 180, 0);
+    --shake-500: rgb(255, 120, 0);
+    --shake-1000: rgb(230, 0, 0);
+    --shake-2000: rgb(160, 0, 0);
+    --shake-3000: rgb(150, 0, 150);
+    --border-color: rgb(82, 88, 89);
+    --background-color: rgb(28, 97, 103);
+    --intensity-1: rgb(70, 100, 110);
+    --intensity-2: rgb(30, 110, 230);
+    --intensity-3: rgb(0, 200, 200);
+    --intensity-4: rgb(250, 250, 100);
+    --intensity-5: rgb(255, 180, 0);
+    --intensity-6: rgb(255, 120, 0);
+    --intensity-7: rgb(230, 0, 0);
+    --intensity-8: rgb(160, 0, 0);
+    --intensity-9: rgb(150, 0, 150);
+    --intensity-0: rgb(102, 102, 102);
+    background: var(--background-color);
+}

@@ -17,7 +17,7 @@ def fetch_tsunami_area_json():
     # TODO
     pass
 def fetch_intensity_report_json(area_codes, area_intensities):
-    with open("./assets/area/IntReport.json", encoding="utf-8") as f:
+    with open("./assets/area/japan_areas.json", encoding="utf-8") as f:
         areas = json.loads(f.read())
         f.close()
     return_areas = {

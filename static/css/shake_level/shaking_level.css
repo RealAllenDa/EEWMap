@@ -1,18 +1,4 @@
 body {
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-    user-select: none;
-    color: white;
-    font-family: B612, sans-serif;
-    --info-background-color: rgb(61, 67, 68);
-    --shake-50: rgb(30, 110, 230);
-    --shake-100: rgb(255, 180, 0);
-    --shake-500: rgb(255, 120, 0);
-    --shake-1000: rgb(230, 0, 0);
-    --shake-2000: rgb(160, 0, 0);
-    --shake-3000: rgb(150, 0, 150);
-    --border-color: rgb(82, 88, 89);
     font-size: 25px;
 }
 #main-container {

@@ -31,9 +31,11 @@ def get_last_earthquake(isLongtime):
         if i.split("_")[2] == "VXSE53":
             # Hypocenter + Intensity Report
             detailed_response = get_hypocenter_intensity_report("http://www.data.jma.go.jp/developer/xml/data/" + i)
+            information_code = i.split("_")[0]
             if detailed_response == 0:
                 return 0, 0
             else:
+                detailed_response["report_id"] = information_code
                 return 1, detailed_response
 
 

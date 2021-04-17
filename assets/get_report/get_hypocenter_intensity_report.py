@@ -19,7 +19,7 @@ def get_hypocenter_intensity_report(xml_addr):
     except:
         return 0
     if DEBUG:
-        with open("./tests/test.xml", encoding="utf-8") as f:
+        with open("./tests/eqinfo.xml", encoding="utf-8") as f:
             test = f.read()
             f.close()
         converted_response = xmltodict.parse(test)

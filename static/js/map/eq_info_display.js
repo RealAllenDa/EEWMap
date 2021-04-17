@@ -105,6 +105,11 @@ var setBannerContent = function (commentId, commentText) {
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-6)";
             window.DOM.information_banner.innerText = "Overseas Earthquake - Japan tsunami risk evaluating";
             return;
+        } else if (commentId == 99999) {
+            // No change
+            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-2)";
+            window.DOM.information_banner.innerText = "Received an earthquake factors correction report";
+            return;
         } else {
             // Unknown
             window.DOM.information_banner_div.style.backgroundColor = "var(--info-background-color)";

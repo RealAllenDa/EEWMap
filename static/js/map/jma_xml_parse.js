@@ -8,7 +8,7 @@ var getJmaXML = function () {
         success: jmaXMLParse
     });
 };
-var lastMessage = {};
+var last_message = {};
 var jmaXMLParse = function (result) {
     /*
     * Status list:
@@ -22,15 +22,20 @@ var jmaXMLParse = function (result) {
     *  */
     console.debug(result);
     var resp_content = result["content"];
+    var result_for_compare = result;
     if (result["status"] == -1) {
         console.warn("Can't retrieve data.");
         return;
     }
-    if (compare(lastMessage, result)) {
+    // Redact result for comparing
+    if ([3, 4].indexOf(result["status"]) != -1) {
+        result_for_compare["content"]["last_time"] = 0;
+    }
+    if (_.isEqual(last_message, result_for_compare)) {
         console.debug("Identical information. No need to update.");
         return;
     } else {
-        lastMessage = result;
+        last_message = result_for_compare;
         console.debug("Updated message. Parsing...");
     }
     if ([0, 1, 2].indexOf(result["status"]) != -1) {
@@ -54,8 +59,8 @@ var jmaXMLParse = function (result) {
         } else {
             displayIntensityCode(0, false);
             addEpicenter(resp_content["hypocenter"]["latitude"], resp_content["hypocenter"]["longitude"]);
-            window.map.setZoom(2);
-            window.map.panTo([4, -5]);
+            window.map.setZoom(2, {animate: false});
+            window.map.panTo([4, -5], {animate: false});
         }
     } else if (result["status"] == 1) {
         window.DOM.intensity_report_div.style.display = "block";
@@ -79,16 +84,20 @@ var jmaXMLParse = function (result) {
     }
 };
 var parseEEWInfo = function (result) {
-    displayEarthquakeInformation(result, true);
-    displayIntensityCode(result["max_intensity"], true);
     if (result["is_cancel"]) {
         // Hide EEW div, show Earthquake Report div
         window.DOM.eew_display_div.style.display = "none";
         window.DOM.intensity_display_div.style.display = "grid";
-        window.DOM.information_banner.innerText = "Previous Earthquake Early Warning had been canceled";
+        window.DOM.information_banner.innerText = "Previous Earthquake Early Warning had been cancelled";
         window.DOM.information_banner.style.color = "white";
-        window.DOM.information_banner_div.style.background = "var(--info-background-color)";
+        window.DOM.information_banner_div.style.background = "var(--intensity-3)";
+        window.DOM.expected_flag.style.display = "none";
+        window.DOM.drill_flag.style.display = "none";
+        deleteAllLayers();
+        return;
     }
+    displayEarthquakeInformation(result, true);
+    displayIntensityCode(result["max_intensity"], true);
     if (result["is_final"]) {
         window.DOM.eew_report_number.innerText = "#" + result["report_num"] + "-F";
     } else {
@@ -97,24 +106,33 @@ var parseEEWInfo = function (result) {
     deleteAllLayers();
     addEpicenter(result["hypocenter"]["latitude"], result["hypocenter"]["longitude"]);
     parseMapScale([], result["hypocenter"]["latitude"], result["hypocenter"]["longitude"]);
-    if (!(compare(result["area_intensity"]["geojson"], {}) && compare(result["area_intensity"]["intensity"], {}))) {
+    if (!(_.isEqual(result["area_intensity"]["geojson"], {}) && _.isEqual(result["area_intensity"]["intensity"], {}))) {
         addMapIntensities(result["area_intensity"]["intensity"]);
         addMapColoring(result["area_intensity"]["geojson"]);
+        window.DOM.expected_flag.style.display = "block";
     } else {
+        window.DOM.expected_flag.style.display = "none";
         console.warn("area_intensity equals {}. No map coloring.");
     }
-    if (result["report_flag"] == 3) {
+    if (parseInt(result["report_flag"]) == 3) {
         // Earthquake Forecast
         window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
         window.DOM.eew_banner.innerText = "Earthquake Early Warning (Forecast)";
         // Manually set the zoom since no earthquake point exists
-        window.map.setZoom(7);
-    } else {
+        window.map.setZoom(7, {animate: false});
+    } else if (parseInt(result["report_flag"]) == 4){
         // EEW
         window.DOM.eew_banner_div.style.background = "var(--intensity-8)";
         window.DOM.eew_banner.innerText = "Earthquake Early Warning (Warning) - Strong Shaking Expected";
+    } else {
+        // Unknown
+        window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
+        window.DOM.eew_banner.innerText = "Unknown EEW (Probably PLUM, etc.)";
     }
-    if (["1", "2", "3", "4"].indexOf(result["max_intensity"]) != -1) {
+    if (result["max_intensity"] == "0") {
+        window.DOM.eew_advice.style.background = "var(--info-background-color)";
+        window.DOM.eew_advice.innerText = "Wait for further information";
+    } else if (["1", "2", "3", "4"].indexOf(result["max_intensity"]) != -1) {
         window.DOM.eew_advice.style.background = "var(--intensity-2)";
         window.DOM.eew_advice.innerText = "Pay attention to coastal areas";
     } else {
@@ -122,10 +140,9 @@ var parseEEWInfo = function (result) {
         window.DOM.eew_advice.innerText = "Stay away from coastal areas";
     }
     if (result["is_test"]) {
-        window.DOM.eew_banner_div.style.background = "var(--intensity-2)";
-        window.DOM.eew_banner.innerText = "Drill - Not Real Situation";
-        window.DOM.eew_advice.style.background = "var(--intensity-2)";
-        window.DOM.eew_advice.innerText = "Drill - Not Real Situation";
+        window.DOM.drill_flag.style.display = "block";
+    } else {
+        window.DOM.drill_flag.style.display = "none";
     }
     if (result["is_degraded"]) {
         console.warn("Result degraded. Check server log.");

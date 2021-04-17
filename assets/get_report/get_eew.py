@@ -1,3 +1,4 @@
+import json
 import time
 import traceback
 
@@ -7,35 +8,37 @@ from assets.area.area_define import fetch_intensity_report_json
 from assets.centroid.centroid_define import fetch_area_centroid
 from assets.config import proxies
 from assets.earthquake_info import response_verify
+from assets.debug import DEBUG_EEW, DEBUG_DGRD_EEW
+
 
 def get_eew_info():
     """
      Get EEW information.
      Result: 0 - Success
-             1 - No EEW
              -1 - Failed
     """
-    try:
-        response = requests.get(url="https://api.iedred7584.com/eew/json/",
-                                     proxies=proxies)
-        response.encoding = 'utf-8'
-        if not response_verify(response):
-            return get_degraded_eew_info()
-    except:
-        traceback.print_exc()
+    if DEBUG_DGRD_EEW:
         return get_degraded_eew_info()
-    converted_response = response.json()
+    if DEBUG_EEW:
+        with open("./tests/eew.json", encoding="utf-8") as f:
+            converted_response = json.loads(f.read())
+            f.close()
+    else:
+        try:
+            response = requests.get(url="https://api.iedred7584.com/eew/json/",
+                                    proxies=proxies)
+            response.encoding = 'utf-8'
+            if not response_verify(response):
+                return get_degraded_eew_info()
+        except:
+            traceback.print_exc()
+            return get_degraded_eew_info()
+        converted_response = response.json()
     is_final = False
     if converted_response["ParseStatus"] == "Error":
         return get_degraded_eew_info()
     if converted_response["Type"]["Code"] != 0:
         is_final = True
-        # Outdated report
-        if int(time.time()) - converted_response["AnnouncedTime"]["UnixTime"] >= 180:
-            # >= 1min
-            return {
-                "status": 1
-            }
     if converted_response["Title"]["String"] == "緊急地震速報（警報）":
         report_flag = 4
     else:
@@ -45,11 +48,14 @@ def get_eew_info():
     else:
         is_train = False
     report_time = converted_response["AnnouncedTime"]["String"]
-    if converted_response["Type"]["String"] != "発表":
+    if converted_response["Type"]["String"] != "発表" or \
+        converted_response["Status"]["Detail"] == "通常の取り消し":
         return {
             "status": 0,
             "is_degraded": False,
-            "is_cancel": True
+            "is_cancel": True,
+            "report_flag": report_flag,
+            "last_time": int(time.time()) - converted_response["AnnouncedTime"]["UnixTime"]
         }
     hypocenter_info = {
         "name": converted_response["Hypocenter"]["Name"],
@@ -60,6 +66,7 @@ def get_eew_info():
     report_num = converted_response["Serial"]
     magnitude = converted_response["Hypocenter"]["Magnitude"]["Float"]
     max_intensity = converted_response["MaxIntensity"]["From"]
+    event_id = converted_response["EventID"]
     if report_flag == 4:
         area_intensity = {}
         to_fetch_area_color = []
@@ -106,6 +113,7 @@ def get_eew_info():
         "report_time": report_time,
         "report_num": report_num,
         "report_flag": report_flag,
+        "report_id": event_id,
         "is_final": is_final,
         "magnitude": magnitude,
         "hypocenter": hypocenter_info,
@@ -115,21 +123,27 @@ def get_eew_info():
         }
     }
 def get_degraded_eew_info():
-    try:
-        response_time = requests.get(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",
-                                     proxies=proxies)
-        response_time.encoding = 'utf-8'
-        if not response_verify(response_time):
+    if DEBUG_DGRD_EEW:
+        with open("./tests/eew_dgrd.json", encoding="utf-8") as f:
+            converted_response = json.loads(f.read())
+            f.close()
+    else:
+        try:
+            response_time = requests.get(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",
+                                         proxies=proxies)
+            response_time.encoding = 'utf-8'
+            if not response_verify(response_time):
+                return {"status": -1}
+            request_time = time.strptime(response_time.json()["latest_time"], "%Y/%m/%d %H:%M:%S")
+            req_timestamp = int(time.mktime(request_time))
+            response = requests.get(
+                url="http://www.kmoni.bosai.go.jp/webservice/hypo/eew/{}.json".format(req_timestamp))
+            response.encoding = 'utf-8'
+            if not response_verify(response):
+                return {"status": -1}
+        except:
             return {"status": -1}
-        request_time = time.strptime(response_time.json()["latest_time"], "%Y/%m/%d %H:%M:%S")
-        req_timestamp = int(time.mktime(request_time))
-        response = requests.get(url="http://www.kmoni.bosai.go.jp/webservice/hypo/eew/{}.json".format(req_timestamp))
-        response.encoding = 'utf-8'
-        if not response_verify(response):
-            return {"status": -1}
-    except:
-        return {"status": -1}
-    converted_response = response.json()
+        converted_response = response.json()
     if converted_response["result"]["message"] != "":
         # No EEW Available
         return {"status": 1}
@@ -139,16 +153,29 @@ def get_degraded_eew_info():
             report_flag = 3
         else:
             report_flag = 4
+        if converted_response["calcintensity"] in ["1", "2", "3", "4", "7"]:
+            parsed_intensity = converted_response["calcintensity"]
+        elif converted_response["calcintensity"] == "5強":
+            parsed_intensity = "5+"
+        elif converted_response["calcintensity"] == "5弱":
+            parsed_intensity = "5-"
+        elif converted_response["calcintensity"] == "6強":
+            parsed_intensity = "6+"
+        elif converted_response["calcintensity"] == "6弱":
+            parsed_intensity = "6-"
+        else:
+            parsed_intensity = "0"
         return {
             "status": 0,
             "is_degraded": True,
             "is_cancel": converted_response["is_cancel"],
             "is_test": converted_response["is_training"],
-            "max_intensity": int(converted_response["calcintensity"]),
+            "max_intensity": parsed_intensity,
             "last_time": 0,
             "report_time": converted_response["report_time"],
             "report_num": converted_response["report_num"],
             "report_flag": report_flag,
+            "report_id": converted_response["report_id"],
             "is_final": converted_response["is_final"],
             "magnitude": converted_response["magunitude"],
             "hypocenter": {

@@ -4,6 +4,8 @@ var initializeDOM = function () {
     window.DOM.eew_display_div = document.getElementById("eew-display");
     window.DOM.intensity_report_div = document.getElementById("intensity-report");
     window.DOM.earthquake_report_div = document.getElementById("earthquake-report");
+    window.DOM.drill_flag = document.getElementById("drill-flag");
+    window.DOM.expected_flag = document.getElementById("expected-flag");
     // Earthquake Report
     window.DOM.information_banner_div = document.getElementById("banner-description");
     window.DOM.information_banner = document.getElementById("banner-text");

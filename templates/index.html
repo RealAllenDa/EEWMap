@@ -4,45 +4,55 @@
     <meta charset="UTF-8">
     <title>Japan Earthquake Monitor</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font.css') }}"/>
-    <style>
-        body {
-            font-family: B612, sans-serif;
-            text-align: center;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index/index.css') }}"/>
 </head>
 <body>
-<h1>Japan Earthquake Monitor</h1>
-<h2>By Allen Da in <a href="https://github.com/RealAllenDa/EEWMap">EEWMap</a></h2>
-<hr>
-<h1>1. <a href="{{ url_for(".map_render") }}">Earthquake Map</a></h1>
-<h2>Includes EEW(Earthquake Early Warning) Report, Intensity Report, Hypocenter Report, etc.</h2>
-<br>
-<h1>2. <a href="{{ url_for(".shake_level_render") }}">Shaking Level</a></h1>
-<h2>Shaking level explanation:</h2>
-<table>
-    <tr>
-        <th class="bold">Shake Level</th>
-        <th class="bold">>=50</th>
-        <th class="bold">>=100</th>
-        <th class="bold">>=500</th>
-        <th class="bold">>=1000</th>
-        <th class="bold">>=2000</th>
-        <th class="bold">>=3000</th>
-    </tr>
-    <tr>
-        <th class="bold">Explanation</th>
-        <th>Insensible shaking. Nobody will feel it.</th>
-        <th>Moderate shaking. Almost all the people will feel it.</th>
-        <th>Strong shaking. People will have difficulty to do things.</th>
-        <th>Very strong shaking. People will have difficulty to stand.</th>
-        <th>Extremely strong shaking. People will have difficulty to crawl on the ground.</th>
-        <th>Catastrophic shaking. The wooden houses will crack.</th>
-    </tr>
-</table>
+<div>
+    <h1>Japan Earthquake Monitor</h1>
+    <h2>By Allen Da in <a href="https://github.com/RealAllenDa/EEWMap">EEWMap</a></h2>
+    <hr>
+</div>
+<div>
+    <h1>1. <a href="{{ url_for(".map_render") }}">Earthquake Map</a></h1>
+    <h2>Includes EEW (Earthquake Early Warning), Intensity Report, Hypocenter Report, etc.</h2>
+</div>
+<div>
+    <h1>2. <a href="{{ url_for(".shake_level_render") }}">Shaking Level</a></h1>
+    <h2>Shaking level explanation:</h2>
+    <table>
+        <tr style="color: black">
+            <th class="bold">Shake Level</th>
+            <th class="bold">Explanation</th>
+        </tr>
+        <tr style="background: var(--shake-50);">
+            <td class="bold">>=50</td>
+            <td>Insensible shaking. Nobody will feel it.</td>
+        </tr>
+        <tr style="background: var(--shake-100); color: black">
+            <td class="bold">>=100</td>
+            <td>Moderate shaking. Almost all the people will feel it.</td>
+        </tr>
+        <tr style="background: var(--shake-500)">
+            <td class="bold">>=500</td>
+            <td>Strong shaking. People will have difficulty to do things.</td>
+        </tr>
+        <tr style="background: var(--shake-1000)">
+            <td class="bold">>=1000</td>
+            <td>Very strong shaking. People will have difficulty to stand.</td>
+        </tr>
+        <tr style="background: var(--shake-2000)">
+            <td class="bold">>=2000</td>
+            <td>Extremely strong shaking. People will have difficulty to crawl on the ground.</td>
+        </tr>
+        <tr style="background: var(--shake-3000)">
+            <td class="bold">>=3000</td>
+            <td>Catastrophic shaking. The wooden houses will crack.</td>
+        </tr>
+    </table>
+</div>
+<div>
+    <h1>3. <a href="{{ url_for(".previous_earthquake_render") }}">Previous Earthquakes</a></h1>
+    <h2>Shows the Previous Earthquakes (Max. 30 entries)</h2>
+</div>
 </body>
 </html>

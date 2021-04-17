@@ -1,0 +1,19 @@
+body {
+    font-family: B612, sans-serif;
+    text-align: center;
+    background: white;
+    color: black;
+}
+.bold {
+    font-weight: bold;
+}
+table {
+    font-size: 20px;
+    margin: 0 auto;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+tr {
+    border: 2px solid black;
+    color: white;
+}
