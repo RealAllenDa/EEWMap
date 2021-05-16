@@ -74,46 +74,31 @@ var displayIntensityCode = function (intensity, is_eew) {
         intensity_code.innerText = intensity;
     }
 };
-var setBannerContent = function (commentId, commentText) {
+var setBannerContent = function (commentId) {
     var commentIds = commentId.split(" ");
     console.log(commentIds);
     // noinspection LoopStatementThatDoesntLoopJS,JSUnusedAssignment
     for (var i = 0; i < commentIds.length; i++) {
         commentId = parseInt(commentIds[i]);
-        if (commentId == 211) {
+        if (commentId == 1) {
             // Major tsunami warning / ... has been issued
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-7)";
             window.DOM.information_banner.innerText = "Major Tsunami Warning / Tsunami Warning / Advisory In Effect";
             return;
-        } else if (commentId == 215) {
+        } else if (commentId == 4) {
             // No tsunami
             window.DOM.information_banner_div.style.backgroundColor = "#66cccc";
             window.DOM.information_banner.innerText = "No Tsunami Expected";
             return;
-        } else if (commentId == 217) {
+        } else if (commentId == 3) {
+            // Light sea changes are expected
+            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-4)";
+            window.DOM.information_banner.innerText = "Light Sea Changes Expected - No Tsunami Expected";
+            return;
+        } else if (commentId == 2) {
             // Evaluating
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-6)";
             window.DOM.information_banner.innerText = "Tsunami Risk Evaluating - Stay away from coastal areas";
-            return;
-        } else if (commentId == 999) {
-            // Train
-            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-2)";
-            window.DOM.information_banner.innerText = "Drill - Not Real Situation";
-            return;
-        } else if (commentId == 221 || commentId == 229) {
-            // Evaluating (Overseas)
-            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-6)";
-            window.DOM.information_banner.innerText = "Overseas Earthquake - Japan tsunami risk evaluating";
-            return;
-        } else if (commentId == 99999) {
-            // No change
-            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-2)";
-            window.DOM.information_banner.innerText = "Received an earthquake factors correction report";
-            return;
-        } else {
-            // Unknown
-            window.DOM.information_banner_div.style.backgroundColor = "var(--info-background-color)";
-            window.DOM.information_banner.innerText = commentText;
             return;
         }
     }

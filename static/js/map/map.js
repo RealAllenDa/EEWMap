@@ -1,55 +1,103 @@
-window.layers = [];
 window.intensity_area_icons = {
     1: new L.Icon({
-        iconUrl: "../static/image/intensity_area/1.png",
+        iconUrl: "../static/image/intensity_big/1.png",
         iconSize: [25, 25]
     }),
     2: new L.Icon({
-        iconUrl: "../static/image/intensity_area/2.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/2.png",
+        iconSize: [25, 25]
     }),
     3: new L.Icon({
-        iconUrl: "../static/image/intensity_area/3.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/3.png",
+        iconSize: [25, 25]
     }),
     4: new L.Icon({
-        iconUrl: "../static/image/intensity_area/4.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/4.png",
+        iconSize: [25, 25]
     }),
     "5-": new L.Icon({
-        iconUrl: "../static/image/intensity_area/5.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/5-.png",
+        iconSize: [25, 25]
     }),
     "5+": new L.Icon({
-        iconUrl: "../static/image/intensity_area/6.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/5+.png",
+        iconSize: [25, 25]
     }),
     "6-": new L.Icon({
-        iconUrl: "../static/image/intensity_area/7.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/6-.png",
+        iconSize: [25, 25]
     }),
     "6+": new L.Icon({
-        iconUrl: "../static/image/intensity_area/8.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/6+.png",
+        iconSize: [25, 25]
     }),
     "7": new L.Icon({
-        iconUrl: "../static/image/intensity_area/9.png",
-        iconSize: [25, 25],
+        iconUrl: "../static/image/intensity_big/7.png",
+        iconSize: [25, 25]
+    }),
+    "5?": new L.Icon({
+        iconUrl: "../static/image/intensity_big/5_.png",
+        iconSize: [25, 25]
+    })
+};
+window.intensity_station_icons = {
+    1: new L.Icon({
+        iconUrl: "../static/image/intensity_small/1.png",
+        iconSize: [20, 20]
+    }),
+    2: new L.Icon({
+        iconUrl: "../static/image/intensity_small/2.png",
+        iconSize: [20, 20]
+    }),
+    3: new L.Icon({
+        iconUrl: "../static/image/intensity_small/3.png",
+        iconSize: [20, 20]
+    }),
+    4: new L.Icon({
+        iconUrl: "../static/image/intensity_small/4.png",
+        iconSize: [20, 20]
+    }),
+    "5-": new L.Icon({
+        iconUrl: "../static/image/intensity_small/5-.png",
+        iconSize: [20, 20]
+    }),
+    "5+": new L.Icon({
+        iconUrl: "../static/image/intensity_small/5+.png",
+        iconSize: [20, 20]
+    }),
+    "6-": new L.Icon({
+        iconUrl: "../static/image/intensity_small/6-.png",
+        iconSize: [20, 20]
+    }),
+    "6+": new L.Icon({
+        iconUrl: "../static/image/intensity_small/6+.png",
+        iconSize: [20, 20]
+    }),
+    "7": new L.Icon({
+        iconUrl: "../static/image/intensity_small/7.png",
+        iconSize: [20, 20]
+    }),
+    "5?": new L.Icon({
+        iconUrl: "../static/image/intensity_small/5_.png",
+        iconSize: [20, 20]
     })
 };
 window.epicenter_icon = new L.Icon({
    iconUrl: "../static/image/epicenter.png",
    iconSize: [25, 25]
 });
+window.layers = [];
 var initializeMap = function () {
     var map_url = "https://www.jma.go.jp/tile/jma/transparent-cities/{z}/{x}/{y}.png";
     window.map = L.map('map', {
-        zoomControl: false
-    }).setView([38.272688535980976, 137], 5);
+        zoomControl: false,
+        center: [38.272688535980976, 137],
+        zoom: 5
+    });
     L.tileLayer(map_url, {
         maxZoom: 8,
         attribution: "Map&Data by <a href='http://www.jma.go.jp/jma/index.html'>JMA</a> | " +
-            "<a href='https://github.com/RealAllenDa/EEWMap'>EEWMap</a> by AllenDa"
+            "EEWMap by AllenDa"
     }).addTo(window.map);
 };
 var addMapIntensities = function (intensityList) {
@@ -57,7 +105,11 @@ var addMapIntensities = function (intensityList) {
         var intensity = intensityList[i]["intensity"];
         var latitude = intensityList[i]["latitude"];
         var longitude = intensityList[i]["longitude"];
-        var layer = new L.marker([latitude, longitude], {icon: window.intensity_area_icons[intensity]});
+        if (intensityList[i]["is_area"] == "true") {
+            var layer = L.marker([latitude, longitude], {icon: window.intensity_area_icons[intensity]});
+        } else {
+            layer = L.marker([latitude, longitude], {icon: window.intensity_station_icons[intensity]});
+        }
         if (intensity == "1" || intensity == "2" || intensity == "3" || intensity == "4") {
             layer.setZIndexOffset(parseInt(intensity) * 100);
         } else if (intensity == "5-") {
@@ -78,7 +130,7 @@ var addMapIntensities = function (intensityList) {
 };
 var addEpicenter = function (latitude, longitude) {
     window.epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon}).addTo(window.map);
-    window.epicenterMarker.setZIndexOffset(10000);
+    window.epicenterMarker.setZIndexOffset(50);
 };
 var deleteAllLayers = function () {
     try {
@@ -142,6 +194,16 @@ var parseMapScale = function (earthquakePoints, epicenterlat, epicenterlong) {
     console.log(center, point_scale);
     window.map.setZoom(point_scale, {animate: false});
     window.map.panTo(center, {animate: false});
+};
+var parseEpicenterMapScale = function (epicenterlat, epicenterlong) {
+    var earthquake_points = [];
+    for (var i in window.iconGroup._layers) {
+        earthquake_points[earthquake_points.length] = {
+            "longitude": window.iconGroup._layers[i]._latlng["lng"],
+            "latitude": window.iconGroup._layers[i]._latlng["lat"]
+        };
+    }
+    parseMapScale(earthquake_points, epicenterlat, epicenterlong);
 };
 var addMapColoring = function (geojson_content) {
     window.colorMapLayer = L.geoJson(geojson_content,

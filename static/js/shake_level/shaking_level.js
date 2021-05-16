@@ -3,7 +3,6 @@ window.onload = function () {
     window.level_display_wrap = document.getElementById("shaking-level-wrap");
     window.last_time_fetch_success = 0;
     setInterval(function () {
-        window.time_stamp = new Date().getTime();
         getShakeLevel();
     }, 2500);
 };
@@ -43,7 +42,7 @@ var shakeLevelShow = function (result) {
 var getShakeLevel = function () {
     $.ajax({
         type: "GET",
-        url: "/api/get_shake_level",
+        url: "/api/shake_level",
         dataType: "JSON",
         cache: false,
         timeout: 3000,
