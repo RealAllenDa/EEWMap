@@ -3,9 +3,10 @@ import traceback
 
 import requests
 
-from config import PROXY
+from config import PROXY, DEBUG_EEW_OVRD, DEBUG_EEW
 from modules.utilities import response_verify
 from modules.intensity import intensity2color
+from modules.pswave import parse_swave
 
 return_dict = {}
 def get_eew_info(app):
@@ -20,6 +21,9 @@ def get_eew_info(app):
         request_time = time.strptime(response_time.json()["latest_time"], "%Y/%m/%d %H:%M:%S")
         req_date = time.strftime("%Y%m%d", request_time)
         req_time = time.strftime("%Y%m%d%H%M%S", request_time)
+        if DEBUG_EEW:
+            req_date = DEBUG_EEW_OVRD["date"]
+            req_time = DEBUG_EEW_OVRD["time"]
         response = requests.get(
             url="http://www.kmoni.bosai.go.jp/webservice/hypo/eew/{}.json".format(req_time))
         response.encoding = 'utf-8'
@@ -67,6 +71,16 @@ def get_eew_info(app):
             intensities = intensity2color(response)
         except:
             app.logger.warn("Failed to fetch EEW image. Exception occurred: \n" + traceback.format_exc())
+        try:
+            origin_time = time.strptime(converted_response["origin_time"], "%Y%m%d%H%M%S")
+            origin_timestamp = float(time.mktime(origin_time))
+            if DEBUG_EEW:
+                origin_timestamp = DEBUG_EEW_OVRD["origin_timestamp"]
+            depth = int(converted_response["depth"].replace("km", ""))
+            s_wave_time = parse_swave(depth, float(time.time() - origin_timestamp))
+        except:
+            app.logger.warn("Failed to S wave time. Exception occurred: \n" + traceback.format_exc())
+            s_wave_time = None
         return_dict = {
             "status": 0,
             "is_cancel": converted_response["is_cancel"],
@@ -84,5 +98,6 @@ def get_eew_info(app):
                 "latitude": converted_response["latitude"],
                 "depth": converted_response["depth"]
             },
-            "area_intensity": intensities
+            "area_intensity": intensities,
+            "s_wave": s_wave_time
         }

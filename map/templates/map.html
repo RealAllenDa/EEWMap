@@ -18,12 +18,6 @@
 <body>
 <script src="{{ url_for('static', filename='js/map/index.js') }}"></script>
 <div id="main-container">
-    <div id="drill-flag" class="flags" style="display: none;">
-        <span>Drill - Not Real Situation</span>
-    </div>
-    <div id="expected-flag" class="flags" style="display: none;">
-        <span>Expected Intensity (Int. >=4)</span>
-    </div>
     <div id="intensity-display" class="window">
         <div id="earthquake-description">
             <div id="intensity-icon" class="sub-window">
@@ -60,6 +54,12 @@
     </div>
     <div id="map" class="sub-window"></div>
     <div id="eew-display" class="window" style="display: none">
+    <div id="drill-flag" class="flags" style="display: none;">
+        <span>Drill - Not Real Situation</span>
+    </div>
+    <div id="expected-flag" class="flags" style="display: none;">
+        <span>Expected Intensity</span>
+    </div>
         <div id="eew-banner" class="sub-window">
             <span id="eew-level">Fetching Information...</span>
         </div>

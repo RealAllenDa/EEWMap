@@ -24,15 +24,9 @@ def earthquake_info_get():
     :return: Earthquake info
     :rtype: dict
     """
-    from .p2p_get.parse_p2p_json import return_list
-    return str(return_list)
-@api_bp.route("/eew")
-def eew_get():
-    """
-    Get EEWs.
-
-    :return: EEW info
-    :rtype: dict
-    """
     from .eew.get_eew import return_dict
-    return return_dict
+    from .p2p_get.parse_p2p_json import return_list
+    return {
+        "info": return_list,
+        "eew": return_dict
+    }

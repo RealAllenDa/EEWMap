@@ -45,7 +45,7 @@ var getShakeLevel = function () {
         url: "/api/shake_level",
         dataType: "JSON",
         cache: false,
-        timeout: 3000,
+        timeout: 2500,
         success: shakeLevelShow
     });
 };

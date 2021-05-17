@@ -21,7 +21,7 @@ def refresh_p2p_info(app):
     get_p2p_json(app)
     app.logger.debug("Refreshed P2P info in {:.3f} seconds.".format(time.perf_counter() - start_time))
     # Recursion
-    TIMERS["p2p"] = Timer(3, refresh_p2p_info, args=(app,))
+    TIMERS["p2p"] = Timer(2, refresh_p2p_info, args=(app,))
     TIMERS["p2p"].start()
 
 def refresh_eew(app):
@@ -33,7 +33,7 @@ def refresh_eew(app):
     get_eew_info(app)
     app.logger.debug("Refreshed EEW in {:.3f} seconds.".format(time.perf_counter() - start_time))
     # Recursion
-    TIMERS["eew"] = Timer(3, refresh_eew, args=(app,))
+    TIMERS["eew"] = Timer(2, refresh_eew, args=(app,))
     TIMERS["eew"].start()
 
 def refresh_shake_level(app):
@@ -45,7 +45,7 @@ def refresh_shake_level(app):
     get_shake_level(app)
     app.logger.debug("Refreshed shaking level in {:.3f} seconds.".format(time.perf_counter() - start_time))
     # Recursion
-    TIMERS["shake_level"] = Timer(3, refresh_shake_level, args=(app,))
+    TIMERS["shake_level"] = Timer(2, refresh_shake_level, args=(app,))
     TIMERS["shake_level"].start()
 
 def initialize_api(app):
@@ -54,10 +54,10 @@ def initialize_api(app):
     """
     global TIMERS
     app.logger.debug("Initializing API Timers...")
-    TIMERS["p2p"] = Timer(3, refresh_p2p_info, args=(app,))
+    TIMERS["p2p"] = Timer(2, refresh_p2p_info, args=(app,))
     TIMERS["p2p"].start()
-    TIMERS["shake_level"] = Timer(3, refresh_shake_level, args=(app,))
+    TIMERS["shake_level"] = Timer(2, refresh_shake_level, args=(app,))
     TIMERS["shake_level"].start()
-    TIMERS["eew"] = Timer(3, refresh_eew, args=(app,))
+    TIMERS["eew"] = Timer(2, refresh_eew, args=(app,))
     TIMERS["eew"].start()
     app.logger.debug("Successfully initialized API!")

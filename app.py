@@ -9,6 +9,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 
 from map import map_bp
+from modules.pswave import init_pswave
 from shake_level import shake_level_bp
 from index import index_bp
 from history import history_bp
@@ -52,6 +53,7 @@ init_geojson_instance(app)
 init_centroid_instance(app)
 initialize_api(app)
 init_intensity2color(app)
+init_pswave(app)
 app.logger.info("Modules initialization completed successfully.")
 if __name__ == "__main_":
     app.run()

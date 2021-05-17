@@ -24,7 +24,7 @@
 }
 #eew-intensity-add {
       font-size: 75px;
-      position: fixed;
+      position: absolute;
       top: 540px;
       left: 217px;
 }

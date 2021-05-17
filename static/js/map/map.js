@@ -144,6 +144,9 @@ var deleteAllLayers = function () {
             window.iconGroup.clearLayers();
             window.layers = [];
         }
+        if (window.swave_circle != undefined) {
+            window.map.removeLayer(window.swave_circle);
+        }
     } catch (e){
         console.error("Failed to remove layers.", e);
     }
@@ -224,4 +227,13 @@ var parseColorStyle = function (feature) {
         color: "#000000",
         weight: 2
     }
+};
+var addSWaveCircle = function (epicenter, swave_distance) {
+ window.swave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], swave_distance * 1000, {
+    color: "#ff7800",
+    weight: 4,
+    opacity: 1,
+    fillColor: '#ff7800',
+    fillOpacity: 0.2
+  }).addTo(window.map);
 };

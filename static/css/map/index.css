@@ -61,7 +61,7 @@
     font-weight: bolder;
     font-size: 20px;
     border: 2px solid var(--intensity-1);
-    position: fixed;
+    position: absolute;
     top: 20px;
     left: 10px;
     text-align: center;
