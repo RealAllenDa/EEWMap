@@ -3,7 +3,7 @@ body {
 }
 #main-container {
     width: 200px;
-    height: 92px;
+    height: 215px;
     border: 6px solid var(--border-color);
     background: var(--info-background-color);
     box-sizing: border-box;
@@ -18,8 +18,19 @@ body {
 }
 #shaking-level-wrap {
     font-weight: bold;
-    border-top: 4px solid var(--border-color);
 }
 #shaking-level {
     display: inline!important;
+}
+#detailed-points {
+    border-top: 3px solid var(--border-color);
+}
+.points {
+    width: 100%;
+    height: 40px;
+    display: flex;
+}
+.point-label {
+    width: 50%;
+    height: 40px;
 }

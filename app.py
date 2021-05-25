@@ -14,6 +14,7 @@ from shake_level import shake_level_bp
 from index import index_bp
 from history import history_bp
 from api import api_bp, initialize_api
+from tsunami import tsunami_bp
 from modules.area import init_geojson_instance
 from modules.centroid import init_centroid_instance
 from modules.intensity import init_intensity2color
@@ -47,6 +48,7 @@ app.register_blueprint(shake_level_bp)
 app.register_blueprint(index_bp)
 app.register_blueprint(history_bp)
 app.register_blueprint(map_bp)
+app.register_blueprint(tsunami_bp)
 app.logger.info("App initialization completed successfully. Initializing modules...")
 # Initialize APIs & assets
 init_geojson_instance(app)

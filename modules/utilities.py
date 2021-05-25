@@ -9,3 +9,18 @@ def response_verify(resp):
         return False
     else:
         return True
+
+def generate_list(name):
+    """
+    Make sure parameters xmltodict generates is a list.
+
+    :param name: The dict/list that xmltodict gives
+    :return: Guaranteed a list
+    :rtype: list
+    """
+    if not name:
+        return []
+    elif isinstance(name, list):
+        return name
+    else:
+        return [name]

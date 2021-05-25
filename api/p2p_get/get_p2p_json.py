@@ -1,7 +1,9 @@
-import requests
-from flask import current_app
+import json
+import traceback
 
-from config import PROXY
+import requests
+
+from config import PROXY, DEBUG_P2P_TSUNAMI, DEBUG_P2P_OVRD
 from modules.utilities import response_verify
 from .parse_p2p_json import parse_p2p_info
 
@@ -12,12 +14,16 @@ def get_p2p_json(app):
     """
     try:
         response = requests.get(url="https://api.p2pquake.net/v2/history?codes=551&codes=552&limit=5",
-                                proxies=PROXY)
+                                proxies=PROXY, timeout=3500)
         response.encoding = "utf-8"
         if not response_verify(response):
-            current_app.logger.warn("Failed to fetch P2P JSON data. (response code not 200)")
+            app.logger.warn("Failed to fetch P2P JSON data. (response code not 200)")
             return
     except:
-        current_app.logger.warn("Failed to fetch P2P JSON data. (exception occurred)")
+        app.logger.warn("Failed to fetch P2P JSON data. Exception occurred: \n" + traceback.format_exc())
         return
-    parse_p2p_info(response.json(), app)
+    if not DEBUG_P2P_TSUNAMI:
+        parse_p2p_info(response.json(), app)
+    else:
+        with open(DEBUG_P2P_OVRD["file"], "r", encoding="utf-8") as f:
+            parse_p2p_info(json.loads(f.read()), app)

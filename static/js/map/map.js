@@ -84,11 +84,11 @@ window.intensity_station_icons = {
 };
 window.epicenter_icon = new L.Icon({
    iconUrl: "../static/image/epicenter.png",
-   iconSize: [25, 25]
+   iconSize: [35, 35]
 });
 window.layers = [];
 var initializeMap = function () {
-    var map_url = "https://www.jma.go.jp/tile/jma/transparent-cities/{z}/{x}/{y}.png";
+    var map_url = "https://api.mapbox.com/styles/v1/allenda/ckp1e65ta2uk618rwi5ibfluz/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYWxsZW5kYSIsImEiOiJja241dWpnNWwwN3Q3MnRwNm1ueWJvaDUyIn0.mugew7hjEAG-zFoXg_pYiw";
     window.map = L.map('map', {
         zoomControl: false,
         center: [38.272688535980976, 137],
@@ -96,8 +96,9 @@ var initializeMap = function () {
     });
     L.tileLayer(map_url, {
         maxZoom: 8,
-        attribution: "Map&Data by <a href='http://www.jma.go.jp/jma/index.html'>JMA</a> | " +
-            "EEWMap by AllenDa"
+        attribution: "Data by <a href='http://www.jma.go.jp/jma/index.html'>JMA</a> | " +
+            "EEWMap by AllenDa | " +
+            "Map by <a href='https://mapbox.com'>Mapbox</a>"
     }).addTo(window.map);
 };
 var addMapIntensities = function (intensityList) {

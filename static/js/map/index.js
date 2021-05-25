@@ -21,13 +21,13 @@ var initializeDOM = function () {
 };
 window.onload = function () {
     try {
-    initializeDOM();
-    initializeMap();
-    displayIntensityCode(0, false);
+        initializeDOM();
+        initializeMap();
+        displayIntensityCode(0, false);
     } catch (e) {
         console.error("Failed to initialize the map.", e);
-
     }
+
     setInterval(function () {
         getEqInfo();
     }, 2000);

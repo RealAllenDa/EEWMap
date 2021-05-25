@@ -2,6 +2,10 @@
     font-family: B612;
     src: url("../font/B612-Regular.ttf");
 }
+@font-face {
+    font-family: Geometos;
+    src: url("../font/Geometos.ttf");
+}
 body {
     margin: 0;
     padding: 0;
@@ -16,6 +20,12 @@ body {
     --shake-1000: rgb(230, 0, 0);
     --shake-2000: rgb(160, 0, 0);
     --shake-3000: rgb(150, 0, 150);
+    --green-warn: #33cc99;
+    --yellow-warn: #ffff66;
+    --red-warn: #ff6666;
+    --green-warn-label: #339999;
+    --yellow-warn-label: #cccc33;
+    --red-warn-label: #cc6666;
     --border-color: rgb(82, 88, 89);
     --background-color: rgb(28, 97, 103);
     --intensity-1: rgb(70, 100, 110);
@@ -28,5 +38,8 @@ body {
     --intensity-8: rgb(160, 0, 0);
     --intensity-9: rgb(150, 0, 150);
     --intensity-0: rgb(102, 102, 102);
+    --major-tsunami-warn: #C800FF;
+    --tsunami-warn: #FF2800;
+    --tsunami-advisory: #FAF500;
     background: var(--background-color);
 }

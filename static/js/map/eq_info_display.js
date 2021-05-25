@@ -39,7 +39,7 @@ var displayIntensityCode = function (intensity, is_eew) {
             intensity_code_box.style.backgroundColor = "var(--info-background-color)";
     }
     // Set background color
-    if ([0, "1", "2", "3", "4", "7"].indexOf(intensity) != -1) {
+    if ([0, "-1", "1", "2", "3", "4", "7"].indexOf(intensity) != -1) {
         // Add margin
         intensity_code.className = "intensity-display margin-add";
     } else {
@@ -68,13 +68,13 @@ var displayIntensityCode = function (intensity, is_eew) {
         intensity_code.innerText = "6";
     } else if (intensity == "7") {
         intensity_code.innerText = "7";
-    } else if (intensity == 0 || isNaN(intensity) || intensity == "NaN") {
+    } else if (intensity == "-1" || intensity == 0 || isNaN(intensity) || intensity == "NaN") {
         intensity_code.innerText = "--";
     } else {
         intensity_code.innerText = intensity;
     }
 };
-var setBannerContent = function (commentId) {
+var setBannerContent = function (commentId, isForeign) {
     var commentIds = commentId.split(" ");
     console.log(commentIds);
     // noinspection LoopStatementThatDoesntLoopJS,JSUnusedAssignment
@@ -82,24 +82,37 @@ var setBannerContent = function (commentId) {
         commentId = parseInt(commentIds[i]);
         if (commentId == 1) {
             // Major tsunami warning / ... has been issued
+            window.DOM.information_banner.style.color = "white";
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-7)";
             window.DOM.information_banner.innerText = "Major Tsunami Warning / Tsunami Warning / Advisory In Effect";
             return;
         } else if (commentId == 4) {
             // No tsunami
+            window.DOM.information_banner.style.color = "white";
             window.DOM.information_banner_div.style.backgroundColor = "#66cccc";
             window.DOM.information_banner.innerText = "No Tsunami Expected";
             return;
         } else if (commentId == 3) {
             // Light sea changes are expected
+            window.DOM.information_banner.style.color = "black";
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-4)";
             window.DOM.information_banner.innerText = "Light Sea Changes Expected - No Tsunami Expected";
             return;
         } else if (commentId == 2) {
             // Evaluating
+            window.DOM.information_banner.style.color = "white";
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-6)";
             window.DOM.information_banner.innerText = "Tsunami Risk Evaluating - Stay away from coastal areas";
             return;
+        } else {
+            // Unknown
+            window.DOM.information_banner.style.color = "white";
+            window.DOM.information_banner_div.style.backgroundColor = "var(--info-background-color)";
+            window.DOM.information_banner.innerText = "Unknown message: " + commentId;
+            return;
         }
+    }
+    if (isForeign) {
+        window.DOM.information_banner.innerText += " (In Japan only)";
     }
 };

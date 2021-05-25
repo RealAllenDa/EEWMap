@@ -30,3 +30,28 @@ def earthquake_info_get():
         "info": return_list,
         "eew": return_dict
     }
+@api_bp.route("/is_tsunami")
+def check_if_tsunami_issued():
+    """
+    Check if the tsunami warning has been issued.
+
+    :return: Issued=1, None=0
+    """
+    from .p2p_get.parse_p2p_json import tsunami_warning_in_effect
+    return str(tsunami_warning_in_effect)
+@api_bp.route("/tsunami_info")
+def tsunami_info_get():
+    """
+    Gets the tsunami infos.
+
+    :return: Tsunami info
+    :rtype: dict
+    """
+    from .p2p_get.parse_p2p_json import tsunami_return
+    from .tsunami.parse_jma_tsunami import return_dict
+    from .p2p_get.parse_p2p_json import tsunami_warning_in_effect
+    return {
+        "status": tsunami_warning_in_effect,
+        "map": tsunami_return,
+        "info": return_dict
+    }

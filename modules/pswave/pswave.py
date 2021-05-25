@@ -34,7 +34,7 @@ def parse_swave(depth, time_passed):
     :param time_passed: The passed time of the earthquake
     :return: The S wave time.
     """
-    logger.debug("Parsing S wave time...")
+    logger.debug("Parsing S wave time -> depth:{}, time:{}...".format(depth, time_passed))
     start_time = time.perf_counter()
     if depth > 700 or time_passed > 2000:
         logger.warn("Failed to parse S wave time (Time too long or depth too high).")

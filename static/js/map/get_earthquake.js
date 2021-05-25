@@ -5,14 +5,18 @@ var getEqInfo = function () {
         cache: false,
         dataType: "JSON",
         timeout: 2500,
-        success: parseEqInfo,
+        success: splitEqInfo,
         error: function () {
             console.warn("Failed to retrieve data.");
         }
     });
 };
 var last_message = {};
-var parseEqInfo = function (result) {
+var last_eew_report_num = -1;
+var messages_before_eew = [];
+var eew_in_effect = false;
+var suspend_eew_until_number_change = false;
+var splitEqInfo = function (result) {
     console.debug(result);
     var result_for_compare = result;
     if (_.isEqual(last_message, result_for_compare)) {
@@ -23,25 +27,39 @@ var parseEqInfo = function (result) {
         console.debug("Updated message. Parsing...");
     }
     if (result["eew"]["status"] == 0) {
-        // Hide Earthquake Report div, show EEW div
-        window.DOM.eew_display_div.style.display = "grid";
-        window.DOM.intensity_display_div.style.display = "none";
-        parseEEWInfo(result);
-        return;
+        if (!eew_in_effect) {
+            // EEW first received
+            messages_before_eew = result["info"];
+            eew_in_effect = true;
+            last_eew_report_num = -1;
+        }
+        if (result["eew"]["report_num"] != last_eew_report_num) {
+            // New EEW, display EEW
+            last_eew_report_num = result["eew"]["report_num"];
+            suspend_eew_until_number_change = false;
+            parseEEWInfo(result);
+        } else if (!(_.isEqual(result["info"], messages_before_eew))) {
+            messages_before_eew = result["info"];
+            suspend_eew_until_number_change = true;
+            parseEqInfo(result);
+        } else if (!suspend_eew_until_number_change) {
+            parseEEWInfo(result);
+        }
     } else {
-        // Hide EEW div, show Earthquake Report div
-        window.DOM.eew_display_div.style.display = "none";
-        window.DOM.intensity_display_div.style.display = "grid";
-        window.DOM.expected_flag.style.display = "none";
-        window.DOM.drill_flag.style.display = "none";
+        parseEqInfo(result);
     }
-    // From the last one to the first one (sequence)
+};
+var parseEqInfo = function (result) {
+    // Hide EEW div, show Earthquake Report div
+    window.DOM.eew_display_div.style.display = "none";
+    window.DOM.intensity_display_div.style.display = "grid";
+    window.DOM.expected_flag.style.display = "none";
+    window.DOM.drill_flag.style.display = "none";
     result = result["info"];
-    result = result.reverse();
     for (var i = 0; i < result.length; i++) {
         var resp_content = result[i];
-        if (resp_content["max_intensity"] == 99999) {
-            resp_content["max_intensity"] = "--";
+        if (resp_content["max_intensity"] == 99999 || resp_content["max_intensity"] == "-1") {
+            resp_content["max_intensity"] = "-1";
         }
         if (resp_content["type"] == "ScalePrompt") {
             window.DOM.intensity_report_div.style.display = "block";
@@ -55,7 +73,7 @@ var parseEqInfo = function (result) {
             if (resp_content["area_intensity"]["geojson"] != "null") {
                 addMapColoring(resp_content["area_intensity"]["geojson"]);
             }
-            setBannerContent(resp_content["tsunami_comments"]);
+            setBannerContent(resp_content["tsunami_comments"], false);
         } else if (resp_content["type"] == "Destination") {
             displayEarthquakeInformation(resp_content, false);
             addEpicenter(resp_content["hypocenter"]["latitude"],
@@ -80,10 +98,25 @@ var parseEqInfo = function (result) {
             addMapIntensities(resp_content["area_intensity"]["areas"]);
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
+        } else if (resp_content["type"] == "Foreign") {
+            displayEarthquakeInformation(resp_content, false);
+            deleteAllLayers();
+            displayIntensityCode(resp_content["max_intensity"], false);
+            addEpicenter(resp_content["hypocenter"]["latitude"],
+                resp_content["hypocenter"]["longitude"]);
+            // Manually set zoom
+            window.map.setZoom(2, {animate: false});
+            window.map.panTo([
+                resp_content["hypocenter"]["latitude"],
+                resp_content["hypocenter"]["longitude"]
+            ], {animate: false});
         }
     }
 };
 var parseEEWInfo = function (result) {
+    // Hide Earthquake Report div, show EEW div
+    window.DOM.eew_display_div.style.display = "grid";
+    window.DOM.intensity_display_div.style.display = "none";
     result = result["eew"];
     if (result["is_cancel"]) {
         // Hide EEW div, show Earthquake Report div
@@ -106,7 +139,6 @@ var parseEEWInfo = function (result) {
     }
     deleteAllLayers();
     addEpicenter(result["hypocenter"]["latitude"], result["hypocenter"]["longitude"]);
-    window.epicenterMarker.setZIndexOffset(100000);
     if (result["area_intensity"] != {}) {
         addMapIntensities(result["area_intensity"]);
     } else {
@@ -114,7 +146,6 @@ var parseEEWInfo = function (result) {
     }
     if (result["s_wave"] != null) {
         addSWaveCircle(result["hypocenter"], result["s_wave"]);
-        window.swave_circle.bringToFront();
     } else {
         console.warn("S wave time equals null. Check server log.");
     }
@@ -149,6 +180,7 @@ var parseEEWInfo = function (result) {
     } else {
         window.DOM.drill_flag.style.display = "none";
     }
+    window.swave_circle.bringToFront();
 };
 var displayEarthquakeInformation = function (resp_content, is_eew) {
     var epicenter = document.getElementById("epicenter");
@@ -163,7 +195,12 @@ var displayEarthquakeInformation = function (resp_content, is_eew) {
         window.DOM.intensity_report_div.style.display = "none";
         window.DOM.earthquake_report_div.style.display = "block";
         window.DOM.occur_time.innerText = resp_content["occur_time"];
-        setBannerContent(resp_content["tsunami_comments"]);
+        if (resp_content["type"] == "Foreign") {
+            var is_foreign = true;
+        } else {
+            is_foreign = false;
+        }
+        setBannerContent(resp_content["tsunami_comments"], is_foreign);
     }
     epicenter.innerText = resp_content["hypocenter"]["name"];
     depth.innerText = resp_content["hypocenter"]["depth"];

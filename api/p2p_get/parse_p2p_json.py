@@ -2,6 +2,8 @@ import time
 
 last_response_list = []
 return_list = []
+tsunami_warning_in_effect = "0"
+tsunami_return = {}
 INTENSITIES = {
     -1: "-1",
     10: "1",
@@ -15,6 +17,8 @@ INTENSITIES = {
     60: "6+",
     70: "7"
 }
+
+
 def parse_p2p_info(raw_json, app):
     """
     Parses the P2P JSON from the getting module.
@@ -26,7 +30,7 @@ def parse_p2p_info(raw_json, app):
     """
     from modules.area import geojson_instance
     from modules.centroid import centroid_instance
-    global last_response_list, return_list
+    global last_response_list, return_list, tsunami_return, tsunami_warning_in_effect
     app.logger.debug("Start parsing P2P JSON...")
     start_split_time = time.perf_counter()
     if not last_response_list:
@@ -44,14 +48,15 @@ def parse_p2p_info(raw_json, app):
         return
     last_response_list = raw_json
     return_list = []
+    tsunami_return = {}
     i: dict
-    for i in parsing_list:
+    for i in reversed(parsing_list):
         app.logger.debug("Parsing ID: {}-{}".format(i["code"], i["id"]))
         start_parse_time = time.perf_counter()
         if i["code"] == 551:
             # Earthquake information
             earthquake_info_type = i["issue"]["type"]
-            if earthquake_info_type in ["Foreign", "Other"]:
+            if earthquake_info_type == "Other":
                 continue
             earthquake_info_receive_time = i["time"]
             earthquake_time = i["earthquake"]["time"]
@@ -66,6 +71,8 @@ def parse_p2p_info(raw_json, app):
                 earthquake_hypocenter["depth"] = "Shallow"
             elif int(earthquake_hypocenter["depth"]) != -1:
                 earthquake_hypocenter["depth"] += "km"
+            else:
+                earthquake_hypocenter["depth"] = "Unknown"
             earthquake_magnitude = earthquake_raw_hypocenter["magnitude"]
             earthquake_max_intensity = INTENSITIES.get(i["earthquake"]["maxScale"], 99999)
             """
@@ -85,34 +92,40 @@ def parse_p2p_info(raw_json, app):
             else:
                 earthquake_tsunami_comment = "000"
             app.logger.debug("Successfully parsed basic information in {:.3f} seconds. "
-                                     "Parsing station information...".format(time.perf_counter() - start_parse_time))
-            station_start_time = time.perf_counter()
-            to_fetch_geojson_areas = []
-            earthquake_area_intensity = {}
-            for j in i["points"]:
-                if j["isArea"]:
-                    point_long_lat = centroid_instance.area_centroid.get(j["addr"], (99999, 99999))
-                    if point_long_lat[0] == 99999:
-                        continue
-                    earthquake_area_intensity[j["addr"]] = {
-                        "name": j["addr"],
-                        "intensity": INTENSITIES.get(j["scale"]),
-                        "latitude": point_long_lat[0],
-                        "longitude": point_long_lat[1],
-                        "is_area": "true"
-                    }
-                    to_fetch_geojson_areas.append(j["addr"])
-                else:
-                    point_long_lat = centroid_instance.station_centroid.get(j["addr"], (99999, 99999))
-                    if point_long_lat[0] == 99999:
-                        continue
-                    earthquake_area_intensity[j["addr"]] = {
-                        "name": j["addr"],
-                        "intensity": INTENSITIES.get(j["scale"]),
-                        "latitude": point_long_lat[0],
-                        "longitude": point_long_lat[1],
-                        "is_area": "false"
-                    }
+                             "Parsing station information...".format(time.perf_counter() - start_parse_time))
+            if earthquake_info_type != "Foreign":
+                station_start_time = time.perf_counter()
+                to_fetch_geojson_areas = []
+                earthquake_area_intensity = {}
+                for j in i["points"]:
+                    if j["isArea"]:
+                        point_long_lat = centroid_instance.area_centroid.get(j["addr"], (99999, 99999))
+                        if point_long_lat[0] == 99999:
+                            continue
+                        earthquake_area_intensity[j["addr"]] = {
+                            "name": j["addr"],
+                            "intensity": INTENSITIES.get(j["scale"]),
+                            "latitude": point_long_lat[0],
+                            "longitude": point_long_lat[1],
+                            "is_area": "true"
+                        }
+                        to_fetch_geojson_areas.append(j["addr"])
+                    else:
+                        point_long_lat = centroid_instance.station_centroid.get(j["addr"], (99999, 99999))
+                        if point_long_lat[0] == 99999:
+                            continue
+                        earthquake_area_intensity[j["addr"]] = {
+                            "name": j["addr"],
+                            "intensity": INTENSITIES.get(j["scale"]),
+                            "latitude": point_long_lat[0],
+                            "longitude": point_long_lat[1],
+                            "is_area": "false"
+                        }
+            else:
+                app.logger.debug("Earthquake is foreign. Skipped area intensity coloring.")
+                earthquake_area_intensity = {}
+                to_fetch_geojson_areas = []
+                station_start_time = 0
             return_temp = {
                 "type": earthquake_info_type,
                 "occur_time": earthquake_time,
@@ -127,21 +140,46 @@ def parse_p2p_info(raw_json, app):
                 }
             }
             if earthquake_hypocenter["latitude"] == -200 or \
-                earthquake_hypocenter["longitude"] == -200 or \
-                earthquake_hypocenter["depth"] == -1 or \
-                earthquake_magnitude == -1 or \
-                earthquake_info_type == "ScalePrompt":
-                # Intensity Report
-                return_temp["hypocenter"] = {}
-                # noinspection PyTypeChecker
-                return_temp["area_intensity"]["geojson"] = geojson_instance.get_intensity_json(to_fetch_geojson_areas, earthquake_area_intensity)
-            app.logger.debug("Successfully parsed area intensity in {:.3f} seconds.".format(
-                time.perf_counter() - station_start_time
-            ))
+                    earthquake_hypocenter["longitude"] == -200 or \
+                    earthquake_hypocenter["depth"] == -1 or \
+                    earthquake_magnitude == -1 or \
+                    earthquake_info_type == "ScalePrompt":
+                if earthquake_info_type != "Foreign":
+                    # Intensity Report
+                    return_temp["hypocenter"] = {}
+                    # noinspection PyTypeChecker
+                    return_temp["area_intensity"]["geojson"] = geojson_instance.get_intensity_json(to_fetch_geojson_areas,
+                                                                                               earthquake_area_intensity)
+                    app.logger.debug("Successfully parsed area intensity in {:.3f} seconds.".format(
+                        time.perf_counter() - station_start_time
+                    ))
             app.logger.debug("Successfully parsed earthquake information in {:.3f} seconds.".format(
                 time.perf_counter() - start_parse_time
             ))
             return_list.append(return_temp)
         elif i["code"] == 552:
             # Tsunami information
-            pass
+            if i["issue"]["type"] != "Focus":
+                app.logger.warn("RARE: Tsunami information type isn't focus. "
+                                "Beware of potential API changes.")
+                continue
+            if i["cancelled"]:
+                tsunami_return = {}
+                tsunami_warning_in_effect = "0"
+                continue
+            tsunami_warning_in_effect = "1"
+            to_parse_geojson_areas = []
+            tsunami_areas_warn = {}
+            tsunami_return = {}
+            for j in i["areas"]:
+                to_parse_geojson_areas.append(j["name"])
+                tsunami_areas_warn[j["name"]] = {
+                    "name": j["name"],
+                    "immediate": j["immediate"],
+                    "grade": j["grade"]
+                }
+            from modules.area import geojson_instance
+            tsunami_return = {
+                "time": i["time"],
+                "areas": geojson_instance.get_tsunami_json(to_parse_geojson_areas, tsunami_areas_warn)
+            }
