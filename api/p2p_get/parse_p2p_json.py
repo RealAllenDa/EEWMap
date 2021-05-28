@@ -148,8 +148,9 @@ def parse_p2p_info(raw_json, app):
                     # Intensity Report
                     return_temp["hypocenter"] = {}
                     # noinspection PyTypeChecker
-                    return_temp["area_intensity"]["geojson"] = geojson_instance.get_intensity_json(to_fetch_geojson_areas,
-                                                                                               earthquake_area_intensity)
+                    return_temp["area_intensity"]["geojson"] = geojson_instance.get_intensity_json(
+                        to_fetch_geojson_areas,
+                        earthquake_area_intensity)
                     app.logger.debug("Successfully parsed area intensity in {:.3f} seconds.".format(
                         time.perf_counter() - station_start_time
                     ))

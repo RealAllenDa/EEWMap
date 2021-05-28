@@ -38,12 +38,18 @@ var splitEqInfo = function (result) {
             last_eew_report_num = result["eew"]["report_num"];
             suspend_eew_until_number_change = false;
             parseEEWInfo(result);
+            if (window.swave_circle != undefined) {
+                window.swave_circle.bringToFront();
+            }
         } else if (!(_.isEqual(result["info"], messages_before_eew))) {
             messages_before_eew = result["info"];
             suspend_eew_until_number_change = true;
             parseEqInfo(result);
         } else if (!suspend_eew_until_number_change) {
             parseEEWInfo(result);
+            if (window.swave_circle != undefined) {
+                window.swave_circle.bringToFront();
+            }
         }
     } else {
         parseEqInfo(result);

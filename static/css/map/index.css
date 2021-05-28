@@ -2,33 +2,40 @@
     width: 750px;
     height: 675px;
 }
+
 .window {
     width: 100%;
     height: 185px;
     display: grid;
     box-sizing: border-box;
 }
+
 #intensity-display {
     grid-template-rows: [eqinfo] 140px
     [infobanner] 45px;
 }
+
 #map {
     width: 100%;
     height: 450px;
 }
+
 #eew-display {
     grid-template-rows: [eewtype] 45px
     [eewadvice] 40px
     [eewinfo] 140px;
 }
+
 .margin-add {
     margin-left: 10px;
 }
+
 .sub-window {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
 }
+
 .label {
     display: inline-block;
     position: relative;
@@ -36,6 +43,7 @@
     left: 10px;
     width: 100px;
 }
+
 .occur-label {
     width: fit-content;
     font-size: 16px;
@@ -43,6 +51,7 @@
     left: 175px;
     top: 5px;
 }
+
 .label-content {
     font-size: 23px;
     font-weight: bold;
@@ -50,12 +59,14 @@
     left: 35px;
     top: -3px;
 }
+
 .intensity-display {
     display: inline-block;
     font-size: 95px;
     font-weight: bolder;
     font-style: italic;
 }
+
 .flags {
     padding: 5px;
     font-weight: bolder;
@@ -66,12 +77,14 @@
     left: 10px;
     text-align: center;
 }
+
 #drill-flag {
     z-index: 10000;
     background: var(--intensity-3);
     color: black;
     left: 490px;
 }
+
 #expected-flag {
     z-index: 9999;
     background: rgb(195, 120, 7);

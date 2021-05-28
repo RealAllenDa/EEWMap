@@ -5,7 +5,10 @@
 """
 from modules.centroid.centroid_define import Centroid
 
+# noinspection PyTypeChecker
 centroid_instance: Centroid = None
+
+
 def init_centroid_instance(app):
     """
     Initializes the centroid instance for app.

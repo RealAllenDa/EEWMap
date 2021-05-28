@@ -1,11 +1,13 @@
 import json
 import time
+from io import BytesIO
 
 from PIL import Image
-from io import BytesIO
 
 INTENSITY_DICT = {}
 logger = None
+
+
 def init_intensity2color(app):
     """
     Initializes intensity2color.
@@ -21,7 +23,8 @@ def init_intensity2color(app):
     for i in temp_dict.keys():
         temp_string = ",".join(temp_dict[i])
         INTENSITY_DICT[temp_string] = float(i)
-    logger.debug("Successfully initialized intensity2color in {:.3f} seconds!".format(time.perf_counter() - start_initialize_time))
+    logger.debug("Successfully initialized intensity2color in {:.3f} seconds!".format(
+        time.perf_counter() - start_initialize_time))
 
 
 # noinspection PyUnresolvedReferences
@@ -44,7 +47,7 @@ def intensity2color(response_handle):
             pixel_color = image[int(i["Point"]["X"]), int(i["Point"]["Y"])][0:3]
         except:
             continue
-        pixel_string = ",".join('%s' %list_id for list_id in pixel_color)
+        pixel_string = ",".join('%s' % list_id for list_id in pixel_color)
         pixel_intensity = INTENSITY_DICT.get(pixel_string, 0)
         if pixel_intensity != 0:
             # Have expected intensity

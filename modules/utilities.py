@@ -10,6 +10,7 @@ def response_verify(resp):
     else:
         return True
 
+
 def generate_list(name):
     """
     Make sure parameters xmltodict generates is a list.

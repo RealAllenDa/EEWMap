@@ -1,6 +1,6 @@
 var initializeMap = function () {
     var map_url = "https://api.mapbox.com/styles/v1/allenda/ckp1ecj0u2dac18otb4iu0wdy/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYWxsZW5kYSIsImEiOiJja241dWpnNWwwN3Q3MnRwNm1ueWJvaDUyIn0.mugew7hjEAG-zFoXg_pYiw";
-window.map_japan = L.map('map_main', {
+    window.map_japan = L.map('map_main', {
         zoomControl: false,
         center: [38.06539235133249, 139.08691406250003],
         zoom: 5,

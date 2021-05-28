@@ -4,29 +4,34 @@
     border: 3px solid var(--border-color);
     box-sizing: border-box;
 }
+
 #tsunami-banner {
     height: 55px;
     display: flex;
     border-bottom: 5px solid var(--border-color);
 }
+
 #tsunami-show {
     box-sizing: border-box;
     width: 600px;
     height: 55px;
     background: var(--info-background-color);
 }
+
 #tsunami-title {
     font-family: Geometos, sans-serif;
     font-size: 28px;
     display: block;
     text-align: center;
 }
+
 #receive-title {
     font-size: 19px;
     text-align: end;
     display: block;
     margin-right: 10px;
 }
+
 #evacuate-sign {
     width: 250px;
     background: black;
@@ -36,6 +41,7 @@
     line-height: 55px;
     text-align: center;
 }
+
 #tsunami-information {
     display: grid;
     grid-template-rows: repeat(8, 45px);
@@ -43,6 +49,7 @@
     height: 360px;
     background: var(--info-background-color);
 }
+
 .tsunami-item {
     display: grid;
     grid-template-columns: [tsunami-grade] 75px
@@ -57,23 +64,28 @@
     text-align: center;
     overflow: hidden;
 }
+
 #tsunami-description {
     font-weight: bold;
     background: dimgray;
 }
+
 .tsunami-warn {
     font-weight: bolder;
     background: var(--tsunami-warn);
 }
+
 .major-tsunami-warn {
     font-weight: bolder;
     background: var(--major-tsunami-warn);
 }
+
 .tsunami-advisory {
     font-weight: bold;
     background: var(--tsunami-advisory);
     color: black;
 }
+
 #information-overlay {
     width: 840px;
     height: 45px;

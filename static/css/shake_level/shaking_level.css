@@ -1,6 +1,7 @@
 body {
     font-size: 25px;
 }
+
 #main-container {
     width: 200px;
     height: 215px;
@@ -8,6 +9,7 @@ body {
     background: var(--info-background-color);
     box-sizing: border-box;
 }
+
 #main-container span {
     display: inline-block;
     width: 100%;
@@ -16,20 +18,25 @@ body {
     text-align: center;
     box-sizing: border-box;
 }
+
 #shaking-level-wrap {
     font-weight: bold;
 }
+
 #shaking-level {
-    display: inline!important;
+    display: inline !important;
 }
+
 #detailed-points {
     border-top: 3px solid var(--border-color);
 }
+
 .points {
     width: 100%;
     height: 40px;
     display: flex;
 }
+
 .point-label {
     width: 50%;
     height: 40px;

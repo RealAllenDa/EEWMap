@@ -6,6 +6,8 @@
 from flask import Blueprint
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
+
+
 @api_bp.route("/shake_level")
 def shake_level_get():
     """
@@ -16,6 +18,8 @@ def shake_level_get():
     """
     from .shake_level.get_shake_level import return_dict
     return return_dict
+
+
 @api_bp.route("/earthquake_info")
 def earthquake_info_get():
     """
@@ -30,6 +34,8 @@ def earthquake_info_get():
         "info": return_list,
         "eew": return_dict
     }
+
+
 @api_bp.route("/is_tsunami")
 def check_if_tsunami_issued():
     """
@@ -39,6 +45,8 @@ def check_if_tsunami_issued():
     """
     from .p2p_get.parse_p2p_json import tsunami_warning_in_effect
     return str(tsunami_warning_in_effect)
+
+
 @api_bp.route("/tsunami_info")
 def tsunami_info_get():
     """

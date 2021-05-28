@@ -1,9 +1,11 @@
 import csv
-import time
 import json
+import time
+
 
 class Centroid:
     """A centroid class that contains area & city centroids."""
+
     def __init__(self, logger):
         """
         Initializes the instance.
@@ -19,7 +21,8 @@ class Centroid:
         self._init_area_centroid()
         self._init_earthquake_station_centroid()
         self._init_station_centroid()
-        self.logger.debug("Successfully initialized centroid library in {:.3f} seconds.".format(time.perf_counter() - start_initialize_time))
+        self.logger.debug("Successfully initialized centroid library in {:.3f} seconds.".format(
+            time.perf_counter() - start_initialize_time))
 
     def _init_area_centroid(self):
         """
@@ -32,7 +35,8 @@ class Centroid:
             for row in reader:
                 self._area_centroid[row["name"]] = (row["latitude"], row["longitude"])
             f.close()
-        self.logger.debug("Successfully initialized centroid for areas in {:.3f} seconds.".format(time.perf_counter() - start_initialize_time))
+        self.logger.debug("Successfully initialized centroid for areas in {:.3f} seconds.".format(
+            time.perf_counter() - start_initialize_time))
 
     def _init_station_centroid(self):
         """
@@ -45,7 +49,8 @@ class Centroid:
             for row in reader:
                 self._station_centroid[row["name"]] = (row["latitude"], row["longitude"])
             f.close()
-        self.logger.debug("Successfully initialized centroid for stations in {:.3f} seconds.".format(time.perf_counter() - start_initialize_time))
+        self.logger.debug("Successfully initialized centroid for stations in {:.3f} seconds.".format(
+            time.perf_counter() - start_initialize_time))
 
     def _init_earthquake_station_centroid(self):
         """
@@ -57,7 +62,8 @@ class Centroid:
             for i in self._eq_station_centroid:
                 if i["Point"] is None or i["IsSuspended"]:
                     self._eq_station_centroid.remove(i)
-        self.logger.debug("Successfully initialized centroid for observation stations in {:.3f} seconds.".format(time.perf_counter() - start_initialize_time))
+        self.logger.debug("Successfully initialized centroid for observation stations in {:.3f} seconds.".format(
+            time.perf_counter() - start_initialize_time))
 
     @property
     def station_centroid(self):

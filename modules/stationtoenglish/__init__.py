@@ -7,6 +7,8 @@
 from modules.stationtoenglish.station_to_english import EpicenterName
 
 epicenter_name_instance = None
+
+
 def init_epicenter_name_instance(app):
     """
     Initializes the GeoJson instance for app.

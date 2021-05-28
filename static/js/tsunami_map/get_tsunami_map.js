@@ -49,24 +49,24 @@ var deleteAllStrokes = function () {
     }
 };
 var parseMapStyle = function (feature) {
-     return {
-         stroke: true,
-         color: feature.properties.intensity_color,
-         weight: 4
-     }
+    return {
+        stroke: true,
+        color: feature.properties.intensity_color,
+        weight: 4
+    }
 };
 var setMapFlashInterval = function () {
     window.map_flash_interval = setInterval(function () {
         var paths = $(".leaflet-interactive");
         for (var i = 0; i < paths.length; i++) {
 
-        paths[i].style.display = "block";
+            paths[i].style.display = "block";
         }
         setTimeout(function () {
-        for (var i = 0; i < paths.length; i++) {
+            for (var i = 0; i < paths.length; i++) {
 
-        paths[i].style.display = "none";
-        }
+                paths[i].style.display = "none";
+            }
         }, 1000);
     }, 1500);
 };

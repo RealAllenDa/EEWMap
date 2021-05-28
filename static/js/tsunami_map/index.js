@@ -17,10 +17,11 @@ window.onload = function () {
         getTsunamiInfo();
     }, 3500);
 };
+
 function splitArray(arr, num) {
-	var newArr = [];
-	for (let i = 0; i < arr.length;) {
-		newArr.push(arr.slice(i, i += num));
-	}
-	return newArr;
+    var newArr = [];
+    for (let i = 0; i < arr.length;) {
+        newArr.push(arr.slice(i, i += num));
+    }
+    return newArr;
 }

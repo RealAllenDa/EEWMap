@@ -28,7 +28,7 @@ var parseTsunamiInfo = function (result) {
     if (parseInt(result["status"]) != 0
         && !_.isEqual({}, result["info"])) {
         if (_.isEqual([], result["info"]["areas"])) {
-            resetTsunami();
+            resetTsunami(false);
             return;
         }
         // Tsunami warning in effect
@@ -59,18 +59,25 @@ var parseTsunamiInfo = function (result) {
                 pages_now = 1;
             }
         }, 15000);
+    } else if (parseInt(result["status"]) != 0 && !(_.isEqual({}, result["map"]))) {
+        resetTsunami(true);
     } else {
-        resetTsunami();
+        resetTsunami(false);
     }
 };
-var resetTsunami = function () {
+var resetTsunami = function (is_in_effect) {
+    if (is_in_effect) {
+        var overlay_text = "Preparing tsunami information...";
+    } else {
+        overlay_text = "No tsunami warning in effect.";
+    }
     clearInterval(window.tsunami_show);
     window.DOM.tsunami_overlay.style.display = "block";
     clearTsunamiInfo();
     window.DOM.pages_now.innerText = "--";
     window.DOM.pages_total.innerText = "--";
     window.DOM.receive_time.innerText = "XXXX-XX-XX XX:XX";
-    window.DOM.tsunami_overlay.innerText = "No tsunami warning in effect.";
+    window.DOM.tsunami_overlay.innerText = overlay_text;
 }
 var clearTsunamiInfo = function () {
     for (var i = 0; i < tsunami_messages_DOMs.length; i++) {

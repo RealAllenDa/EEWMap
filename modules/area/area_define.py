@@ -1,6 +1,6 @@
 import json
-import traceback
 import time
+import traceback
 
 
 class GeoJson:

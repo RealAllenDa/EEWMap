@@ -1,11 +1,14 @@
+import time
 import traceback
 
 import requests
-import time
-from modules.utilities import response_verify
+
 from config import PROXY
+from modules.utilities import response_verify
 
 return_dict = {}
+
+
 def get_shake_level(app):
     """
      Get the shaking level.
@@ -31,4 +34,3 @@ def get_shake_level(app):
         "yellow": response.json()["y"],
         "red": response.json()["r"]
     }
-

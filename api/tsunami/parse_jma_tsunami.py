@@ -10,6 +10,7 @@ from modules.utilities import generate_list, response_verify
 last_jma_info = {}
 return_dict = {}
 
+
 def parse_jma_tsunami(response, app):
     """
     Parses JMA XML and gets tsunami info.
@@ -94,8 +95,8 @@ def parse_current_tsunami(information_url, app):
             area_grade = "Unknown"
         area_height = "Unknown"
         area_time = {
-                "type": "no_time",
-                "time": "Unknown"
+            "type": "no_time",
+            "time": "Unknown"
         }
         if not area_grade in ["Forecast", "Unknown"]:
             first_time_estimation = i["FirstHeight"]

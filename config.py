@@ -8,7 +8,7 @@ DEBUG_EEW = False
 DEBUG_EEW_OVRD = {
     "date": 20210320,
     "time": 20210320181340,
-    "origin_timestamp": 1621356035
+    "origin_timestamp": 1622025761
 }
 
 DEBUG_TSUNAMI = False

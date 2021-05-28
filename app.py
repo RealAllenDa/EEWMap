@@ -6,18 +6,19 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 
-from map import map_bp
-from modules.pswave import init_pswave
-from shake_level import shake_level_bp
-from index import index_bp
-from history import history_bp
 from api import api_bp, initialize_api
-from tsunami import tsunami_bp
+from history import history_bp
+from index import index_bp
+from map import map_bp
 from modules.area import init_geojson_instance
 from modules.centroid import init_centroid_instance
 from modules.intensity import init_intensity2color
+from modules.pswave import init_pswave
+from shake_level import shake_level_bp
+from tsunami import tsunami_bp
 
 app = Flask("EEWMap")
 
@@ -36,11 +37,14 @@ def config_logger():
     console_formatter = logging.Formatter(fmt="[%(asctime)s] [%(levelname)s] [%(module)s] %(funcName)s: %(message)s")
     console_handler.setFormatter(console_formatter)
     flask_logger.addHandler(console_handler)
-    file_handler = RotatingFileHandler(filename="logs/main.log", maxBytes=100*1024*1024, backupCount=10)
-    file_formatter = logging.Formatter(fmt="[%(asctime)s] [%(levelname)s] [%(filename)s %(module)s:%(lineno)d] %(funcName)s: %(message)s")
+    file_handler = RotatingFileHandler(filename="logs/main.log", maxBytes=100 * 1024 * 1024, backupCount=10)
+    file_formatter = logging.Formatter(
+        fmt="[%(asctime)s] [%(levelname)s] [%(filename)s %(module)s:%(lineno)d] %(funcName)s: %(message)s")
     file_handler.setFormatter(file_formatter)
     file_handler.setLevel("DEBUG")
     flask_logger.addHandler(file_handler)
+
+
 config_logger()
 # Register module blueprints
 app.register_blueprint(api_bp)

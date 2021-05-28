@@ -6,6 +6,8 @@
 from flask import render_template, Blueprint
 
 map_bp = Blueprint("map", __name__, template_folder="templates")
+
+
 @map_bp.route("/map")
 def map_render():
     """

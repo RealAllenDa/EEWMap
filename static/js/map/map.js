@@ -83,8 +83,8 @@ window.intensity_station_icons = {
     })
 };
 window.epicenter_icon = new L.Icon({
-   iconUrl: "../static/image/epicenter.png",
-   iconSize: [35, 35]
+    iconUrl: "../static/image/epicenter.png",
+    iconSize: [35, 35]
 });
 window.layers = [];
 var initializeMap = function () {
@@ -123,6 +123,10 @@ var addMapIntensities = function (intensityList) {
             layer.setZIndexOffset(800);
         } else if (intensity == "7") {
             layer.setZIndexOffset(900);
+        } else if (intensity == "5?") {
+            layer.setZIndexOffset(550);
+        } else {
+            layer.setZIndexOffset(0);
         }
         window.layers.push(layer);
     }
@@ -148,7 +152,7 @@ var deleteAllLayers = function () {
         if (window.swave_circle != undefined) {
             window.map.removeLayer(window.swave_circle);
         }
-    } catch (e){
+    } catch (e) {
         console.error("Failed to remove layers.", e);
     }
 };
@@ -179,19 +183,16 @@ var parseMapScale = function (earthquakePoints, epicenterlat, epicenterlong) {
         latitude[1] = center[0];
         longitude[1] = center[1];
     }
-    var distance = Math.sqrt(Math.pow((latitude[0]-latitude[1]), 2) + Math.pow((longitude[0]-longitude[1]), 2));
+    var distance = Math.sqrt(Math.pow((latitude[0] - latitude[1]), 2) + Math.pow((longitude[0] - longitude[1]), 2));
     console.log(latitude, longitude, [sum_latitude, sum_longitude], point_count, center, distance);
-    if(distance < 1){
+    if (distance < 1) {
         point_scale = 8;
     } else if (distance >= 1 && distance < 2) {
         point_scale = 7;
-    } else if (distance >= 2 && distance < 3){
+    } else if (distance >= 2 && distance < 3) {
         point_scale = 7;
-    } else if (distance >= 3 && distance < 4){
+    } else if (distance >= 3 && distance < 4) {
         point_scale = 6;
-    } else if (distance >= 100) {
-        // Abnormal scaling, probably because less points are involved
-        point_scale = 8;
     } else {
         point_scale = 5;
     }
@@ -220,7 +221,7 @@ var parseColorStyle = function (feature) {
      * @typedef {Object} feature
      * @property {Object} properties
      * @property {String} intensity_color
-    */
+     */
     return {
         fillColor: feature.properties.intensity_color,
         fillOpacity: 1.0,
@@ -230,11 +231,12 @@ var parseColorStyle = function (feature) {
     }
 };
 var addSWaveCircle = function (epicenter, swave_distance) {
- window.swave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], swave_distance * 1000, {
-    color: "#ff7800",
-    weight: 4,
-    opacity: 1,
-    fillColor: '#ff7800',
-    fillOpacity: 0.2
-  }).addTo(window.map);
+    window.swave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], swave_distance * 1000, {
+        color: "#ff7800",
+        weight: 4,
+        opacity: 1,
+        fillColor: '#ff7800',
+        fillOpacity: 0.2
+    }).addTo(window.map);
+    window.swave_circle.bringToFront();
 };

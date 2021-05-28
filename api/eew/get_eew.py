@@ -4,16 +4,18 @@ import traceback
 import requests
 
 from config import PROXY, DEBUG_EEW_OVRD, DEBUG_EEW
-from modules.utilities import response_verify
 from modules.intensity import intensity2color
 from modules.pswave import parse_swave
+from modules.utilities import response_verify
 
 return_dict = {}
+
+
 def get_eew_info(app):
     global return_dict
     try:
         response_time = requests.get(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",
-                                         proxies=PROXY, timeout=3500)
+                                     proxies=PROXY, timeout=3500)
         response_time.encoding = 'utf-8'
         if not response_verify(response_time):
             app.logger.warn("Failed to fetch EEW info (failed to get time).")
@@ -77,7 +79,7 @@ def get_eew_info(app):
             if DEBUG_EEW:
                 origin_timestamp = DEBUG_EEW_OVRD["origin_timestamp"]
             depth = int(converted_response["depth"].replace("km", ""))
-            s_wave_time = parse_swave(depth, float(time.time()+3600 - origin_timestamp)) # Japanese time
+            s_wave_time = parse_swave(depth, float(time.time() + 3600 - origin_timestamp))  # Japanese time
         except:
             app.logger.warn("Failed to S wave time. Exception occurred: \n" + traceback.format_exc())
             s_wave_time = None

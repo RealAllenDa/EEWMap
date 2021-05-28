@@ -7,6 +7,7 @@ from config import PROXY, DEBUG_P2P_TSUNAMI, DEBUG_P2P_OVRD
 from modules.utilities import response_verify
 from .parse_p2p_json import parse_p2p_info
 
+
 def get_p2p_json(app):
     """
      Gets P2PQuake's JSON telegram.

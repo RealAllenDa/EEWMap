@@ -5,7 +5,10 @@
 """
 from modules.area.area_define import GeoJson
 
+# noinspection PyTypeChecker
 geojson_instance: GeoJson = None
+
+
 def init_geojson_instance(app):
     """
     Initializes the GeoJson instance for app.

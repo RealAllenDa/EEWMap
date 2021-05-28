@@ -2,30 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/shake_level/shaking_level.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font.css') }}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for('static', filename='css/shake_level/shaking_level.css') }}"/>
     <title>Shaking Level</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-    <script src="{{ url_for('static', filename='js/shake_level/shaking_level.js') }}"></script>
-    <div id="main-container">
-        <span id="shaking-level-label">Shake Level</span>
-        <span id="shaking-level-wrap">Lv. <span id="shaking-level">---</span></span>
-        <div id="detailed-points">
-            <div id="green" class="points">
-                <span id="green-label" class="point-label">Green</span>
-                <span id="green-count" class="point-label">--</span>
-            </div>
-            <div id="yellow" class="points">
-                <span id="yellow-label" class="point-label">Yellow</span>
-                <span id="yellow-count" class="point-label">--</span>
-            </div>
-            <div id="red" class="points">
-                <span id="red-label" class="point-label">Red</span>
-                <span id="red-count" class="point-label">--</span>
-            </div>
+<script src="{{ url_for('static', filename='js/shake_level/shaking_level.js') }}"></script>
+<div id="main-container">
+    <span id="shaking-level-label">Shake Level</span>
+    <span id="shaking-level-wrap">Lv. <span id="shaking-level">---</span></span>
+    <div id="detailed-points">
+        <div id="green" class="points">
+            <span id="green-label" class="point-label">Green</span>
+            <span id="green-count" class="point-label">--</span>
+        </div>
+        <div id="yellow" class="points">
+            <span id="yellow-label" class="point-label">Yellow</span>
+            <span id="yellow-count" class="point-label">--</span>
+        </div>
+        <div id="red" class="points">
+            <span id="red-label" class="point-label">Red</span>
+            <span id="red-count" class="point-label">--</span>
         </div>
     </div>
+</div>
 </body>
 </html>

@@ -1,6 +1,9 @@
 import csv
+
+
 class EpicenterName:
     """A class that can convert epicenter's japanese name to english name."""
+
     def __init__(self, logger):
         """
         Initializes the instance.
@@ -13,6 +16,7 @@ class EpicenterName:
         self.logger.debug("Initializing Epicenter library...")
         self._initialize_eng_epicenter()
         self._initialize_jpn_epicenter()
+
     def _initialize_eng_epicenter(self):
         """
         Initializes the epicenter names in English.
@@ -24,6 +28,7 @@ class EpicenterName:
                 self._epicenter_eng[row["codename"]] = row["name"]
             f.close()
         self.logger.debug("Successfully initialized epicenter in English!")
+
     def _initialize_jpn_epicenter(self):
         """
         Initializes the epicenter names in Japanese.
@@ -35,6 +40,7 @@ class EpicenterName:
                 self._epicenter_eng[row["name"]] = row["codename"]
             f.close()
         self.logger.debug("Successfully initialized epicenter in Japanese!")
+
     def get_english_epicenter_name(self, epicenter_name):
         """
         Converts the Japanese epicenter name to English.

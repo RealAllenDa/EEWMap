@@ -1,9 +1,11 @@
 import traceback
 
 import requests
+
 from config import PROXY
 from modules.utilities import response_verify
 from .parse_jma_tsunami import parse_jma_tsunami
+
 
 def get_jma_tsunami(app):
     """

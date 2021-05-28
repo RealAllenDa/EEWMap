@@ -2,10 +2,12 @@
     font-family: B612;
     src: url("../font/B612-Regular.ttf");
 }
+
 @font-face {
     font-family: Geometos;
     src: url("../font/Geometos.ttf");
 }
+
 body {
     margin: 0;
     padding: 0;

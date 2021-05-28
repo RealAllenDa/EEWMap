@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/index.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/eew-display.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/map/intensity-display.css') }}"/>
-    <title>EEWMap</title>
+    <title>EEW Map</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.min.css" rel="stylesheet">
@@ -54,12 +54,12 @@
     </div>
     <div id="map" class="sub-window"></div>
     <div id="eew-display" class="window" style="display: none">
-    <div id="drill-flag" class="flags" style="display: none;">
-        <span>Drill - Not Real Situation</span>
-    </div>
-    <div id="expected-flag" class="flags" style="display: none;">
-        <span>Expected Intensity</span>
-    </div>
+        <div id="drill-flag" class="flags" style="display: none;">
+            <span>Drill - Not Real Situation</span>
+        </div>
+        <div id="expected-flag" class="flags" style="display: none;">
+            <span>Expected Intensity</span>
+        </div>
         <div id="eew-banner" class="sub-window">
             <span id="eew-level">Fetching Information...</span>
         </div>
