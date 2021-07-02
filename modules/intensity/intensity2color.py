@@ -23,15 +23,15 @@ def init_intensity2color(app):
     for i in temp_dict.keys():
         temp_string = ",".join(temp_dict[i])
         INTENSITY_DICT[temp_string] = float(i)
-    logger.debug("Successfully initialized intensity2color in {:.3f} seconds!".format(
-        time.perf_counter() - start_initialize_time))
+    logger.debug(f"Successfully initialized intensity2color "
+                 f"in {(time.perf_counter() - start_initialize_time):.3f} seconds!")
 
 
 # noinspection PyUnresolvedReferences
-def intensity2color(response_handle):
+def intensity2color(raw_response):
     """
     Parses the image into a intensity array using centroids.
-    :param response_handle: The raw response from requests
+    :param raw_response: The raw response from requests
     :return: A dict containing latitude, longitude and intensities
     :rtype: dict
     """
@@ -39,7 +39,7 @@ def intensity2color(response_handle):
     start_time = time.perf_counter()
     logger.debug("Parsing EEW coloring...")
     intensities = {}
-    image_fp = Image.open(BytesIO(response_handle.content))
+    image_fp = Image.open(BytesIO(raw_response))
     image = image_fp.convert("RGBA").load()
     from modules.centroid import centroid_instance
     for i in centroid_instance.earthquake_station_centroid:
@@ -78,7 +78,5 @@ def intensity2color(response_handle):
                 "detail_intensity": pixel_intensity,
                 "is_area": False
             }
-    logger.debug("Successfully parsed EEW coloring in {:.3f} seconds!".format(
-        time.perf_counter() - start_time
-    ))
+    logger.debug(f"Successfully parsed EEW intensities in {(time.perf_counter() - start_time):.3f} seconds!")
     return intensities

@@ -41,8 +41,8 @@ class GeoJson:
         self.logger.debug("Initializing GeoJson library...")
         self._init_tsunami_json()
         self._init_earthquake_json()
-        self.logger.debug("Successfully initialized GeoJson library in {:.3f} seconds.".format(
-            time.perf_counter() - start_initialize_time))
+        self.logger.debug(f"Successfully initialized GeoJson library "
+                          f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
     def _init_earthquake_json(self):
         """
@@ -54,8 +54,8 @@ class GeoJson:
             with open("./modules/area/japan_areas.json", encoding="utf-8") as f:
                 self.japan_areas = json.loads(f.read())
                 f.close()
-            self.logger.debug("Successfully initialized GeoJson for earthquake in {:.3f} seconds.".format(
-                time.perf_counter() - start_initialize_time))
+            self.logger.debug(f"Successfully initialized GeoJson for earthquake "
+                              f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
         except:
             self.logger.fatal("Failed to initialize GeoJson for earthquake. \n" + traceback.format_exc())
             raise Exception("Failed to initialize GeoJson for earthquake.")
@@ -70,8 +70,8 @@ class GeoJson:
             with open("./modules/area/tsunami_areas.json", encoding="utf-8") as f:
                 self.tsunami_areas = json.loads(f.read())
                 f.close()
-            self.logger.debug("Successfully initialized GeoJson for tsunami in {:.3f} seconds.".format(
-                time.perf_counter() - start_initialize_time))
+            self.logger.debug(f"Successfully initialized GeoJson for tsunami "
+                              f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
         except:
             self.logger.fatal("Failed to initialize GeoJson for tsunami. \n" + traceback.format_exc())
             raise Exception("Failed to initialize GeoJson for tsunami.")
@@ -98,12 +98,16 @@ class GeoJson:
                 try:
                     i["properties"]["intensity"] = area_intensities[i["properties"]["name"]]["intensity"]
                 except:
-                    self.logger.error("Failed to parse intensity coloring for {}.".format(i["properties"]["name"]))
+                    self.logger.error(f"Failed to parse intensity coloring for {i['properties']['name']}.")
                     traceback.print_exc()
                     i["properties"]["intensity"] = "0"
-                i["properties"]["intensity_color"] = self.intensity_color[i["properties"]["intensity"]]
+                try:
+                    i["properties"]["intensity_color"] = self.intensity_color[i["properties"]["intensity"]]
+                except:
+                    i["properties"]["intensity"] = "0"
+                    i["properties"]["intensity_color"] = self.intensity_color[i["properties"]["intensity"]]
                 return_areas["features"].append(i)
-        self.logger.debug("Successfully got GeoJson in {:.3f} seconds.".format(time.perf_counter() - start_time))
+        self.logger.debug(f"Successfully got GeoJson in {(time.perf_counter() - start_time):.3f} seconds.")
         return return_areas
 
     def get_tsunami_json(self, area_names, area_grades):
@@ -128,10 +132,10 @@ class GeoJson:
                 try:
                     i["properties"]["grade"] = area_grades[i["properties"]["name"]]["grade"]
                 except:
-                    self.logger.error("Failed to parse tsunami coloring for {}.".format(i["properties"]["name"]))
+                    self.logger.error(f"Failed to parse tsunami coloring for {i['properties']['name']}.")
                     traceback.print_exc()
                     i["properties"]["grade"] = "Unknown"
                 i["properties"]["intensity_color"] = self.tsunami_color[i["properties"]["grade"]]
                 return_areas["features"].append(i)
-        self.logger.debug("Successfully got GeoJson in {:.3f} seconds.".format(time.perf_counter() - start_time))
+        self.logger.debug(f"Successfully got GeoJson in {(time.perf_counter() - start_time):.3f} seconds.")
         return return_areas

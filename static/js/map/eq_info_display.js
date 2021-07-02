@@ -76,7 +76,7 @@ var displayIntensityCode = function (intensity, is_eew) {
 };
 var setBannerContent = function (commentId, isForeign) {
     var commentIds = commentId.split(" ");
-    console.log(commentIds);
+    window.logger.debug("Comment ids: " + commentIds);
     // noinspection LoopStatementThatDoesntLoopJS,JSUnusedAssignment
     for (var i = 0; i < commentIds.length; i++) {
         commentId = parseInt(commentIds[i]);
@@ -96,7 +96,7 @@ var setBannerContent = function (commentId, isForeign) {
             // Light sea changes are expected
             window.DOM.information_banner.style.color = "black";
             window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-4)";
-            window.DOM.information_banner.innerText = "Light Sea Changes Expected - No Tsunami Expected";
+            window.DOM.information_banner.innerText = "Light Sea Level Changes Expected - No Tsunami Expected";
             return;
         } else if (commentId == 2) {
             // Evaluating

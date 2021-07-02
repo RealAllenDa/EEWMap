@@ -41,7 +41,7 @@ def parse_p2p_info(raw_json, app):
         app.logger.debug("New earthquake information incoming, parsing message...")
         parsing_list = [y for y in raw_json if y not in last_response_list]
         end_split_time = time.perf_counter()
-        app.logger.debug("Split the message in {:.3f} seconds.".format(end_split_time - start_split_time))
+        app.logger.debug(f"Split the message in {(end_split_time - start_split_time):.3f} seconds.")
     else:
         # In this situation, we assume that return_list is not blank (because of the logic above).
         app.logger.debug("No new earthquake information.")
@@ -51,12 +51,17 @@ def parse_p2p_info(raw_json, app):
     tsunami_return = {}
     i: dict
     for i in reversed(parsing_list):
-        app.logger.debug("Parsing ID: {}-{}".format(i["code"], i["id"]))
+        app.logger.debug(f"Parsing ID: {i['code']}-{i['id']}")
         start_parse_time = time.perf_counter()
         if i["code"] == 551:
             # Earthquake information
+            if i["issue"]["source"] == "TR.tr(\\":
+                # Training
+                app.logger.debug("Training message. Skipped.")
+                continue
             earthquake_info_type = i["issue"]["type"]
             if earthquake_info_type == "Other":
+                app.logger.debug("Other message. Skipped.")
                 continue
             earthquake_info_receive_time = i["time"]
             earthquake_time = i["earthquake"]["time"]
@@ -73,7 +78,7 @@ def parse_p2p_info(raw_json, app):
                 earthquake_hypocenter["depth"] += "km"
             else:
                 earthquake_hypocenter["depth"] = "Unknown"
-            earthquake_magnitude = earthquake_raw_hypocenter["magnitude"]
+            earthquake_magnitude = str(round(float(earthquake_raw_hypocenter["magnitude"]), 1))
             earthquake_max_intensity = INTENSITIES.get(i["earthquake"]["maxScale"], 99999)
             """
                 001: Tsunami Warning in effect
@@ -91,8 +96,9 @@ def parse_p2p_info(raw_json, app):
                 earthquake_tsunami_comment = "001"
             else:
                 earthquake_tsunami_comment = "000"
-            app.logger.debug("Successfully parsed basic information in {:.3f} seconds. "
-                             "Parsing station information...".format(time.perf_counter() - start_parse_time))
+            app.logger.debug(
+                f"Successfully parsed basic information in {(time.perf_counter() - start_parse_time):.3f} seconds. "
+                "Parsing station information...")
             if earthquake_info_type != "Foreign":
                 station_start_time = time.perf_counter()
                 to_fetch_geojson_areas = []
@@ -151,12 +157,16 @@ def parse_p2p_info(raw_json, app):
                     return_temp["area_intensity"]["geojson"] = geojson_instance.get_intensity_json(
                         to_fetch_geojson_areas,
                         earthquake_area_intensity)
-                    app.logger.debug("Successfully parsed area intensity in {:.3f} seconds.".format(
-                        time.perf_counter() - station_start_time
-                    ))
-            app.logger.debug("Successfully parsed earthquake information in {:.3f} seconds.".format(
-                time.perf_counter() - start_parse_time
-            ))
+                    app.logger.debug(f"Successfully parsed area intensity in "
+                                     f"{(time.perf_counter() - station_start_time):.3f} seconds.")
+            if earthquake_info_type == "ScaleAndDestination":
+                return_temp["area_intensity"]["geojson"] = geojson_instance.get_intensity_json(
+                    to_fetch_geojson_areas,
+                    earthquake_area_intensity)
+                app.logger.debug(f"Successfully parsed area intensity "
+                                 f"in {(time.perf_counter() - station_start_time):.3f} seconds.")
+            app.logger.debug(f"Successfully parsed earthquake information "
+                             f"in {(time.perf_counter() - start_parse_time):.3f} seconds.")
             return_list.append(return_temp)
         elif i["code"] == 552:
             # Tsunami information

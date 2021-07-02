@@ -1,0 +1,17 @@
+#main-container {
+    width: 1600px;
+    height: 100px;
+    background: #cccc33;
+    color: black;
+    font-size: 70px;
+    line-height: 115px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#tsunami-banner {
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+    display: inline;
+}

@@ -4,10 +4,12 @@ import traceback
 import requests
 import xmltodict
 
-from config import PROXY, DEBUG_TSUNAMI, DEBUG_TSUNAMI_OVRD
+from api.tsunami.parse_jma_watch import preparse_tsunami_watch
+from config import PROXY, DEBUG_TSUNAMI, DEBUG_TSUNAMI_OVRD, DEBUG_TSUNAMI_WATCH
 from modules.utilities import generate_list, response_verify
 
 last_jma_info = {}
+last_jma_tsunami_watch = []
 return_dict = {}
 
 
@@ -19,10 +21,11 @@ def parse_jma_tsunami(response, app):
     :return: A tsunami info
     :rtype: list
     """
-    global last_jma_info, return_dict
+    global last_jma_info, return_dict, last_jma_tsunami_watch
     app.logger.debug("Start splitting JMA XML...")
     start_split_time = time.perf_counter()
-    response_urls = {}
+    response_urls_info = {}
+    response_urls_watch = {}
     converted_response = xmltodict.parse(response.text, encoding="utf-8")
     response_entries = converted_response["feed"]["entry"]
     if last_jma_info != converted_response:
@@ -33,36 +36,44 @@ def parse_jma_tsunami(response, app):
         return
     for i in response_entries:
         # Ids like yyyyMMddhhmmss_n_id_n.xml
+        # store in: {(url): yyMMddhhmmss}
         if i["id"].split("/")[-1].split("_")[2] == "VTSE41":
-            response_urls[i["id"]] = int(i["id"].split("/")[-1].split("_")[0])
-    if (not response_urls) and (not DEBUG_TSUNAMI):
+            response_urls_info[i["id"]] = int(i["id"].split("/")[-1].split("_")[0])
+        elif i["id"].split("/")[-1].split("_")[2] == "VTSE51":
+            if not i["id"] in last_jma_tsunami_watch:
+                response_urls_watch[i["id"]] = int(i["id"].split("/")[-1].split("_")[0])
+                last_jma_tsunami_watch.append(i["id"])
+    if (not response_urls_info) and (not DEBUG_TSUNAMI) and (not response_urls_watch) and (not DEBUG_TSUNAMI_WATCH):
         app.logger.debug("No tsunami warning in effect.")
         return_dict = {}
         return
-    if not DEBUG_TSUNAMI:
-        latest_information_url = max(response_urls, key=lambda x: response_urls[x])
+    if not DEBUG_TSUNAMI and not DEBUG_TSUNAMI_WATCH:
+        latest_information_url = max(response_urls_info, key=lambda x: response_urls_info[x])
     else:
         latest_information_url = "TEST"
-    app.logger.debug("Split JMA XML in {:.3f} seconds. Parsing tsunami info...".format(
-        time.perf_counter() - start_split_time
-    ))
-    parse_current_tsunami(latest_information_url, app)
+    app.logger.debug(f"Split JMA XML in {(time.perf_counter() - start_split_time):.3f} seconds. "
+                     f"Parsing: {latest_information_url}...")
+    # First parse regular tsunami info, then parse watch info
+    parse_current_tsunami_info(latest_information_url, app)
+    if response_urls_watch or DEBUG_TSUNAMI_WATCH:
+        # Have watch information
+        if not DEBUG_TSUNAMI_WATCH:
+            watch_information_urls = sorted(response_urls_watch, key=lambda x: response_urls_watch[x])
+        else:
+            watch_information_urls = ["TEST"]
+        preparse_tsunami_watch(watch_information_urls, app)
 
 
-def parse_current_tsunami(information_url, app):
+def parse_current_tsunami_info(information_url, app):
     """
     Parses current tsunami info.
     :param information_url: The information url.
     :param app: The Flask app instance.
     """
-    global return_dict
-    app.logger.debug("Start parsing tsunami info...")
-    start_parse_time = time.perf_counter()
-    return_dict = {}
     if not DEBUG_TSUNAMI:
         try:
             response = requests.get(url=information_url,
-                                    proxies=PROXY, timeout=3500)
+                                    proxies=PROXY, timeout=3.5)
             response.encoding = "utf-8"
             if not response_verify(response):
                 app.logger.error("Failed to fetch tsunami data. (response code not 200)")
@@ -75,11 +86,40 @@ def parse_current_tsunami(information_url, app):
         with open(DEBUG_TSUNAMI_OVRD["file"], encoding="utf-8") as f:
             converted_response = xmltodict.parse(f.read(), encoding="utf-8")
     if converted_response["Report"]["Control"]["Status"] != "通常":
-        app.logger.info("Drill tsunami message. Skipped.")
+        app.logger.info("Drill/Other tsunami message. Skipped.")
         return
+    parse_tsunami_information(converted_response, app)
+
+
+def parse_tsunami_information(converted_response, app, origin="TE"):
+    """
+    Parses tsunami basic information.
+    :param converted_response: The converted JSON of the XML.
+    :param app: The Flask app instance.
+    :param origin: Where does the report come from: TE=Tsunami Expectation Message, TW=Tsunami Watch Message
+    :return:
+    """
+    global return_dict
+    return_dict = {}
+    app.logger.debug("Start parsing tsunami info...")
+    start_parse_time = time.perf_counter()
     response_items = generate_list(converted_response["Report"]["Body"]["Tsunami"]["Forecast"]["Item"])
     receive_time = time.strptime(converted_response["Report"]["Control"]["DateTime"], "%Y-%m-%dT%H:%M:%SZ")
-    receive_time_formatted = time.strftime("%Y-%m-%d %H:%M:%S", receive_time)
+    receive_time_formatted = time.strftime("%Y/%m/%d %H:%M:%S", receive_time)
+    return_dict["receive_time"] = receive_time_formatted
+    return_dict["areas"] = parse_tsunami_areas(response_items, app)
+    return_dict["origin"] = origin
+    app.logger.debug(f"Successfully parsed tsunami info "
+                     f"in {(time.perf_counter() - start_parse_time):.3f} seconds.")
+
+
+def parse_tsunami_areas(response_items, app):
+    """
+    Parses tsunami areas.
+    :param response_items: The items in forecast section.
+    :param app: The Flask app instance.
+    :return: A list containing areas.
+    """
     area_list = []
     for i in response_items:
         if i["Category"]["Kind"]["Name"] in ["津波予報（若干の海面変動）", "津波注意報解除", "警報解除"]:
@@ -120,7 +160,7 @@ def parse_current_tsunami(information_url, app):
                 time_transformed = time.strptime(first_time_estimation["ArrivalTime"][:19], "%Y-%m-%dT%H:%M:%S")
                 area_time = {
                     "type": "time",
-                    "time": time.strftime("%Y-%m-%d %H:%M:%S", time_transformed)
+                    "time": time.strftime("%m-%d %H:%M", time_transformed)
                 }
             try:
                 max_height = i["MaxHeight"]["jmx_eb:TsunamiHeight"]
@@ -150,8 +190,4 @@ def parse_current_tsunami(information_url, app):
             "height": area_height,
             "time": area_time
         })
-    return_dict["receive_time"] = receive_time_formatted
-    return_dict["areas"] = area_list
-    app.logger.debug("Successfully parsed tsunami info in {:.3f} seconds.".format(
-        time.perf_counter() - start_parse_time
-    ))
+    return area_list

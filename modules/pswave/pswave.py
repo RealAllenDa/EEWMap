@@ -25,7 +25,7 @@ def init_pswave(app):
         if len(temp_2) != 5:
             continue
         pswave_list.append([float(temp_2[1]), float(temp_2[2]), int(temp_2[3]), int(temp_2[4])])
-    logger.debug("Successfully initialized PSWave in {:.3f} seconds.".format(time.perf_counter() - start_time))
+    logger.debug(f"Successfully initialized PSWave in {(time.perf_counter() - start_time):.3f} seconds.")
 
 
 # noinspection PyUnresolvedReferences
@@ -36,7 +36,7 @@ def parse_swave(depth, time_passed):
     :param time_passed: The passed time of the earthquake
     :return: The S wave time.
     """
-    logger.debug("Parsing S wave time -> depth:{}, time:{}...".format(depth, time_passed))
+    logger.debug(f"Parsing S wave time -> depth:{depth}, time:{time_passed}...")
     start_time = time.perf_counter()
     if depth > 700 or time_passed > 2000:
         logger.warn("Failed to parse S wave time (Time too long or depth too high).")
@@ -54,7 +54,5 @@ def parse_swave(depth, time_passed):
     s1 = s1[-1]
     s2 = s2[0]
     s = (time_passed - s1[1]) / (s2[1] - s1[1]) * (s2[3] - s1[3]) + s1[3]
-    logger.debug("Successfully parsed S wave time in {:.3f} seconds.".format(
-        time.perf_counter() - start_time
-    ))
+    logger.debug(f"Successfully parsed S wave time in {(time.perf_counter() - start_time):.3f} seconds.")
     return s

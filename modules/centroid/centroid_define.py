@@ -1,6 +1,13 @@
 import csv
 import json
+import sys
 import time
+import traceback
+
+import requests
+
+from config import PROXY
+from modules.utilities import response_verify
 
 
 class Centroid:
@@ -18,11 +25,45 @@ class Centroid:
         self._eq_station_centroid = {}
         start_initialize_time = time.perf_counter()
         self.logger.debug("Initializing Centroid library...")
+        self.update_intensity_stations()
         self._init_area_centroid()
         self._init_earthquake_station_centroid()
         self._init_station_centroid()
-        self.logger.debug("Successfully initialized centroid library in {:.3f} seconds.".format(
-            time.perf_counter() - start_initialize_time))
+        self.logger.debug(f"Successfully initialized centroid library "
+                          f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
+
+    def update_intensity_stations(self):
+        """
+        Update intensity station names using DM-S.S.S.
+        """
+        self.logger.info("Updating intensity station names...")
+        try:
+            response = requests.get(
+                url="https://api.dmdata.jp/v2/parameter/earthquake/station?key=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
+                proxies=PROXY, timeout=10)
+            response.encoding = "utf-8"
+            if not response_verify(response):
+                self.logger.fatal("Failed to update intensity stations. (response code not 200)")
+                sys.exit(1)
+        except:
+            self.logger.fatal("Failed to update intensity stations. Exception occurred: \n" + traceback.format_exc())
+            sys.exit(1)
+        response = response.json()
+        if response.get("status", "") == "error":
+            self.logger.fatal("Failed to update intensity stations. (response status error)")
+            sys.exit(1)
+        to_write = ""
+        for i in response["items"]:
+            if i["status"] != "現":
+                continue
+            name = i["name"]
+            latitude = i["latitude"]
+            longitude = i["longitude"]
+            to_write += f"{name},{latitude},{longitude}\n"
+        with open("./modules/centroid/intensity_stations.csv", "w+", encoding="utf-8") as f:
+            f.write(to_write)
+            f.close()
+        self.logger.info("Successfully updated intensity station names!")
 
     def _init_area_centroid(self):
         """
@@ -35,8 +76,8 @@ class Centroid:
             for row in reader:
                 self._area_centroid[row["name"]] = (row["latitude"], row["longitude"])
             f.close()
-        self.logger.debug("Successfully initialized centroid for areas in {:.3f} seconds.".format(
-            time.perf_counter() - start_initialize_time))
+        self.logger.debug(f"Successfully initialized centroid for areas "
+                          f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
     def _init_station_centroid(self):
         """
@@ -49,8 +90,8 @@ class Centroid:
             for row in reader:
                 self._station_centroid[row["name"]] = (row["latitude"], row["longitude"])
             f.close()
-        self.logger.debug("Successfully initialized centroid for stations in {:.3f} seconds.".format(
-            time.perf_counter() - start_initialize_time))
+        self.logger.debug(f"Successfully initialized centroid for stations "
+                          f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
     def _init_earthquake_station_centroid(self):
         """
@@ -62,8 +103,8 @@ class Centroid:
             for i in self._eq_station_centroid:
                 if i["Point"] is None or i["IsSuspended"]:
                     self._eq_station_centroid.remove(i)
-        self.logger.debug("Successfully initialized centroid for observation stations in {:.3f} seconds.".format(
-            time.perf_counter() - start_initialize_time))
+        self.logger.debug(f"Successfully initialized centroid for observation stations "
+                          f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
     @property
     def station_centroid(self):

@@ -1,4 +1,8 @@
 window.intensity_area_icons = {
+    null: new L.Icon({
+        iconUrl: "../static/image/intensity_big/0.png",
+        iconSize: [25, 25]
+    }),
     1: new L.Icon({
         iconUrl: "../static/image/intensity_big/1.png",
         iconSize: [25, 25]
@@ -41,6 +45,10 @@ window.intensity_area_icons = {
     })
 };
 window.intensity_station_icons = {
+    null: new L.Icon({
+        iconUrl: "../static/image/intensity_small/0.png",
+        iconSize: [20, 20]
+    }),
     1: new L.Icon({
         iconUrl: "../static/image/intensity_small/1.png",
         iconSize: [20, 20]
@@ -86,20 +94,51 @@ window.epicenter_icon = new L.Icon({
     iconUrl: "../static/image/epicenter.png",
     iconSize: [35, 35]
 });
-window.layers = [];
+window.iconGroup = L.featureGroup();
 var initializeMap = function () {
-    var map_url = "https://api.mapbox.com/styles/v1/allenda/ckp1e65ta2uk618rwi5ibfluz/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYWxsZW5kYSIsImEiOiJja241dWpnNWwwN3Q3MnRwNm1ueWJvaDUyIn0.mugew7hjEAG-zFoXg_pYiw";
     window.map = L.map('map', {
         zoomControl: false,
         center: [38.272688535980976, 137],
-        zoom: 5
-    });
-    L.tileLayer(map_url, {
+        zoom: 5,
         maxZoom: 8,
-        attribution: "Data by <a href='http://www.jma.go.jp/jma/index.html'>JMA</a> | " +
-            "EEWMap by AllenDa | " +
-            "Map by <a href='https://mapbox.com'>Mapbox</a>"
-    }).addTo(window.map);
+        minZoom: 2,
+        zoomSnap: 0.01,
+        zoomDelta: 0.5
+    });
+    var attribution = window.map.attributionControl;
+    attribution.setPrefix("QuakeMap by AllenDa");
+    attribution.addAttribution("Map: Natural Earth | " +
+        "Map Data: JMA");
+    var map_countries_url = "https://earthquake.daziannetwork.com/countries/{z}/{x}/{y}.pbf";
+    var map_borders_url = "https://earthquake.daziannetwork.com/japan_area_line/{z}/{x}/{y}.pbf";
+    var countries_tile_option = {
+        layerURL: map_countries_url,
+        rendererFactory: L.canvas.tile,
+        vectorTileLayerStyles: {
+            "bg_country": {
+                stroke: false,
+                fill: true,
+                fillColor: "#3a3a3a",
+                fillOpacity: 1
+            }
+        },
+        bounds: [[-85.051129, -180.000000], [83.634101, 180.000000]]
+    };
+    var area_line_tile_option = {
+        layerURL: map_borders_url,
+        rendererFactory: L.canvas.tile,
+        vectorTileLayerStyles: {
+            "japan_area_line": {
+                fill: false,
+                weight: 1,
+                fillOpacity: 0,
+                color: "#7e7e7e"
+            }
+        },
+        bounds: [[-49.250870, -178.137086], [81.128531, 178.448622]]
+    };
+    new L.vectorGrid.protobuf(map_countries_url, countries_tile_option).addTo(window.map);
+    new L.vectorGrid.protobuf(map_borders_url, area_line_tile_option).addTo(window.map);
 };
 var addMapIntensities = function (intensityList) {
     for (var i in intensityList) {
@@ -111,7 +150,7 @@ var addMapIntensities = function (intensityList) {
         } else {
             layer = L.marker([latitude, longitude], {icon: window.intensity_station_icons[intensity]});
         }
-        if (intensity == "1" || intensity == "2" || intensity == "3" || intensity == "4") {
+        if (intensity == "0" || intensity == "1" || intensity == "2" || intensity == "3" || intensity == "4") {
             layer.setZIndexOffset(parseInt(intensity) * 100);
         } else if (intensity == "5-") {
             layer.setZIndexOffset(500);
@@ -124,91 +163,37 @@ var addMapIntensities = function (intensityList) {
         } else if (intensity == "7") {
             layer.setZIndexOffset(900);
         } else if (intensity == "5?") {
-            layer.setZIndexOffset(550);
+            layer.setZIndexOffset(50);
         } else {
             layer.setZIndexOffset(0);
         }
-        window.layers.push(layer);
+        window.iconGroup.addLayer(layer);
     }
-    window.iconGroup = L.layerGroup(window.layers);
     window.map.addLayer(window.iconGroup);
 };
 var addEpicenter = function (latitude, longitude) {
-    window.epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon}).addTo(window.map);
-    window.epicenterMarker.setZIndexOffset(50);
+    var epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon});
+    epicenterMarker.setZIndexOffset(50);
+    window.iconGroup.addLayer(epicenterMarker);
 };
 var deleteAllLayers = function () {
     try {
-        if (window.epicenterMarker != undefined) {
-            window.map.removeLayer(window.epicenterMarker);
-        }
         if (window.colorMapLayer != undefined) {
             window.colorMapLayer.removeFrom(window.map);
         }
         if (window.iconGroup != undefined) {
             window.iconGroup.clearLayers();
-            window.layers = [];
         }
         if (window.swave_circle != undefined) {
             window.map.removeLayer(window.swave_circle);
         }
     } catch (e) {
-        console.error("Failed to remove layers.", e);
+        window.logger.error("Failed to remove layers." + e);
     }
 };
-var parseMapScale = function (earthquakePoints, epicenterlat, epicenterlong) {
-    if (epicenterlat == undefined || epicenterlong == undefined) {
-        epicenterlat = 0;
-        epicenterlong = 0;
-        console.warn("No epicenter is defined. Check backend code.");
-    }
-    var longitude = [parseFloat(epicenterlong), parseFloat(epicenterlong)];
-    var latitude = [parseFloat(epicenterlat), parseFloat(epicenterlat)];
-    var sum_longitude = parseFloat(epicenterlong);
-    var sum_latitude = parseFloat(epicenterlat);
-    var point_count = 1;
-    if (epicenterlat == 0 && epicenterlong == 0) {
-        point_count = 0; // Without epicenter
-    }
-    var point_scale;
-    for (var i in earthquakePoints) {
-        sum_longitude += parseFloat(earthquakePoints[i]["longitude"]);
-        sum_latitude += parseFloat(earthquakePoints[i]["latitude"]);
-        longitude = [Math.max(longitude[0], parseFloat(earthquakePoints[i]["longitude"])), Math.min(longitude[1], parseFloat(earthquakePoints[i]["longitude"]))];
-        latitude = [Math.max(latitude[0], parseFloat(earthquakePoints[i]["latitude"])), Math.min(latitude[1], parseFloat(earthquakePoints[i]["latitude"]))];
-        point_count++;
-    }
-    var center = [sum_latitude / point_count, sum_longitude / point_count];
-    if (epicenterlong == 0 && epicenterlat == 0) {
-        latitude[1] = center[0];
-        longitude[1] = center[1];
-    }
-    var distance = Math.sqrt(Math.pow((latitude[0] - latitude[1]), 2) + Math.pow((longitude[0] - longitude[1]), 2));
-    console.log(latitude, longitude, [sum_latitude, sum_longitude], point_count, center, distance);
-    if (distance < 1) {
-        point_scale = 8;
-    } else if (distance >= 1 && distance < 2) {
-        point_scale = 7;
-    } else if (distance >= 2 && distance < 3) {
-        point_scale = 7;
-    } else if (distance >= 3 && distance < 4) {
-        point_scale = 6;
-    } else {
-        point_scale = 5;
-    }
-    console.log(center, point_scale);
-    window.map.setZoom(point_scale, {animate: false});
-    window.map.panTo(center, {animate: false});
-};
-var parseEpicenterMapScale = function (epicenterlat, epicenterlong) {
-    var earthquake_points = [];
-    for (var i in window.iconGroup._layers) {
-        earthquake_points[earthquake_points.length] = {
-            "longitude": window.iconGroup._layers[i]._latlng["lng"],
-            "latitude": window.iconGroup._layers[i]._latlng["lat"]
-        };
-    }
-    parseMapScale(earthquake_points, epicenterlat, epicenterlong);
+var parseMapScale = function () {
+    window.logger.info(window.iconGroup.getBounds());
+    window.map.fitBounds(window.iconGroup.getBounds(), {padding: [0, 30]});
 };
 var addMapColoring = function (geojson_content) {
     window.colorMapLayer = L.geoJson(geojson_content,

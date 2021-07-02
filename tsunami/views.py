@@ -22,3 +22,19 @@ def tsunami_map_render():
     Renders the tsunami map index.
     """
     return render_template("tsunami_map.html")
+
+
+@tsunami_bp.route("/tsunami_watch")
+def tsunami_watch_render():
+    """
+    Renders the tsunami watch index.
+    """
+    return render_template("tsunami_watch.html")
+
+
+@tsunami_bp.route("/tsunami_banner")
+def tsunami_banner_render():
+    """
+    Renders the tsunami banner index.
+    """
+    return render_template("tsunami_banner.html")

@@ -14,7 +14,7 @@ def get_jma_tsunami(app):
     """
     try:
         response = requests.get(url="http://www.data.jma.go.jp/developer/xml/feed/eqvol.xml",
-                                proxies=PROXY, timeout=5000)
+                                proxies=PROXY, timeout=5)
         response.encoding = "utf-8"
         if not response_verify(response):
             app.logger.warn("Failed to fetch JMA XML data. (response code not 200)")

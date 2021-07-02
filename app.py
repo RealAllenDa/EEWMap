@@ -10,7 +10,6 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 
 from api import api_bp, initialize_api
-from history import history_bp
 from index import index_bp
 from map import map_bp
 from modules.area import init_geojson_instance
@@ -50,7 +49,6 @@ config_logger()
 app.register_blueprint(api_bp)
 app.register_blueprint(shake_level_bp)
 app.register_blueprint(index_bp)
-app.register_blueprint(history_bp)
 app.register_blueprint(map_bp)
 app.register_blueprint(tsunami_bp)
 app.logger.info("App initialization completed successfully. Initializing modules...")
