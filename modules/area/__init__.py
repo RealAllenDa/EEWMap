@@ -1,6 +1,5 @@
 """
  EEWMap - Modules - Area
- ---------------------------
  Gets the geojson area definitions.
 """
 from modules.area.area_define import GeoJson

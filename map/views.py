@@ -1,6 +1,5 @@
 """
  EEWMap - Map - Views
- ---------------------------
  The main view controller for the map.
 """
 from flask import render_template, Blueprint

@@ -1,3 +1,7 @@
+"""
+ EEWMap - API - Tsunami - JMA_Watch
+ Parses tsunami watch information from JMA XML.
+"""
 import time
 import traceback
 
@@ -13,6 +17,7 @@ watch_return = {}
 def preparse_tsunami_watch(information_urls, app):
     """
     Filters tsunami watch information from other information.
+
     :param information_urls: The information urls list
     :param app: The Flask app instance
     """
@@ -56,8 +61,9 @@ def preparse_tsunami_watch(information_urls, app):
 def parse_tsunami_watch_information(to_parse_raw_response, app):
     """
     Parses tsunami watch information.
-    :param to_parse_raw_response: The raw response waiting to being parsed.
-    :param app: The Flask app instance.
+
+    :param to_parse_raw_response: The raw response waiting to being parsed
+    :param app: The Flask app instance
     """
     global watch_return
     watch_return = {"areas": []}

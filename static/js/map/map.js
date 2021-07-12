@@ -3,19 +3,19 @@ window.intensity_area_icons = {
         iconUrl: "../static/image/intensity_big/0.png",
         iconSize: [25, 25]
     }),
-    1: new L.Icon({
+    "1": new L.Icon({
         iconUrl: "../static/image/intensity_big/1.png",
         iconSize: [25, 25]
     }),
-    2: new L.Icon({
+    "2": new L.Icon({
         iconUrl: "../static/image/intensity_big/2.png",
         iconSize: [25, 25]
     }),
-    3: new L.Icon({
+    "3": new L.Icon({
         iconUrl: "../static/image/intensity_big/3.png",
         iconSize: [25, 25]
     }),
-    4: new L.Icon({
+    "4": new L.Icon({
         iconUrl: "../static/image/intensity_big/4.png",
         iconSize: [25, 25]
     }),
@@ -49,19 +49,19 @@ window.intensity_station_icons = {
         iconUrl: "../static/image/intensity_small/0.png",
         iconSize: [20, 20]
     }),
-    1: new L.Icon({
+    "1": new L.Icon({
         iconUrl: "../static/image/intensity_small/1.png",
         iconSize: [20, 20]
     }),
-    2: new L.Icon({
+    "2": new L.Icon({
         iconUrl: "../static/image/intensity_small/2.png",
         iconSize: [20, 20]
     }),
-    3: new L.Icon({
+    "3": new L.Icon({
         iconUrl: "../static/image/intensity_small/3.png",
         iconSize: [20, 20]
     }),
-    4: new L.Icon({
+    "4": new L.Icon({
         iconUrl: "../static/image/intensity_small/4.png",
         iconSize: [20, 20]
     }),

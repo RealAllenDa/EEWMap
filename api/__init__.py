@@ -1,6 +1,5 @@
 """
  EEWMap - API
- ---------------------------
  The APIs.
 """
 from .controller import api_bp

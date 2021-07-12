@@ -1,3 +1,15 @@
+"""
+ EEWMap - API - P2P - Parse_JSON
+ Parses P2P API Json from the response, including:
+    - Earthquake information
+        - Intensity Report
+        - Hypocenter Report
+        - Hypocenter and Intensity Report
+        - Detailed Intensity Report
+        - Foreign Earthquake Report
+    - Tsunami information (Goes into tsunami map)
+        - Tsunami Expected Grade
+"""
 import time
 
 last_response_list = []
@@ -23,8 +35,8 @@ def parse_p2p_info(raw_json, app):
     """
     Parses the P2P JSON from the getting module.
 
-    :param app: The Flask app instance.
-    :param raw_json: The JSON from the module.
+    :param app: The Flask app instance
+    :param raw_json: The JSON from the module
     :return: Earthquake information
     :rtype: dict
     """

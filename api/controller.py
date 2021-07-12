@@ -1,6 +1,5 @@
 """
  EEWMap - API - Views
- ---------------------------
  The controller (blueprint) for APIs.
 """
 from flask import Blueprint

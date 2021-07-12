@@ -1,5 +1,11 @@
+"""
+ EEWMap - Modules - Pswave - Main
+ The main entry point of this module.
+"""
 import re
 import time
+
+from modules.utilities import relpath
 
 logger = None
 pswave_list = []
@@ -8,14 +14,14 @@ pswave_list = []
 def init_pswave(app):
     """
     Initializes the PSWave module.
-    :param app: The Flask app instance.
-    :return:
+
+    :param app: The Flask app instance
     """
     global logger, pswave_list
     logger = app.logger
     logger.debug("Initializing PSWave...")
     start_time = time.perf_counter()
-    with open("./modules/pswave/tjma2001", "r") as f:
+    with open(relpath("./tjma2001"), "r") as f:
         temp_file = f.read()
         f.close()
     file_parsed = re.sub(r"\x20+", " ", temp_file)
@@ -32,24 +38,25 @@ def init_pswave(app):
 def parse_swave(depth, time_passed):
     """
     Parses the SWave time from tjma2001.
+
     :param depth: The depth of the earthquake
     :param time_passed: The passed time of the earthquake
-    :return: The S wave time.
+    :return: The S wave time
     """
     logger.debug(f"Parsing S wave time -> depth:{depth}, time:{time_passed}...")
     start_time = time.perf_counter()
     if depth > 700 or time_passed > 2000:
-        logger.warn("Failed to parse S wave time (Time too long or depth too high).")
+        logger.warning("Failed to parse S wave time (Time too long or depth too high).")
         return None
     depth_correspond = list(filter(lambda d: d[2] == depth, pswave_list))
     if len(depth_correspond) == 0:
-        logger.warn("Failed to parse S wave time (No depth corresponding).")
+        logger.warning("Failed to parse S wave time (No depth corresponding).")
         return None
     # the last one => s1, the first one => s2
     s1 = list(filter(lambda s_p: s_p[1] <= time_passed, depth_correspond))
     s2 = list(filter(lambda s_p: s_p[1] >= time_passed, depth_correspond))
     if s1 == [] or s2 == []:
-        logger.warn("Failed to parse S wave time (No depth s1, s2 corresponding).")
+        logger.warning("Failed to parse S wave time (No depth s1, s2 corresponding).")
         return None
     s1 = s1[-1]
     s2 = s2[0]

@@ -1,7 +1,6 @@
 """
  EEWMap - API - Init
- ---------------------------
- Initializes the APIs.
+ Initializes the APIs (Initializes timers to refresh).
 """
 import time
 import traceback
@@ -20,6 +19,8 @@ from .tsunami import get_jma_tsunami
 def refresh_p2p_info(app):
     """
     Refreshes the P2P JSON.
+
+    :param app: The Flask app instance
     """
     try:
         start_time = time.perf_counter()
@@ -32,6 +33,8 @@ def refresh_p2p_info(app):
 def refresh_eew(app):
     """
     Refreshes the EEW.
+
+    :param app: The Flask app instance
     """
     try:
         start_time = time.perf_counter()
@@ -44,6 +47,8 @@ def refresh_eew(app):
 def refresh_shake_level(app):
     """
     Refreshes the Shaking Level.
+
+    :param app: The Flask app instance
     """
     try:
         start_time = time.perf_counter()
@@ -56,6 +61,8 @@ def refresh_shake_level(app):
 def refresh_jma_tsunami(app):
     """
     Refreshes the JMA tsunami info.
+
+    :param app: The Flask app instance
     """
     try:
         start_time = time.perf_counter()
@@ -64,6 +71,20 @@ def refresh_jma_tsunami(app):
     except:
         app.logger.error("Failed to refresh tsunami info. \n" + traceback.format_exc())
 
+
+def refresh_stations(app):
+    """
+    Refreshes the intensity station properties.
+
+    :param app: The Flask app instance
+    """
+    try:
+        from modules.centroid import centroid_instance
+        start_time = time.perf_counter()
+        centroid_instance.refresh_stations()
+        app.logger.debug(f"Refreshed station info in {(time.perf_counter() - start_time):.3f} seconds.")
+    except:
+        app.logger.error("Failed to refresh station info. \n" + traceback.format_exc())
 
 def initialize_api(app):
     """
@@ -82,7 +103,9 @@ def initialize_api(app):
     }
     scheduler = BackgroundScheduler(jobstores=job_stores, executors=executors,
                                     job_defaults=job_defaults)
-    if ENABLE_QUAKE: scheduler.add_job(func=refresh_p2p_info, args=(app,), trigger="interval", seconds=2, id="p2p")
+    if ENABLE_QUAKE:
+        scheduler.add_job(func=refresh_p2p_info, args=(app,), trigger="interval", seconds=2, id="p2p")
+        scheduler.add_job(func=refresh_stations, args=(app,), trigger="interval", days=1, id="station_update")
     if ENABLE_SHAKE: scheduler.add_job(func=refresh_shake_level, args=(app,), trigger="interval", seconds=2,
                                        id="shake_level")
     if ENABLE_EEW: scheduler.add_job(func=refresh_eew, args=(app,), trigger="interval", seconds=2, id="eew")

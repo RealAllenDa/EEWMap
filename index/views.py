@@ -1,6 +1,5 @@
 """
  EEWMap - Index - Views
- ---------------------------
  The main view controller for index page.
 """
 from flask import render_template, Blueprint

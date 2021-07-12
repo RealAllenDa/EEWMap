@@ -1,32 +1,43 @@
-# For people who need to set proxy
+"""
+ EEWMap - Config
+ The configuration file for all modules.
+"""
+from modules.utilities import relpath
+
+# Version
+VERSION = "0.9.0-Build0 PreRelease"
+
+# Proxy Settings
 PROXY = {
     "http": "",
     "https": ""
 }
-# Debugging
+
+# Module enable
 ENABLE_EEW = True
 ENABLE_P2P_TSUNAMI = True
 ENABLE_SHAKE = True
 ENABLE_QUAKE = True
 
+# Debugging
 DEBUG_EEW = False
 DEBUG_EEW_OVRD = {
     "start_time": 20210501102730,
-    "origin_timestamp": 1623483035
+    "origin_timestamp": 1625232556
 }
 
 DEBUG_EEW_IMAGE = False
-DEBUG_EEW_IMAGE_OVRD = "./misc/demo/image.gif"
+DEBUG_EEW_IMAGE_OVRD = relpath("./misc/demo/image.gif")
 
 DEBUG_TSUNAMI = False
 DEBUG_TSUNAMI_OVRD = {
-    "file": "./misc/demo/demo_tsunami.xml"
+    "file": relpath("./misc/demo/demo_tsunami.xml")
 }
 
 DEBUG_P2P_TSUNAMI = False
 DEBUG_P2P_OVRD = {
-    "file": "./misc/demo/p2p_tsunami.json"
+    "file": relpath("./misc/demo/p2p_tsunami.json")
 }
 
 DEBUG_TSUNAMI_WATCH = False
-DEBUG_TSUNAMI_WATCH_OVRD = "./misc/demo/demo_watch.xml"
+DEBUG_TSUNAMI_WATCH_OVRD = relpath("./misc/demo/demo_watch.xml")

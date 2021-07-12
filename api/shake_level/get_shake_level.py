@@ -1,3 +1,7 @@
+"""
+ EEWMap - API - shake_level - Get_Shake
+ Gets shake level, etc. from kmoni API.
+"""
 import time
 import traceback
 
@@ -11,9 +15,9 @@ return_dict = {}
 
 def get_shake_level(app):
     """
-     Get the shaking level.
+     Get the shaking level and green/yellow/red point count.
 
-     :return: The status and the shaking level.
+     :return: The status and the shaking level
      :rtype: dict
     """
     global return_dict

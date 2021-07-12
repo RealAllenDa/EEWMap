@@ -1,6 +1,5 @@
 """
- EEWMap
- ------------------
+ EEWMap - App
  Used to start the whole program.
 """
 import logging
@@ -16,11 +15,11 @@ from modules.area import init_geojson_instance
 from modules.centroid import init_centroid_instance
 from modules.intensity import init_intensity2color
 from modules.pswave import init_pswave
+from modules.utilities import relpath
 from shake_level import shake_level_bp
 from tsunami import tsunami_bp
 
 app = Flask("EEWMap")
-
 
 # noinspection SpellCheckingInspection
 def config_logger():
@@ -28,7 +27,7 @@ def config_logger():
     Configure the flask logger's format, file store location, etc.
     :return: None
     """
-    if not os.path.exists("./logs/"):
+    if not os.path.exists(relpath("./logs/")):
         os.mkdir("logs")
     flask_logger = app.logger
     flask_logger.setLevel("DEBUG")
@@ -36,7 +35,7 @@ def config_logger():
     console_formatter = logging.Formatter(fmt="[%(asctime)s] [%(levelname)s] [%(module)s] %(funcName)s: %(message)s")
     console_handler.setFormatter(console_formatter)
     flask_logger.addHandler(console_handler)
-    file_handler = RotatingFileHandler(filename="logs/main.log", maxBytes=100 * 1024 * 1024, backupCount=10)
+    file_handler = RotatingFileHandler(filename=relpath("logs/main.log"), maxBytes=100 * 1024 * 1024, backupCount=10)
     file_formatter = logging.Formatter(
         fmt="[%(asctime)s] [%(levelname)s] [%(filename)s %(module)s:%(lineno)d] %(funcName)s: %(message)s")
     file_handler.setFormatter(file_formatter)

@@ -1,8 +1,14 @@
+"""
+ EEWMap - Modules - Intensity - Main
+ The main entry point of this module.
+"""
 import json
 import time
 from io import BytesIO
 
 from PIL import Image
+
+from modules.utilities import relpath
 
 INTENSITY_DICT = {}
 logger = None
@@ -11,13 +17,14 @@ logger = None
 def init_intensity2color(app):
     """
     Initializes intensity2color.
-    :param app: The Flask app instance.
+
+    :param app: The Flask app instance
     """
     global INTENSITY_DICT, logger
     start_initialize_time = time.perf_counter()
     logger = app.logger
     logger.debug("Initializing intensity2color...")
-    with open("./modules/intensity/intensity2color.json", "r") as f:
+    with open(relpath("./intensity2color.json"), "r") as f:
         temp_dict = json.loads(f.read())
         f.close()
     for i in temp_dict.keys():
@@ -31,6 +38,7 @@ def init_intensity2color(app):
 def intensity2color(raw_response):
     """
     Parses the image into a intensity array using centroids.
+
     :param raw_response: The raw response from requests
     :return: A dict containing latitude, longitude and intensities
     :rtype: dict
@@ -43,6 +51,8 @@ def intensity2color(raw_response):
     image = image_fp.convert("RGBA").load()
     from modules.centroid import centroid_instance
     for i in centroid_instance.earthquake_station_centroid:
+        if i["Point"] is None:
+            continue
         try:
             pixel_color = image[int(i["Point"]["X"]), int(i["Point"]["Y"])][0:3]
         except:
@@ -52,13 +62,13 @@ def intensity2color(raw_response):
         if pixel_intensity != 0:
             # Have expected intensity
             if 0.5 < pixel_intensity < 1.5:
-                parsed_intensity = 1
+                parsed_intensity = "1"
             elif 1.5 <= pixel_intensity < 2.5:
-                parsed_intensity = 2
+                parsed_intensity = "2"
             elif 2.5 <= pixel_intensity < 3.5:
-                parsed_intensity = 3
+                parsed_intensity = "3"
             elif 3.5 <= pixel_intensity < 4.5:
-                parsed_intensity = 4
+                parsed_intensity = "4"
             elif 4.5 <= pixel_intensity < 5.0:
                 parsed_intensity = "5-"
             elif 5.0 <= pixel_intensity < 5.5:
@@ -68,10 +78,11 @@ def intensity2color(raw_response):
             elif 6.0 <= pixel_intensity < 6.5:
                 parsed_intensity = "6+"
             elif pixel_intensity >= 6.5:
-                parsed_intensity = 7
+                parsed_intensity = "7"
             else:
                 continue
             intensities[i["Code"]] = {
+                "name": i["Region"] + i["Name"],
                 "latitude": i["Location"]["Latitude"],
                 "longitude": i["Location"]["Longitude"],
                 "intensity": parsed_intensity,

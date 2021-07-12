@@ -1,3 +1,7 @@
+"""
+ EEWMap - API - Tsunami - JMA_Tsunami
+ Parses tsunami information (Expected arrival time) from JMA XML.
+"""
 import time
 import traceback
 
@@ -16,6 +20,7 @@ return_dict = {}
 def parse_jma_tsunami(response, app):
     """
     Parses JMA XML and gets tsunami info.
+
     :param response: The raw response from requests
     :param app: The Flask app instance
     :return: A tsunami info
@@ -67,8 +72,9 @@ def parse_jma_tsunami(response, app):
 def parse_current_tsunami_info(information_url, app):
     """
     Parses current tsunami info.
-    :param information_url: The information url.
-    :param app: The Flask app instance.
+
+    :param information_url: The information url
+    :param app: The Flask app instance
     """
     if not DEBUG_TSUNAMI:
         try:
@@ -94,10 +100,10 @@ def parse_current_tsunami_info(information_url, app):
 def parse_tsunami_information(converted_response, app, origin="TE"):
     """
     Parses tsunami basic information.
-    :param converted_response: The converted JSON of the XML.
-    :param app: The Flask app instance.
+
+    :param converted_response: The converted JSON of the XML
+    :param app: The Flask app instance
     :param origin: Where does the report come from: TE=Tsunami Expectation Message, TW=Tsunami Watch Message
-    :return:
     """
     global return_dict
     return_dict = {}
@@ -116,9 +122,10 @@ def parse_tsunami_information(converted_response, app, origin="TE"):
 def parse_tsunami_areas(response_items, app):
     """
     Parses tsunami areas.
-    :param response_items: The items in forecast section.
-    :param app: The Flask app instance.
-    :return: A list containing areas.
+
+    :param response_items: The items in forecast section
+    :param app: The Flask app instance
+    :return: A list containing areas
     """
     area_list = []
     for i in response_items:

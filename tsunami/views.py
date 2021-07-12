@@ -1,6 +1,5 @@
 """
  EEWMap - Tsunami Map - Views
- ---------------------------
  The main view controller for the tsunami map.
 """
 from flask import render_template, Blueprint

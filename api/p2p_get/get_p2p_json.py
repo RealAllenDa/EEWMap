@@ -1,3 +1,9 @@
+"""
+ EEWMap - API - P2P - Get_JSON
+ Gets JSON from P2PQuake API, limited to:
+    - 551 (Earthquake Information)
+    - 552 (Tsunami Information)
+"""
 import json
 import traceback
 
@@ -11,7 +17,8 @@ from .parse_p2p_json import parse_p2p_info
 def get_p2p_json(app):
     """
      Gets P2PQuake's JSON telegram.
-     :param app: The Flask app instance.
+
+     :param app: The Flask app instance
     """
     if not DEBUG_P2P_TSUNAMI:
         try:

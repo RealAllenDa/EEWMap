@@ -1,3 +1,7 @@
+"""
+ EEWMap - API - EEW - Get_EEW
+ Gets and parses EEW information from kmoni API.
+"""
 import time
 import traceback
 
@@ -12,6 +16,16 @@ return_dict = {}
 
 
 def get_eew_info(app):
+    """
+    Gets EEW information from kmoni API, including:
+        - Time
+        - EEW
+        - If EEW is issuing, EEW expected intensity map
+
+    :param app: The Flask app instance
+    :return: Parsed EEW information
+    :rtype: dict
+    """
     global return_dict
     try:
         response_time = requests.get(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",

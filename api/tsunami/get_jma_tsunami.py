@@ -1,3 +1,7 @@
+"""
+ EEWMap - API - Tsunami - Get_Tsunami
+ Gets JMA XML.
+"""
 import traceback
 
 import requests
@@ -10,7 +14,8 @@ from .parse_jma_tsunami import parse_jma_tsunami
 def get_jma_tsunami(app):
     """
     Gets the JMA tsunami info.
-    :param app: The Flask app instance.
+
+    :param app: The Flask app instance
     """
     try:
         response = requests.get(url="http://www.data.jma.go.jp/developer/xml/feed/eqvol.xml",

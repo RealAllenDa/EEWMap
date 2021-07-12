@@ -1,13 +1,16 @@
+"""
+ EEWMap - Modules - Centroid - Centroid_Define
+ The main entry point of this module.
+"""
 import csv
 import json
-import sys
 import time
 import traceback
 
 import requests
 
 from config import PROXY
-from modules.utilities import response_verify
+from modules.utilities import response_verify, relpath
 
 
 class Centroid:
@@ -17,7 +20,7 @@ class Centroid:
         """
         Initializes the instance.
 
-        :param logger: The Flask app logger.
+        :param logger: The Flask app logger
         """
         self.logger = logger
         self._area_centroid = {}
@@ -25,33 +28,36 @@ class Centroid:
         self._eq_station_centroid = {}
         start_initialize_time = time.perf_counter()
         self.logger.debug("Initializing Centroid library...")
-        self.update_intensity_stations()
+        self.refresh_stations()
         self._init_area_centroid()
         self._init_earthquake_station_centroid()
         self._init_station_centroid()
         self.logger.debug(f"Successfully initialized centroid library "
                           f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
-    def update_intensity_stations(self):
+    def refresh_stations(self):
         """
-        Update intensity station names using DM-S.S.S.
+        Updates intensity station names using DM-S.S.S, and refreshes the stations.
+        NOTE: The refresh station information are fetched using a bad/borrowed key.
+        For commercial uses, please change the key to a self-obtained one.
         """
         self.logger.info("Updating intensity station names...")
         try:
             response = requests.get(
                 url="https://api.dmdata.jp/v2/parameter/earthquake/station?key=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
-                proxies=PROXY, timeout=10)
+                proxies=PROXY, timeout=10
+            )
             response.encoding = "utf-8"
             if not response_verify(response):
-                self.logger.fatal("Failed to update intensity stations. (response code not 200)")
-                sys.exit(1)
+                self.logger.error("Failed to update intensity stations. (response code not 200)")
+                return
         except:
-            self.logger.fatal("Failed to update intensity stations. Exception occurred: \n" + traceback.format_exc())
-            sys.exit(1)
+            self.logger.error("Failed to update intensity stations. Exception occurred: \n" + traceback.format_exc())
+            return
         response = response.json()
         if response.get("status", "") == "error":
-            self.logger.fatal("Failed to update intensity stations. (response status error)")
-            sys.exit(1)
+            self.logger.error("Failed to update intensity stations. (response status error)")
+            return
         to_write = ""
         for i in response["items"]:
             if i["status"] != "現":
@@ -60,17 +66,18 @@ class Centroid:
             latitude = i["latitude"]
             longitude = i["longitude"]
             to_write += f"{name},{latitude},{longitude}\n"
-        with open("./modules/centroid/intensity_stations.csv", "w+", encoding="utf-8") as f:
+        with open(relpath("./intensity_stations.csv"), "w+", encoding="utf-8") as f:
             f.write(to_write)
             f.close()
         self.logger.info("Successfully updated intensity station names!")
+        self._init_station_centroid()
 
     def _init_area_centroid(self):
         """
         Initializes the centroid for the areas.
         """
         start_initialize_time = time.perf_counter()
-        with open("./modules/centroid/jma_area_centroid.csv", "r", encoding="utf-8") as f:
+        with open(relpath("./jma_area_centroid.csv"), "r", encoding="utf-8") as f:
             fieldnames = ("name", "latitude", "longitude")
             reader = csv.DictReader(f, fieldnames)
             for row in reader:
@@ -84,7 +91,7 @@ class Centroid:
         Initializes the centroid for intensity stations.
         """
         start_initialize_time = time.perf_counter()
-        with open("./modules/centroid/intensity_stations.csv", "r", encoding="utf-8") as f:
+        with open(relpath("./intensity_stations.csv"), "r", encoding="utf-8") as f:
             fieldnames = ("name", "latitude", "longitude")
             reader = csv.DictReader(f, fieldnames)
             for row in reader:
@@ -98,7 +105,7 @@ class Centroid:
         Initializes the centroid for observation stations.
         """
         start_initialize_time = time.perf_counter()
-        with open("./modules/centroid/observation_points.json", "r", encoding="utf-8") as f:
+        with open(relpath("./observation_points.json"), "r", encoding="utf-8") as f:
             self._eq_station_centroid = json.loads(f.read())
             for i in self._eq_station_centroid:
                 if i["Point"] is None or i["IsSuspended"]:

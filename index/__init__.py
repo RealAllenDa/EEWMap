@@ -1,6 +1,5 @@
 """
  EEWMap - Index
- ---------------------------
- The index of the app.
+ The index page of the project.
 """
 from .views import index_bp

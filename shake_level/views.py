@@ -1,6 +1,5 @@
 """
- EEWMap - Shake_level - views
- ---------------------------
+ EEWMap - shake_level - Views
  The main view controller for shake level.
 """
 from flask import render_template, Blueprint

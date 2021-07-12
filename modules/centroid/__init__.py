@@ -1,6 +1,5 @@
 """
  EEWMap - Modules - Centroid
- ---------------------------
  Gets the coordinate definition for earthquake reports.
 """
 from modules.centroid.centroid_define import Centroid
