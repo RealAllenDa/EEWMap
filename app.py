@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 
-from api import api_bp, initialize_api
+from api import api_bp, init_api
 from index import index_bp
 from map import map_bp
 from modules.area import init_geojson_instance
@@ -25,7 +25,6 @@ app = Flask("EEWMap")
 def config_logger():
     """
     Configure the flask logger's format, file store location, etc.
-    :return: None
     """
     if not os.path.exists(relpath("./logs/")):
         os.mkdir("logs")
@@ -54,9 +53,9 @@ app.logger.info("App initialization completed successfully. Initializing modules
 # Initialize APIs & assets
 init_geojson_instance(app)
 init_centroid_instance(app)
-initialize_api(app)
+init_api(app)
 init_intensity2color(app)
 init_pswave(app)
 app.logger.info("Modules initialization completed successfully.")
-if __name__ == "__main_":
+if __name__ == "__main__":
     app.run()

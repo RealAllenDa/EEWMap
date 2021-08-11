@@ -60,7 +60,7 @@
 
 #legends {
     width: 275px;
-    height: 110px;
+    height: fit-content;
     position: absolute;
     top: 350px;
     left: 565px;

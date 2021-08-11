@@ -41,7 +41,7 @@ class TestUtilities(unittest.TestCase):
 
     def test_generate_list(self):
         """
-        Tests generate_list with four samples:
+        Tests generate_list with four samples.
             - Just a string "123" -> ["123"]
             - A list ["123", "456"] -> ["123", "456"]
             - An empty string "" -> []
@@ -136,7 +136,7 @@ class TestModules(unittest.TestCase):
 
     def test_pswave(self):
         """
-        Tests parse_swave function with five examples:
+        Tests parse_swave function with five examples.
             - Normal (depth: 30, time_passed: 225) -> 969.---
             - Depth abnormal (depth: 1000, time_passed: 0) -> None
             - Time abnormal (depth: 0, time_passed: 200000) -> None

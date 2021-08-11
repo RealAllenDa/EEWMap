@@ -15,15 +15,19 @@ var initializeMap = function () {
         zoom: 5,
         attributionControl: false,
         maxZoom: 8,
-        minZoom: 2
+        minZoom: 2,
+        zoomSnap: 0.01,
+        zoomDelta: 0.5
     });
     window.map_ogasawara = L.map('map_ogasawara', {
         zoomControl: false,
-        center: [26.902476886279832, 142.14111328125003],
-        zoom: 7,
+        center: [26.91439669619432, 142.14703272013634],
+        zoom: 7.57,
         attributionControl: false,
         maxZoom: 8,
-        minZoom: 2
+        minZoom: 2,
+        zoomSnap: 0.01,
+        zoomDelta: 0.5
     });
     var map_japan_url = "https://earthquake.daziannetwork.com/japan/{z}/{x}/{y}.pbf";
     var map_borders_url = "https://earthquake.daziannetwork.com/japan_area_line/{z}/{x}/{y}.pbf";

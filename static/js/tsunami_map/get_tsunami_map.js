@@ -15,11 +15,21 @@ var latLngBounds_japan_map = L.latLngBounds([
     [46.042735653846506, 157.76367187500003],
     [29.113775395114416, 120.41015625000001]
 ]);
+var latLngBounds_ogasawara = L.latLngBounds([
+    [20.81525687520561, 139.56552841954462],
+    [31.90715387478476, 155.35768301846318]
+]);
 window.map_flash_interval = undefined;
 var enable_okinawa_map = false;
+var enable_ogasawara_map = false;
 var tsunami_map_layer1 = undefined;
 var tsunami_map_layer2 = undefined;
 var tsunami_map_layer3 = undefined;
+var current_grade_list = {
+    "Advisory": false,
+    "Warning": false,
+    "MajorWarning": false
+};
 var last_message = {};
 var parseMapInfo = function (result) {
     console.debug(result);
@@ -47,11 +57,24 @@ var setMapInfo = function (result) {
         tsunami_map_layer1 = L.geoJson(map_result, {
             style: parseMapStyle,
             onEachFeature: function (feature, layer) {
+                var current_area_grade = feature["properties"]["grade"];
+                if (current_area_grade == "Watch") {
+                    current_grade_list["Advisory"] = true;
+                }
+                if (current_area_grade == "Warning") {
+                    current_grade_list["Warning"] = true;
+                }
+                if (current_area_grade == "MajorWarning") {
+                    current_grade_list["MajorWarning"] = true;
+                }
                 if (latLngBounds_japan_map.contains([layer._bounds._northEast, layer._bounds._southWest])) {
                     bound_japan.extend([layer._bounds._northEast, layer._bounds._southWest]);
                 }
                 if (window.map_okinawa.getBounds().contains([layer._bounds._northEast, layer._bounds._southWest])) {
                     enable_okinawa_map = true;
+                }
+                if (latLngBounds_ogasawara.contains([layer._bounds._northEast, layer._bounds._southWest])) {
+                    enable_ogasawara_map = true;
                 }
             }
         });
@@ -59,6 +82,11 @@ var setMapInfo = function (result) {
             $("#map_okinawa_overlay")[0].style.display = "block";
         } else {
             $("#map_okinawa_overlay")[0].style.display = "none";
+        }
+        if (enable_ogasawara_map) {
+            $("#map_ogasawara_overlay")[0].style.display = "block";
+        } else {
+            $("#map_ogasawara_overlay")[0].style.display = "none";
         }
         // noinspection JSUnusedGlobalSymbols
         tsunami_map_layer2 = L.geoJson(map_result, {
@@ -71,10 +99,33 @@ var setMapInfo = function (result) {
         tsunami_map_layer1.addTo(window.map_japan);
         tsunami_map_layer2.addTo(window.map_okinawa);
         tsunami_map_layer3.addTo(window.map_ogasawara);
-        window.map_japan.fitBounds(bound_japan, {padding: [0, 20]});
+        if (!(bound_japan.getNorthEast() == undefined && bound_japan.getSouthWest() == undefined)) {
+            window.map_japan.fitBounds(bound_japan, {padding: [0, 20]});
+        } else {
+            window.map_japan.fitBounds(latLngBounds_japan_map);
+        }
+        setMapLegends(current_grade_list);
         setMapFlashInterval();
     } else {
         document.getElementById("receive-time").innerText = "XXXX-XX-XX XX:XX";
+    }
+};
+var setMapLegends = function (current_grade_list) {
+    var legends_div = $("#legends div");
+    var major_legend = legends_div[0];
+    var warn_legend = legends_div[1];
+    var advisory_legend = legends_div[2];
+    major_legend.style.display = "none";
+    warn_legend.style.display = "none";
+    advisory_legend.style.display = "none";
+    if (current_grade_list["Advisory"]) {
+        advisory_legend.style.display = "flex";
+    }
+    if (current_grade_list["Warning"]) {
+        warn_legend.style.display = "flex";
+    }
+    if (current_grade_list["MajorWarning"]) {
+        major_legend.style.display = "flex";
     }
 };
 var deleteAllStrokes = function () {

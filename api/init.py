@@ -86,7 +86,7 @@ def refresh_stations(app):
     except:
         app.logger.error("Failed to refresh station info. \n" + traceback.format_exc())
 
-def initialize_api(app):
+def init_api(app):
     """
     Initializes the APIs.
     """

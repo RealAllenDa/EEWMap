@@ -175,6 +175,8 @@ var addEpicenter = function (latitude, longitude) {
     var epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon});
     epicenterMarker.setZIndexOffset(50);
     window.iconGroup.addLayer(epicenterMarker);
+    window.map.removeLayer(window.iconGroup);
+    window.map.addLayer(window.iconGroup);
 };
 var deleteAllLayers = function () {
     try {

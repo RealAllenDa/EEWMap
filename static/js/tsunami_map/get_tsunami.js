@@ -117,7 +117,7 @@ var setTsunamiInfo = function (result) {
         if (pages_now > pages_total) {
             pages_now = 1;
         }
-    }, 15000);
+    }, 10000);
 };
 var resetTsunami = function () {
     clearInterval(window.tsunami_show);

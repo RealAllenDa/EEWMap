@@ -5,7 +5,7 @@
 from modules.utilities import relpath
 
 # Version
-VERSION = "0.9.0-Build2 PreRelease"
+VERSION = "1.0.0-Build1 Release"
 
 # Proxy Settings
 PROXY = {
@@ -23,7 +23,7 @@ ENABLE_QUAKE = True
 DEBUG_EEW = False
 DEBUG_EEW_OVRD = {
     "start_time": 20210501102730,
-    "origin_timestamp": 1625232556
+    "origin_timestamp": 1626602170
 }
 
 DEBUG_EEW_IMAGE = False

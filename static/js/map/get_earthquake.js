@@ -42,7 +42,7 @@ var splitEqInfo = function (result) {
             eew_in_effect = true;
             last_eew_report_num = -1;
         }
-        if (result["eew"]["report_num"] != last_eew_report_num) {
+        if (parseInt(result["eew"]["report_num"]) > parseInt(last_eew_report_num)) {
             // New EEW, display EEW
             window.logger.info("EEW updated (num != last_num). Displaying EEW.");
             last_eew_report_num = result["eew"]["report_num"];
@@ -80,39 +80,70 @@ var parseEqInfo = function (result) {
     window.DOM.intensity_display_div.style.display = "grid";
     window.DOM.expected_flag.style.display = "none";
     window.DOM.drill_flag.style.display = "none";
+    // When displaying EEW, this pane should cover the intensities. (S wave circle)
+    // But when displaying earthquake information, this pane shouldn't.
+    // So, we restore it to normal when displaying earthquake information
     $(".leaflet-overlay-pane")[0].className = "leaflet-pane leaflet-overlay-pane";
     result = result["info"];
     for (var i = 0; i < result.length; i++) {
+        // In extreme conditions, there could be multiple reports.
         var resp_content = result[i];
         if (resp_content["max_intensity"] == 99999 || resp_content["max_intensity"] == "-1") {
             resp_content["max_intensity"] = "-1";
         }
         if (resp_content["type"] == "ScalePrompt") {
+            /*
+            * For scale prompt:
+            *   1. Earthquake information div -> Intensity report div
+            *       1.1 Change report time
+            *   2. Display big intensity code
+            *   3. Delete all layers on map
+            *   4. Add area intensities on map
+            *   5. Check if GeoJson for intensities are present
+            *       True -> Add coloring (via GeoJson)
+            *   6. Parse map scale
+            *   7. Set status banner
+            * */
             window.DOM.intensity_report_div.style.display = "block";
             window.DOM.earthquake_report_div.style.display = "none";
             window.DOM.intensity_report_occur_time.innerText = resp_content["occur_time"];
             displayIntensityCode(resp_content["max_intensity"], false);
             deleteAllLayers();
             addMapIntensities(resp_content["area_intensity"]["areas"]);
-            // Parse map coloring
             if (resp_content["area_intensity"]["geojson"] != "null") {
                 addMapColoring(resp_content["area_intensity"]["geojson"]);
             }
             parseMapScale();
             setBannerContent(resp_content["tsunami_comments"], false);
         } else if (resp_content["type"] == "Destination") {
+            /*
+            * For Destination (Hypocenter Report):
+            *   1. Display earthquake information (Hypocenter)
+            *   2. Add epicenter marker on map
+            *   3. Parse map scale
+            * */
             displayEarthquakeInformation(resp_content, false);
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
             parseMapScale();
         } else if (resp_content["type"] == "ScaleAndDestination") {
-            // Not enough examples, assumed process
+            /*
+            * For ScaleAndDestination (Hypocenter and area intensity Report):
+            *   1. Display big intensity code
+            *   2. Delete all layers on map
+            *   3. Add epicenter marker on map
+            *   4. Add area intensities on map
+            *   5. Check if GeoJson for intensities are present
+            *       True -> Add coloring (via GeoJson)
+            *   6. Parse map scale
+            *   7. Set status banner
+            *   8. Display earthquake information (Hypocenter)
+            * */
             displayIntensityCode(resp_content["max_intensity"], false);
             deleteAllLayers();
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
             addMapIntensities(resp_content["area_intensity"]["areas"]);
-            // Parse map coloring
             if (resp_content["area_intensity"]["geojson"] != "null") {
                 addMapColoring(resp_content["area_intensity"]["geojson"]);
             }
@@ -120,6 +151,15 @@ var parseEqInfo = function (result) {
             setBannerContent(resp_content["tsunami_comments"], false);
             displayEarthquakeInformation(resp_content, false);
         } else if (resp_content["type"] == "DetailScale") {
+            /*
+            * For DetailScale (Hypocenter and detailed intensity Report):
+            *   1. Display earthquake information (Hypocenter)
+            *   2. Delete all layers on map
+            *   3. Display big intensity code
+            *   4. Add station intensities on map
+            *   5. Add epicenter marker on map
+            *   6. Parse map scale
+            * */
             displayEarthquakeInformation(resp_content, false);
             deleteAllLayers();
             displayIntensityCode(resp_content["max_intensity"], false);
@@ -128,6 +168,15 @@ var parseEqInfo = function (result) {
                 resp_content["hypocenter"]["longitude"]);
             parseMapScale();
         } else if (resp_content["type"] == "Foreign") {
+            /*
+            * For Foreign (Foreign Earthquake Report):
+            *   1. Display earthquake information (Hypocenter)
+            *   2. Delete all layers on map
+            *   3. Display big intensity code
+            *       NOTE: For foreign, it'll always be -1.
+            *   4. Add epicenter marker on map
+            *   5. Set zoom & location for map
+            * */
             displayEarthquakeInformation(resp_content, false);
             deleteAllLayers();
             displayIntensityCode(resp_content["max_intensity"], false);
@@ -148,6 +197,7 @@ var parseEEWInfo = function (result) {
     window.DOM.intensity_display_div.style.display = "none";
     result = result["eew"];
     if (result["is_cancel"]) {
+        // Restore to normal display pane
         // Hide EEW div, show Earthquake Report div
         window.DOM.eew_display_div.style.display = "none";
         window.DOM.intensity_display_div.style.display = "grid";
@@ -156,10 +206,14 @@ var parseEEWInfo = function (result) {
         window.DOM.information_banner_div.style.background = "var(--intensity-3)";
         window.DOM.expected_flag.style.display = "none";
         window.DOM.drill_flag.style.display = "none";
+        // Restore pane to normal (See parseEqInfo)
         $(".leaflet-overlay-pane")[0].className = "leaflet-pane leaflet-overlay-pane";
+        // Delete overlay & intensities
         deleteAllLayers();
         return;
     }
+    // For EEW, we need the S wave circle cover the intensities
+    // So, we add the overlay pane's class name with "overlay-eew" (Set z-index to 99999)
     // noinspection JSJQueryEfficiency
     $(".leaflet-overlay-pane")[0].className = "leaflet-pane leaflet-overlay-pane overlay-eew";
     displayEarthquakeInformation(result, true);

@@ -1,4 +1,9 @@
 var displayIntensityCode = function (intensity, is_eew) {
+    /*
+    * For intensity 1, 2, 3, 4, 7, Unknown: Add margin
+    * For intensity 3, 4, 5-, 5+: Set text color to black, others to white
+    * For intensity 5-, 5+, 6-, 6+: Set intensity add
+    * */
     var intensity_code_box = document.getElementById("intensity-icon");
     var intensity_code = document.getElementById("intensity");
     var intensity_code_add = document.getElementById("intensity-add");
@@ -8,11 +13,6 @@ var displayIntensityCode = function (intensity, is_eew) {
         intensity_code_add = document.getElementById("eew-intensity-add");
     }
     // 1=1, 2=2, 3=3, 4=4, 5=5-, 6=5+, 7=6-, 8=6+, 9=7, 0=Unknown
-    /*
-    * For intensity 1, 2, 3, 4, 7, Unknown: Add margin
-    * For intensity 3, 4, 5-, 5+: Set text color to black, others to white
-    * For intensity 5-, 5+, 6-, 6+: Set intensity add
-    * */
     switch (intensity) {
         case "1":
         case "2":
