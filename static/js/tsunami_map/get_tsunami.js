@@ -31,8 +31,34 @@ function deepCopyObj2NewObj(fromObj, toObj) {
     }
 }
 
+var sortByArrivalTime = function (array_for_sort) {
+    var area_entries = [];
+    Object.entries(array_for_sort).forEach((content) => {
+            // noinspection JSCheckFunctionSignatures
+            area_entries.push(Object.entries(content[1]));
+        }
+    );
+    area_entries.sort((f1, f2) => {
+        var time_f1 = f1[3][1];
+        var time_f2 = f2[3][1];
+        if (time_f1["type"] == "no_time" && time_f2["type"] == "time") {
+            return 99;
+        } else if (time_f1["type"] == "time" && time_f2["type"] == "no_time") {
+            return -99;
+        } else if (time_f1["type"] == "no_time" && time_f2["type"] == "no_time") {
+            return time_f1["status"] - time_f2["status"];
+        } else {
+            return time_f1["timestamp"] - time_f2["timestamp"];
+        }
+    });
+    area_entries = area_entries.reverse();
+    var area_sorted = [];
+    area_entries.forEach((content) => {
+        area_sorted.push(Object.fromEntries(content));
+    });
+    return area_sorted;
+};
 const sortByLevel = ["MajorWarning", "Warning", "Watch"];
-const sortByHeight = ["HUGE", "10m+", "10m", "5m", "HIGH", "3m", "1m", "", "Unknown"];
 // --- UTILITIES END
 
 var getTsunamiInfo = function () {
@@ -72,12 +98,27 @@ var parseTsunamiInfo = function (result) {
         window.DOM.report_origin.innerText = result["info"]["origin"];
         var result_for_sort = {};
         deepCopyObj2NewObj(result["info"], result_for_sort);
+        // Sort array
+        var split_by_tsunami_grade = {
+            "MajorWarning": [],
+            "Warning": [],
+            "Watch": []
+        };
+        result_for_sort["areas"].forEach((content) => {
+            split_by_tsunami_grade[content["grade"]].push(content);
+        });
+        var final_sorted_areas = sortByArrivalTime(split_by_tsunami_grade["MajorWarning"]);
+        Array.prototype.push.apply(
+            final_sorted_areas,
+            sortByArrivalTime(split_by_tsunami_grade["Warning"])
+        );
+        Array.prototype.push.apply(
+            final_sorted_areas,
+            sortByArrivalTime(split_by_tsunami_grade["Watch"])
+        );
+        console.log(final_sorted_areas);
         var sorted_result = {
-            "areas": customSort({
-                data: result_for_sort["areas"],
-                sortBy: sortByHeight,
-                sortField: "height"
-            }),
+            "areas": final_sorted_areas,
             "origin": result_for_sort["origin"],
             "receive_time": result_for_sort["receive_time"]
         };

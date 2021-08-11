@@ -151,23 +151,27 @@ def parse_tsunami_areas(response_items, app):
                 if first_time_estimation["Condition"] == "ただちに津波来襲と予測":
                     area_time = {
                         "type": "no_time",
-                        "time": "Tsunami Will Arrive Soon"
+                        "time": "Tsunami Will Arrive Soon",
+                        "status": 0
                     }
                 elif first_time_estimation["Condition"] == "津波到達中と推測":
                     area_time = {
                         "type": "no_time",
-                        "time": "Tsunami Arrival Expected"
+                        "time": "Tsunami Arrival Expected",
+                        "status": 1
                     }
                 elif first_time_estimation["Condition"] == "第１波の到達を確認":
                     area_time = {
                         "type": "no_time",
-                        "time": "Arrival of Initial Tsunami Confirmed"
+                        "time": "Arrival of Initial Tsunami Confirmed",
+                        "status": 2
                     }
             else:
                 time_transformed = time.strptime(first_time_estimation["ArrivalTime"][:19], "%Y-%m-%dT%H:%M:%S")
                 area_time = {
                     "type": "time",
-                    "time": time.strftime("%m-%d %H:%M", time_transformed)
+                    "time": time.strftime("%m-%d %H:%M", time_transformed),
+                    "timestamp": time.mktime(time_transformed)
                 }
             try:
                 max_height = i["MaxHeight"]["jmx_eb:TsunamiHeight"]
