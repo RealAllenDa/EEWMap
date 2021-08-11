@@ -11,7 +11,28 @@ const customSort = ({data, sortBy, sortField}) => {
         (a, b) => sortByObject[a[sortField]] - sortByObject[b[sortField]]
     );
 };
+
+function isObj(obj) {
+    return obj instanceof Object;
+}
+
+function deepCopyObj2NewObj(fromObj, toObj) {
+    for (var key in fromObj) {
+        if (fromObj.hasOwnProperty(key)) {
+            var fromValue = fromObj[key];
+            if (!isObj(fromValue)) {
+                toObj[key] = fromValue;
+            } else {
+                var tmpObj = new fromValue.constructor;
+                deepCopyObj2NewObj(fromValue, tmpObj);
+                toObj[key] = tmpObj;
+            }
+        }
+    }
+}
+
 const sortByLevel = ["MajorWarning", "Warning", "Watch"];
+const sortByHeight = ["HUGE", "10m+", "10m", "5m", "HIGH", "3m", "1m", "", "Unknown"];
 // --- UTILITIES END
 
 var getTsunamiInfo = function () {
@@ -31,11 +52,10 @@ var last_message = {};
 var tsunami_messages_DOMs = [];
 var splitTsunamiInfo = function (result) {
     console.debug(result);
-    var result_for_compare = result;
-    if (_.isEqual(last_message, result_for_compare)) {
+    if (_.isEqual(last_message, result)) {
         console.debug("Identical information. No need to update.");
     } else {
-        last_message = result_for_compare;
+        last_message = result;
         console.debug("Updated message. Parsing...");
         parseTsunamiInfo(result);
     }
@@ -43,16 +63,27 @@ var splitTsunamiInfo = function (result) {
 var parseTsunamiInfo = function (result) {
     if (parseInt(result["status"]) != 0
         && !_.isEqual({}, result["info"])) {
-        console.log(456);
+        console.log("Parsing detailed tsunami info...");
         if (_.isEqual([], result["info"]["areas"])) {
             resetTsunami();
             return;
         }
         window.DOM.title.innerText = "TSUNAMI INFORMATION (DETAILED)";
         window.DOM.report_origin.innerText = result["info"]["origin"];
-        setTsunamiInfo(result["info"]);
+        var result_for_sort = {};
+        deepCopyObj2NewObj(result["info"], result_for_sort);
+        var sorted_result = {
+            "areas": customSort({
+                data: result_for_sort["areas"],
+                sortBy: sortByHeight,
+                sortField: "height"
+            }),
+            "origin": result_for_sort["origin"],
+            "receive_time": result_for_sort["receive_time"]
+        };
+        setTsunamiInfo(sorted_result);
     } else if (parseInt(result["status"]) != 0 && !(_.isEqual({}, result["map"]))) {
-        console.log(123);
+        console.log("Parsing preliminary tsunami info...");
         window.DOM.title.innerText = "TSUNAMI INFORMATION (PRELIMINARY)";
         window.DOM.report_origin.innerText = "P2P";
         var area_geojson = result["map"]["areas"]["features"];
@@ -85,7 +116,7 @@ var parseTsunamiInfo = function (result) {
         console.log(result_combined);
         setTsunamiInfo(result_combined);
     } else {
-        console.log(789);
+        console.log("No tsunami messages.");
         resetTsunami();
     }
 };

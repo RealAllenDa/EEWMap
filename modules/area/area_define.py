@@ -33,7 +33,7 @@ class GeoJson:
             "7": "#960096"
         }
         self.tsunami_color = {
-            "MajorWarning": "#AA28AA",
+            "MajorWarning": "#B65BD2",
             "Warning": "#DE3329",
             "Watch": "#E5A72C"
         }

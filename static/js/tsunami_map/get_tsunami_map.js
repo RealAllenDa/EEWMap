@@ -31,16 +31,20 @@ var current_grade_list = {
     "MajorWarning": false
 };
 var last_message = {};
+var is_first_time = true;
 var parseMapInfo = function (result) {
     console.debug(result);
-    var result_for_compare = result;
-    if (_.isEqual(last_message, result_for_compare)) {
+    if (is_first_time) {
+        setMapInfo(result);
+        is_first_time = false;
+        last_message = result;
+        return;
+    }
+    if (_.isEqual(last_message, result)) {
         console.debug("Identical information. No need to update.");
         return;
     }
-    last_message = result_for_compare;
-    console.debug("Updated message. Parsing...");
-    setMapInfo(result);
+    window.location.reload();
 };
 var setMapInfo = function (result) {
     var map_result = result["map"]["areas"];

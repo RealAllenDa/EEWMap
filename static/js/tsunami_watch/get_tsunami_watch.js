@@ -1,3 +1,34 @@
+function isObj(obj) {
+    return obj instanceof Object;
+}
+
+function deepCopyObj2NewObj(fromObj, toObj) {
+    for (var key in fromObj) {
+        if (fromObj.hasOwnProperty(key)) {
+            var fromValue = fromObj[key];
+            if (!isObj(fromValue)) {
+                toObj[key] = fromValue;
+            } else {
+                var tmpObj = new fromValue.constructor;
+                deepCopyObj2NewObj(fromValue, tmpObj);
+                toObj[key] = tmpObj;
+            }
+        }
+    }
+}
+
+const customSort = ({data, sortBy, sortField}) => {
+    const sortByObject = sortBy.reduce(
+        (obj, item, index) => ({
+            ...obj,
+            [item]: index
+        }),
+        {}
+    );
+    return data.sort(
+        (a, b) => sortByObject[a[sortField]] - sortByObject[b[sortField]]
+    );
+};
 var getTsunamiWatch = function () {
     $.ajax({
         type: "GET",
@@ -37,7 +68,48 @@ var setWatchInfo = function (result) {
     }
     window.DOM.tsunami_overlay.style.display = "none";
     window.DOM.receive_time.innerText = result["receive_time"];
-    var array_split = splitArray(result["areas"], 7);
+    // Sort array
+    var result_copied = {};
+    deepCopyObj2NewObj(result["areas"], result_copied);
+    var area_entries = [];
+    Object.entries(result_copied).forEach((content) => {
+            // noinspection JSCheckFunctionSignatures
+            area_entries.push(Object.entries(content[1]));
+        }
+    );
+    area_entries.sort((f1, f2) => {
+        var a = parseFloat(f1[1][1]);
+        var b = parseFloat(f2[1][1]);
+        if (isNaN(a) && isNaN(b)) {
+            if (f1[0][1] == "Observing") {
+                if (f2[0][1] == "Observing") {
+                    return 0;
+                }
+                if (f2[0][1] == "Weak") {
+                    return -99;
+                }
+            } else if (f1[0][1] == "Weak") {
+                if (f2[0][1] == "Observing") {
+                    return 99;
+                }
+                if (f2[0][1] == "Weak") {
+                    return 0;
+                }
+            }
+        } else if (isNaN(a) && !isNaN(b)) {
+            return -99;
+        } else if (!isNaN(a) && isNaN(b)) {
+            return 99;
+        } else {
+            return a - b;
+        }
+    });
+    area_entries = area_entries.reverse();
+    var area_sorted = [];
+    area_entries.forEach((content) => {
+        area_sorted.push(Object.fromEntries(content));
+    });
+    var array_split = splitArray(area_sorted, 7);
     console.log(array_split);
     var pages_total = array_split.length;
     var pages_now = 1;
@@ -58,7 +130,7 @@ var setWatchInfo = function (result) {
         if (pages_now > pages_total) {
             pages_now = 1;
         }
-    }, 15000);
+    }, 10000);
 };
 var resetTsunami = function () {
     clearInterval(window.watch_show);

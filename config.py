@@ -5,7 +5,7 @@
 from modules.utilities import relpath
 
 # Version
-VERSION = "1.0.0-Build1 Release"
+VERSION = "1.0.0-Build2 Release"
 
 # Proxy Settings
 PROXY = {
