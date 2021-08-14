@@ -74,45 +74,83 @@ var displayIntensityCode = function (intensity, is_eew) {
         intensity_code.innerText = intensity;
     }
 };
-var setBannerContent = function (commentId, isForeign) {
-    var commentIds = commentId.split(" ");
-    window.logger.debug("Comment ids: " + commentIds);
+var setBannerContent = function (commentId) {
+    window.logger.debug("Comment ids: " + commentId);
+    let domesticId = commentId["domestic"];
+    let foreignId = commentId["foreign"];
     // noinspection LoopStatementThatDoesntLoopJS,JSUnusedAssignment
-    for (var i = 0; i < commentIds.length; i++) {
-        commentId = parseInt(commentIds[i]);
-        if (commentId == 1) {
-            // Major tsunami warning / ... has been issued
-            window.DOM.information_banner.style.color = "white";
-            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-7)";
-            window.DOM.information_banner.innerText = "Major Tsunami Warning / Tsunami Warning / Advisory In Effect";
-            return;
-        } else if (commentId == 4) {
-            // No tsunami
-            window.DOM.information_banner.style.color = "white";
-            window.DOM.information_banner_div.style.backgroundColor = "#66cccc";
-            window.DOM.information_banner.innerText = "No Tsunami Expected";
-            return;
-        } else if (commentId == 3) {
-            // Light sea changes are expected
-            window.DOM.information_banner.style.color = "black";
-            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-4)";
-            window.DOM.information_banner.innerText = "Light Sea Level Changes Expected - No Tsunami Expected";
-            return;
-        } else if (commentId == 2) {
-            // Evaluating
-            window.DOM.information_banner.style.color = "white";
-            window.DOM.information_banner_div.style.backgroundColor = "var(--intensity-6)";
-            window.DOM.information_banner.innerText = "Tsunami Risk Evaluating - Stay away from coastal areas";
-            return;
-        } else {
-            // Unknown
-            window.DOM.information_banner.style.color = "white";
-            window.DOM.information_banner_div.style.backgroundColor = "var(--info-background-color)";
-            window.DOM.information_banner.innerText = "Unknown message: " + commentId;
-            return;
-        }
+    if (domesticId == "Warning") {
+        // Major tsunami warning / ... has been issued
+        window.DOM.domestic_information_banner.style.color = "white";
+        window.DOM.domestic_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+        window.DOM.domestic_information_banner.innerText = "Japan: Major Tsunami Warning / Tsunami Warning / Advisory In Effect";
+    } else if (domesticId == "None") {
+        // No tsunami
+        window.DOM.domestic_information_banner.style.color = "white";
+        window.DOM.domestic_information_banner_div.style.backgroundColor = "#66cccc";
+        window.DOM.domestic_information_banner.innerText = "Japan: No Tsunami Expected";
+    } else if (domesticId == "NonEffective") {
+        // Light sea changes are expected
+        window.DOM.domestic_information_banner.style.color = "black";
+        window.DOM.domestic_information_banner_div.style.backgroundColor = "var(--intensity-4)";
+        window.DOM.domestic_information_banner.innerText = "Japan: Light Sea Level Changes Expected - No Tsunami Expected";
+    } else if (domesticId == "Checking") {
+        // Evaluating
+        window.DOM.domestic_information_banner.style.color = "white";
+        window.DOM.domestic_information_banner_div.style.backgroundColor = "var(--intensity-6)";
+        window.DOM.domestic_information_banner.innerText = "Japan: Tsunami Risk Evaluating - Stay away from coastal areas";
+    } else {
+        // Unknown
+        window.DOM.domestic_information_banner.style.color = "white";
+        window.DOM.domestic_information_banner_div.style.backgroundColor = "var(--info-background-color)";
+        window.DOM.domestic_information_banner.innerText = "Japan: Unknown message: " + commentId;
     }
-    if (isForeign) {
-        window.DOM.information_banner.innerText += " (In Japan only)";
+
+    if (foreignId == "None") {
+        // No tsunami
+        window.DOM.foreign_information_banner_div.style.display = "none";
+    } else {
+        window.DOM.foreign_information_banner_div.style.display = "block";
+        if (foreignId == "Checking") {
+            // Evaluating
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-6)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Tsunami Risk Evaluating";
+        } else if (foreignId == "NonEffectiveNearby") {
+            // Maybe tsunami waves near the earthquake, non effective
+            window.DOM.foreign_information_banner.style.color = "black";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-4)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Small non-effective tsunami possible near the source";
+        } else if (foreignId == "WarningNearby") {
+            // Tsunami waves near the earthquake
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Tsunami possible near the source";
+        } else if (foreignId == "WarningPacific") {
+            // Tsunami waves near pacific ocean
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Tsunami possible in the Pacific Ocean";
+        } else if (foreignId == "WarningPacificWide") {
+            // Tsunami waves across pacific ocean
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Tsunami possible in wide area of Pacific Ocean";
+        } else if (foreignId == "WarningIndian") {
+            // Tsunami waves near indian ocean
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Tsunami possible in the Indian Ocean";
+        } else if (foreignId == "WarningIndianWide") {
+            // Tsunami waves across indian ocean
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: Tsunami possible in wide area of Indian Ocean";
+        } else if (foreignId == "Potential") {
+            // Tsunami is possible
+            window.DOM.foreign_information_banner.style.color = "white";
+            window.DOM.foreign_information_banner_div.style.backgroundColor = "var(--intensity-7)";
+            window.DOM.foreign_information_banner.innerText = "Foreign: In general, tsunami is possible on this scale";
+        }
     }
 };

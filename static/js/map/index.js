@@ -7,8 +7,10 @@ var initializeDOM = function () {
     window.DOM.drill_flag = document.getElementById("drill-flag");
     window.DOM.expected_flag = document.getElementById("expected-flag");
     // Earthquake Report
-    window.DOM.information_banner_div = document.getElementById("banner-description");
-    window.DOM.information_banner = document.getElementById("banner-text");
+    window.DOM.domestic_information_banner_div = document.getElementById("banner-description-domestic");
+    window.DOM.domestic_information_banner = document.getElementById("banner-text-domestic");
+    window.DOM.foreign_information_banner_div = document.getElementById("banner-description-foreign");
+    window.DOM.foreign_information_banner = document.getElementById("banner-text-foreign");
     window.DOM.occur_time = document.getElementById("occur-time");
     window.DOM.intensity_report_occur_time = document.getElementById("int-report-occur-time");
 

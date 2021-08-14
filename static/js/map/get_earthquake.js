@@ -114,7 +114,7 @@ var parseEqInfo = function (result) {
                 addMapColoring(resp_content["area_intensity"]["geojson"]);
             }
             parseMapScale();
-            setBannerContent(resp_content["tsunami_comments"], false);
+            setBannerContent(resp_content["tsunami_comments"]);
         } else if (resp_content["type"] == "Destination") {
             /*
             * For Destination (Hypocenter Report):
@@ -148,7 +148,7 @@ var parseEqInfo = function (result) {
                 addMapColoring(resp_content["area_intensity"]["geojson"]);
             }
             parseMapScale();
-            setBannerContent(resp_content["tsunami_comments"], false);
+            setBannerContent(resp_content["tsunami_comments"]);
             displayEarthquakeInformation(resp_content, false);
         } else if (resp_content["type"] == "DetailScale") {
             /*
@@ -201,9 +201,10 @@ var parseEEWInfo = function (result) {
         // Hide EEW div, show Earthquake Report div
         window.DOM.eew_display_div.style.display = "none";
         window.DOM.intensity_display_div.style.display = "grid";
-        window.DOM.information_banner.innerText = "Previous Earthquake Early Warning had been cancelled";
-        window.DOM.information_banner.style.color = "white";
-        window.DOM.information_banner_div.style.background = "var(--intensity-3)";
+        window.DOM.foreign_information_banner_div.style.display = "none";
+        window.DOM.domestic_information_banner.innerText = "Previous Earthquake Early Warning had been cancelled";
+        window.DOM.domestic_information_banner.style.color = "white";
+        window.DOM.domestic_information_banner_div.style.background = "var(--intensity-3)";
         window.DOM.expected_flag.style.display = "none";
         window.DOM.drill_flag.style.display = "none";
         // Restore pane to normal (See parseEqInfo)
@@ -288,12 +289,7 @@ var displayEarthquakeInformation = function (resp_content, is_eew) {
         window.DOM.intensity_report_div.style.display = "none";
         window.DOM.earthquake_report_div.style.display = "block";
         window.DOM.occur_time.innerText = resp_content["occur_time"];
-        if (resp_content["type"] == "Foreign") {
-            var is_foreign = true;
-        } else {
-            is_foreign = false;
-        }
-        setBannerContent(resp_content["tsunami_comments"], is_foreign);
+        setBannerContent(resp_content["tsunami_comments"]);
     }
     epicenter.innerText = resp_content["hypocenter"]["name"];
     depth.innerText = resp_content["hypocenter"]["depth"];

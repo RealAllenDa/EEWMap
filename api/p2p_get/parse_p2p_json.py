@@ -98,16 +98,24 @@ def parse_p2p_info(raw_json, app):
                 003: Light Sea Changes Expected
                 004: No Tsunami Expected
             """
-            if i["earthquake"]["domesticTsunami"] in ["Unknown", "Checking"]:
-                earthquake_tsunami_comment = "002"
-            elif i["earthquake"]["domesticTsunami"] == "None":
-                earthquake_tsunami_comment = "004"
-            elif i["earthquake"]["domesticTsunami"] == "NonEffective":
-                earthquake_tsunami_comment = "003"
-            elif i["earthquake"]["domesticTsunami"] in ["Watch", "Warning"]:
-                earthquake_tsunami_comment = "001"
+            earthquake_tsunami_comment = {
+                "foreign": "",
+                "domestic": ""
+            }
+            if i["earthquake"]["foreignTsunami"] not in ["None", "Unknown"]:
+                earthquake_tsunami_comment["foreign"] = i["earthquake"]["foreignTsunami"]
             else:
-                earthquake_tsunami_comment = "000"
+                earthquake_tsunami_comment["foreign"] = "None"
+            if i["earthquake"]["domesticTsunami"] in ["Unknown", "Checking"]:
+                earthquake_tsunami_comment["domestic"] = "Checking"
+            elif i["earthquake"]["domesticTsunami"] == "None":
+                earthquake_tsunami_comment["domestic"] = "None"
+            elif i["earthquake"]["domesticTsunami"] == "NonEffective":
+                earthquake_tsunami_comment["domestic"] = "NonEffective"
+            elif i["earthquake"]["domesticTsunami"] in ["Watch", "Warning"]:
+                earthquake_tsunami_comment["domestic"] = "Warning"
+            else:
+                earthquake_tsunami_comment["domestic"] = i["earthquake"]["domesticTsunami"]
             app.logger.debug(
                 f"Successfully parsed basic information in {(time.perf_counter() - start_parse_time):.3f} seconds. "
                 "Parsing station information...")
