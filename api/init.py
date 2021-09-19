@@ -4,7 +4,6 @@
 """
 import time
 import traceback
-
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -27,7 +26,7 @@ def refresh_p2p_info(app):
         get_p2p_json(app)
         app.logger.debug(f"Refreshed P2P info in {(time.perf_counter() - start_time):.3f} seconds.")
     except:
-        app.logger.error("Failed to refresh shaking level. \n" + traceback.format_exc())
+        app.logger.error("Failed to refresh P2P info. \n" + traceback.format_exc())
 
 
 def refresh_eew(app):
@@ -41,7 +40,7 @@ def refresh_eew(app):
         get_eew_info(app)
         app.logger.debug(f"Refreshed EEW in {(time.perf_counter() - start_time):.3f} seconds.")
     except:
-        app.logger.error("Failed to refresh shaking level. \n" + traceback.format_exc())
+        app.logger.error("Failed to refresh EEW. \n" + traceback.format_exc())
 
 
 def refresh_shake_level(app):
