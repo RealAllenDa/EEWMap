@@ -30,21 +30,22 @@
             <div id="earthquake-info" class="sub-window">
                 <div id="intensity-report" class="sub-window" style="display:none;">
                     <span id="intensity-report-label">Intensity Report</span>
-                    <span class="occur-label">Occurred at <span
+                    <span class="occur-label" id="int-report-occur-label">Occurred at <span
                             id="int-report-occur-time">XXXX-XX-XX XX:XX</span></span>
                 </div>
                 <div id="earthquake-report" class="sub-window">
-                    <span class="occur-label">Occurred at <span id="occur-time">XXXX-XX-XX XX:XX</span></span>
+                    <span class="occur-label" id="eq-report-occur-label">Occurred at
+                        <span id="occur-time">XXXX-XX-XX XX:XX</span></span>
                     <div style="margin-top: 9px;">
-                        <span class="label">Epicenter</span>
+                        <span class="label" id="epicenter-label">Epicenter</span>
                         <span id="epicenter" class="label-content">---</span>
                     </div>
                     <div>
-                        <span class="label">Depth</span>
+                        <span class="label" id="depth-label">Depth</span>
                         <span id="depth" class="label-content">---</span>
                     </div>
                     <div>
-                        <span class="label">M</span>
+                        <span class="label" id="magnitude-label">M</span>
                         <span id="magnitude" class="label-content">---</span>
                     </div>
                 </div>
@@ -60,10 +61,10 @@
     <div id="map" class="sub-window"></div>
     <div id="eew-display" class="window" style="display: none">
         <div id="drill-flag" class="flags" style="display: none;">
-            <span>Drill - Not Real Situation</span>
+            <span id="drill-label">Drill - Not Real Situation</span>
         </div>
         <div id="expected-flag" class="flags" style="display: none;">
-            <span>Expected Intensity</span>
+            <span id="expected-label">Expected Intensity</span>
         </div>
         <div id="eew-banner" class="sub-window">
             <span id="eew-level">Fetching Information...</span>
@@ -79,17 +80,18 @@
                 <span id="eew-intensity-add" class="intensity-display"></span>
             </div>
             <div id="eew-earthquake-info" class="sub-window">
-                <span class="occur-label">Received at <span id="eew-receive-time">XXXX/XX/XX XX:XX</span></span>
+                <span class="occur-label" id="eew-receive-label">Received at
+                    <span id="eew-receive-time">XXXX/XX/XX XX:XX</span></span>
                 <div style="margin-top: 9px;">
-                    <span class="label">Epicenter</span>
+                    <span class="label" id="eew-epicenter-label">Epicenter</span>
                     <span id="eew-epicenter" class="label-content">---</span>
                 </div>
                 <div>
-                    <span class="label">Depth</span>
+                    <span class="label" id="eew-depth-label">Depth</span>
                     <span id="eew-depth" class="label-content">---</span>
                 </div>
                 <div>
-                    <span class="label">M</span>
+                    <span class="label" id="eew-magnitude-label">M</span>
                     <span id="eew-magnitude" class="label-content">---</span>
                 </div>
             </div>
