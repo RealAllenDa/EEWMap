@@ -37,3 +37,10 @@ def tsunami_banner_render():
     Renders the tsunami banner index.
     """
     return render_template("tsunami_banner.html")
+
+@tsunami_bp.route("/tsunami_forecast")
+def tsunami_forecast_render():
+    """
+    Renders the tsunami forecast index.
+    """
+    return render_template("tsunami_forecast.html")
