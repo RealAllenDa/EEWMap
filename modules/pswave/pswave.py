@@ -5,7 +5,7 @@
 import re
 import time
 
-from modules.utilities import relpath
+from modules.sdk import relpath
 
 logger = None
 pswave_list = []

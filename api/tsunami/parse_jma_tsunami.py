@@ -5,12 +5,11 @@
 import time
 import traceback
 
-import requests
 import xmltodict
 
 from api.tsunami.parse_jma_watch import preparse_tsunami_watch
 from config import PROXY, DEBUG_TSUNAMI, DEBUG_TSUNAMI_OVRD, DEBUG_TSUNAMI_WATCH
-from modules.utilities import generate_list, response_verify
+from modules.sdk import generate_list, make_web_request
 
 last_jma_info = {}
 last_jma_tsunami_watch = []
@@ -78,11 +77,10 @@ def parse_current_tsunami_info(information_url, app):
     """
     if not DEBUG_TSUNAMI:
         try:
-            response = requests.get(url=information_url,
-                                    proxies=PROXY, timeout=3.5)
-            response.encoding = "utf-8"
-            if not response_verify(response):
-                app.logger.error("Failed to fetch tsunami data. (response code not 200)")
+            response = make_web_request(url=information_url,
+                                        proxies=PROXY, timeout=3.5)
+            if not response[0]:
+                app.logger.error(f"Failed to fetch tsunami data: {response[1]}.")
                 return
         except:
             app.logger.warn("Failed to fetch tsunami data. Exception occurred: \n" + traceback.format_exc())

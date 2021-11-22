@@ -8,7 +8,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from modules.utilities import relpath
+from modules.sdk import relpath
 
 INTENSITY_DICT = {}
 logger = None

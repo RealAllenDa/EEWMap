@@ -33,7 +33,7 @@ class TestUtilities(unittest.TestCase):
         """
         Tests response_verify.
         """
-        from modules.utilities import response_verify
+        from modules.sdk import response_verify
         self.assertTrue(response_verify(DemoRespOK))
         self.assertFalse(response_verify(DemoRespError))
         self.assertFalse(response_verify(DemoRespStatusError))
@@ -47,7 +47,7 @@ class TestUtilities(unittest.TestCase):
             - An empty string "" -> []
             - A False -> []
         """
-        from modules.utilities import generate_list
+        from modules.sdk import generate_list
         self.assertEqual(generate_list("123"), ["123"])
         self.assertEqual(generate_list(["123", "456"]), ["123", "456"])
         self.assertEqual(generate_list(""), [])
@@ -58,7 +58,7 @@ class TestUtilities(unittest.TestCase):
         Tests relpath by reading test_file.txt.
         If the content isn't "TEST", then the function is broken.
         """
-        from modules.utilities import relpath
+        from modules.sdk import relpath
         path_to_test_file = relpath("./test_file.txt")
         self.assertNotEqual(path_to_test_file, "")
         fp = open(path_to_test_file, "r+")

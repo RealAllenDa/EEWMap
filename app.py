@@ -15,7 +15,7 @@ from modules.area import init_geojson_instance
 from modules.centroid import init_centroid_instance
 from modules.intensity import init_intensity2color
 from modules.pswave import init_pswave
-from modules.utilities import relpath
+from modules.sdk import relpath
 from shake_level import shake_level_bp
 from tsunami import tsunami_bp
 

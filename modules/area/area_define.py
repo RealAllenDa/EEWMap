@@ -6,7 +6,7 @@ import json
 import time
 import traceback
 
-from modules.utilities import relpath
+from modules.sdk import relpath
 
 
 class GeoJson:
