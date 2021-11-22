@@ -7,10 +7,8 @@ import json
 import time
 import traceback
 
-import requests
-
-from config import PROXY
-from modules.utilities import response_verify, relpath
+from config import PROXY, ENABLE_UPDATING_STATION_NAMES
+from modules.sdk import relpath, make_web_request
 
 
 class Centroid:
@@ -43,18 +41,16 @@ class Centroid:
         """
         self.logger.info("Updating intensity station names...")
         try:
-            response = requests.get(
+            response = make_web_request(
                 url="https://api.dmdata.jp/v2/parameter/earthquake/station?key=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
-                proxies=PROXY, timeout=10
+                proxies=PROXY, timeout=10, to_json=True
             )
-            response.encoding = "utf-8"
-            if not response_verify(response):
-                self.logger.error("Failed to update intensity stations. (response code not 200)")
+            if not response[0]:
+                self.logger.error(f"Failed to update intensity stations: {response[1]}.")
                 return
         except:
             self.logger.error("Failed to update intensity stations. Exception occurred: \n" + traceback.format_exc())
             return
-        response = response.json()
         if response.get("status", "") == "error":
             self.logger.error("Failed to update intensity stations. (response status error)")
             return

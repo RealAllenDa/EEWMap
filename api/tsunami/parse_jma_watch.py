@@ -5,11 +5,10 @@
 import time
 import traceback
 
-import requests
 import xmltodict
 
 from config import PROXY, DEBUG_TSUNAMI_WATCH_OVRD
-from modules.utilities import response_verify, generate_list
+from modules.sdk import generate_list, make_web_request
 
 watch_return = {}
 
@@ -27,11 +26,10 @@ def preparse_tsunami_watch(information_urls, app):
     if information_urls != ["TEST"]:
         for i in information_urls:
             try:
-                response = requests.get(url=i,
+                response = make_web_request(url=i,
                                         proxies=PROXY, timeout=3.5)
-                response.encoding = "utf-8"
-                if not response_verify(response):
-                    app.logger.warn("Failed to fetch tsunami watch information. (response code not 200)")
+                if not response[0]:
+                    app.logger.warn(f"Failed to fetch tsunami watch information: {response[1]}.")
                     continue
             except:
                 app.logger.warn(

@@ -2,7 +2,7 @@
  EEWMap - Config
  The configuration file for all modules.
 """
-from modules.utilities import relpath
+from modules.sdk import relpath
 
 # Version
 VERSION = "1.0.1-Build1 Release"

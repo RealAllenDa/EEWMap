@@ -5,12 +5,10 @@
 import time
 import traceback
 
-import requests
-
 from config import PROXY, DEBUG_EEW_OVRD, DEBUG_EEW, DEBUG_EEW_IMAGE, DEBUG_EEW_IMAGE_OVRD
 from modules.intensity import intensity2color
 from modules.pswave import parse_swave
-from modules.utilities import response_verify
+from modules.sdk import make_web_request
 
 return_dict = {}
 
@@ -28,13 +26,12 @@ def get_eew_info(app):
     """
     global return_dict
     try:
-        response_time = requests.get(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",
-                                     proxies=PROXY, timeout=3.5)
-        response_time.encoding = 'utf-8'
-        if not response_verify(response_time):
+        response_time = make_web_request(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",
+                                        proxies=PROXY, timeout=3.5, to_json=True)
+        if not response_time[0]:
             app.logger.warn("Failed to fetch EEW info (failed to get time).")
             return
-        request_time = time.strptime(response_time.json()["latest_time"], "%Y/%m/%d %H:%M:%S")
+        request_time = time.strptime(response_time[1]["latest_time"], "%Y/%m/%d %H:%M:%S")
         req_date = time.strftime("%Y%m%d", request_time)
         req_time = time.strftime("%Y%m%d%H%M%S", request_time)
         if DEBUG_EEW:
@@ -44,17 +41,16 @@ def get_eew_info(app):
             req_timestamp = time.mktime(time_struct) + time_offset
             req_time_transformed = time.localtime(req_timestamp)
             req_time = time.strftime("%Y%m%d%H%M%S", req_time_transformed)
-        response = requests.get(
+        response = make_web_request(
             url=f"http://www.kmoni.bosai.go.jp/webservice/hypo/eew/{req_time}.json",
-            proxies=PROXY, timeout=3.5)
-        response.encoding = 'utf-8'
-        if not response_verify(response):
-            app.logger.warn(f"Failed to fetch EEW info (response code isn't 200). -> {response.status_code}")
+            proxies=PROXY, timeout=3.5, to_json=True)
+        if not response[0]:
+            app.logger.warn(f"Failed to fetch EEW info: {response[1]}.")
             return
     except:
         app.logger.warn("Failed to fetch EEW info. Exception occurred: \n" + traceback.format_exc())
         return
-    converted_response = response.json()
+    converted_response = response[1]
     if converted_response["result"]["message"] != "":
         # No EEW Available
         return_dict = {
@@ -84,16 +80,16 @@ def get_eew_info(app):
         intensities = {}
         try:
             if not DEBUG_EEW_IMAGE:
-                response = requests.get(
+                response = make_web_request(
                     url=f"http://www.kmoni.bosai.go.jp/data/map_img/EstShindoImg/eew/{req_date}/{req_time}.eew.gif",
-                    proxies=PROXY, timeout=3.5)
-                resp_raw = response.content
+                    proxies=PROXY, timeout=3.5, to_json=False)
+                resp_raw = response[1]
             else:
                 with open(DEBUG_EEW_IMAGE_OVRD, "rb") as f:
                     resp_raw = f.read()
                     f.close()
-            if not response_verify(response):
-                app.logger.warn("Failed to fetch EEW image (response code isn't 200).")
+            if not response[0]:
+                app.logger.warn(f"Failed to fetch EEW image: {response[1]}.")
             else:
                 intensities = intensity2color(resp_raw)
         except:

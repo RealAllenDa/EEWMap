@@ -5,10 +5,8 @@
 import time
 import traceback
 
-import requests
-
 from config import PROXY
-from modules.utilities import response_verify
+from modules.sdk import make_web_request
 
 return_dict = {}
 
@@ -22,19 +20,18 @@ def get_shake_level(app):
     """
     global return_dict
     try:
-        response = requests.get(url="http://kwatch-24h.net/EQLevel.json?" + str(int(time.time())),
-                                timeout=3.5, proxies=PROXY)
-        response.encoding = 'utf-8'
-        if not response_verify(response):
-            app.logger.warn("Failed to fetch shake level (response code != 200).")
+        response = make_web_request(url="http://kwatch-24h.net/EQLevel.json?" + str(int(time.time())),
+                                timeout=3.5, proxies=PROXY, to_json=True)
+        if not response[0]:
+            app.logger.warn(f"Failed to fetch shake level: {response[1]}.")
             return
     except:
         app.logger.warn("Failed to fetch shake level. Exception occurred: \n" + traceback.format_exc())
         return
     return_dict = {
         "status": 0,
-        "shake_level": response.json()["l"],
-        "green": response.json()["g"],
-        "yellow": response.json()["y"],
-        "red": response.json()["r"]
+        "shake_level": response[1]["l"],
+        "green": response[1]["g"],
+        "yellow": response[1]["y"],
+        "red": response[1]["r"]
     }
