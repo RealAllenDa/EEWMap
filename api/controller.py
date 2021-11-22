@@ -55,11 +55,12 @@ def tsunami_info_get():
     :rtype: dict
     """
     from .p2p_get.parse_p2p_json import tsunami_return
-    from .tsunami.parse_jma_tsunami import return_dict
+    from .tsunami.parse_jma_tsunami import return_dict, tsunami_watch_in_effect
     from .p2p_get.parse_p2p_json import tsunami_warning_in_effect
     from .tsunami.parse_jma_watch import watch_return
     return {
         "status": tsunami_warning_in_effect,
+        "status_forecast": tsunami_watch_in_effect,
         "map": tsunami_return,
         "info": return_dict,
         "watch": watch_return
