@@ -2,10 +2,9 @@
  EEWMap - API - Tsunami - JMA_Tsunami
  Parses tsunami information (Expected arrival time) from JMA XML.
 """
+import requests
 import time
 import traceback
-
-import requests
 import xmltodict
 
 from api.tsunami.parse_jma_watch import preparse_tsunami_watch
@@ -15,7 +14,7 @@ from modules.utilities import generate_list, response_verify
 last_jma_info = {}
 last_jma_tsunami_watch = []
 return_dict = {}
-
+tsunami_watch_in_effect = '0'
 
 def parse_jma_tsunami(response, app):
     """
@@ -110,10 +109,10 @@ def parse_tsunami_information(converted_response, app, origin="TE"):
     app.logger.debug("Start parsing tsunami info...")
     start_parse_time = time.perf_counter()
     response_items = generate_list(converted_response["Report"]["Body"]["Tsunami"]["Forecast"]["Item"])
-    receive_time = time.strptime(converted_response["Report"]["Control"]["DateTime"], "%Y-%m-%dT%H:%M:%SZ")
+    receive_time = time.strptime(converted_response["Report"]["Head"]["ReportDateTime"][:19], "%Y-%m-%dT%H:%M:%S")
     receive_time_formatted = time.strftime("%Y/%m/%d %H:%M:%S", receive_time)
     return_dict["receive_time"] = receive_time_formatted
-    return_dict["areas"] = parse_tsunami_areas(response_items, app)
+    return_dict["areas"], return_dict["forecast_areas"] = parse_tsunami_areas(response_items, app)
     return_dict["origin"] = origin
     app.logger.debug(f"Successfully parsed tsunami info "
                      f"in {(time.perf_counter() - start_parse_time):.3f} seconds.")
@@ -127,9 +126,11 @@ def parse_tsunami_areas(response_items, app):
     :param app: The Flask app instance
     :return: A list containing areas
     """
+    global tsunami_watch_in_effect
     area_list = []
+    forecast_list = []
     for i in response_items:
-        if i["Category"]["Kind"]["Name"] in ["津波予報（若干の海面変動）", "津波注意報解除", "警報解除"]:
+        if i["Category"]["Kind"]["Name"] in ["津波注意報解除", "警報解除"]:
             continue
         area_name = i["Area"]["Name"]
         if "大津波警報" in i["Category"]["Kind"]["Name"]:
@@ -138,6 +139,8 @@ def parse_tsunami_areas(response_items, app):
             area_grade = "Warning"
         elif "津波注意報" in i["Category"]["Kind"]["Name"]:
             area_grade = "Watch"
+        elif "津波予報（若干の海面変動）" in i["Category"]["Kind"]["Name"]:
+            area_grade = "Forecast"
         else:
             area_grade = "Unknown"
         area_height = "Unknown"
@@ -195,10 +198,18 @@ def parse_tsunami_areas(response_items, app):
                 app.logger.warn("Failed to parse tsunami area height."
                                 " Exception occurred: \n" + traceback.format_exc())
                 area_height = "Unknown"
-        area_list.append({
+        area_info = {
             "name": area_name,
             "grade": area_grade,
             "height": area_height,
             "time": area_time
-        })
-    return area_list
+        }
+        if "津波予報（若干の海面変動）" in i["Category"]["Kind"]["Name"]:
+            forecast_list.append(area_info)
+        else:
+            area_list.append(area_info)
+    if len(forecast_list) != 0:
+        tsunami_watch_in_effect = '1'
+    else:
+        tsunami_watch_in_effect = '0'
+    return area_list, forecast_list
