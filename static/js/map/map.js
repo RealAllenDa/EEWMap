@@ -92,7 +92,7 @@ window.intensity_station_icons = {
 };
 window.epicenter_icon = new L.Icon({
     iconUrl: "../static/image/epicenter.png",
-    iconSize: [35, 35]
+    iconSize: [45, 45]
 });
 window.iconGroup = L.featureGroup();
 var initializeMap = function () {
@@ -173,10 +173,8 @@ var addMapIntensities = function (intensityList) {
 };
 var addEpicenter = function (latitude, longitude) {
     var epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon});
-    epicenterMarker.setZIndexOffset(50);
+    epicenterMarker.setZIndexOffset(5000000);
     window.iconGroup.addLayer(epicenterMarker);
-    window.map.removeLayer(window.iconGroup);
-    window.map.addLayer(window.iconGroup);
 };
 var deleteAllLayers = function () {
     try {
