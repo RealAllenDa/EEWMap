@@ -1,5 +1,15 @@
 # EEWMap Changelog
 
+# 1.1.1 Release
+
+- [feature] [map] Added P wave circle.
+- [refactor] [map] Epicenter marker's size will be 40*40 now.
+
+# 1.1.0.1 Release
+
+- [refactor] [map] Epicenter marker will always be on the top.
+- [refactor] [map] Epicenter marker's size will be 45*45 now.
+
 # 1.1.0 Release
 
 - [feature] [tsunami/forecast] Added tsunami forecast.

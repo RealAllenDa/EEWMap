@@ -23,7 +23,7 @@ ENABLE_QUAKE = True
 DEBUG_EEW = False
 DEBUG_EEW_OVRD = {
     "start_time": 20210501102730,
-    "origin_timestamp": 1631790443
+    "origin_timestamp": 1638439232
 }
 
 DEBUG_EEW_IMAGE = False

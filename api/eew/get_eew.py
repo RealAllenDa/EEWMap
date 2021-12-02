@@ -9,7 +9,7 @@ import requests
 
 from config import PROXY, DEBUG_EEW_OVRD, DEBUG_EEW, DEBUG_EEW_IMAGE, DEBUG_EEW_IMAGE_OVRD
 from modules.intensity import intensity2color
-from modules.pswave import parse_swave
+from modules.pswave import parse_pswave
 from modules.utilities import response_verify
 
 return_dict = {}
@@ -104,11 +104,11 @@ def get_eew_info(app):
             if DEBUG_EEW:
                 origin_timestamp = DEBUG_EEW_OVRD["origin_timestamp"]
             depth = int(converted_response["depth"].replace("km", ""))
-            s_wave_time = parse_swave(depth, float(
+            s_wave_time, p_wave_time = parse_pswave(depth, float(
                 time.time() + (3600 if not DEBUG_EEW else 0) - origin_timestamp))  # Japanese time
         except:
-            app.logger.warn("Failed to get S wave time. Exception occurred: \n" + traceback.format_exc())
-            s_wave_time = None
+            app.logger.warn("Failed to get PS wave time. Exception occurred: \n" + traceback.format_exc())
+            s_wave_time, p_wave_time = None, None
         return_dict = {
             "status": 0,
             "is_cancel": converted_response["is_cancel"],
@@ -127,5 +127,6 @@ def get_eew_info(app):
                 "depth": converted_response["depth"]
             },
             "area_intensity": intensities,
-            "s_wave": s_wave_time
+            "s_wave": s_wave_time,
+            "p_wave": p_wave_time
         }

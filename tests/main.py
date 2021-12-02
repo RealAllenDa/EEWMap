@@ -143,12 +143,12 @@ class TestModules(unittest.TestCase):
             - No depth corresponding (depth: 162.25, time_passed: 0) -> None
             - No s1, s2 (intermediate value) corresponding (depth: 170, time_passed: 0) -> None
         """
-        from modules.pswave import parse_swave
-        normal_time = parse_swave(30, 225)
-        depth_abnormal_time = parse_swave(1000, 0)
-        time_abnormal_time = parse_swave(0, 200000)
-        no_depth_corresponding_time = parse_swave(162.25, 0)
-        no_s1_s2_time = parse_swave(170, 0)
+        from modules.pswave import parse_pswave
+        normal_time = parse_pswave(30, 225)[0]
+        depth_abnormal_time = parse_pswave(1000, 0)[0]
+        time_abnormal_time = parse_pswave(0, 200000)[0]
+        no_depth_corresponding_time = parse_pswave(162.25, 0)[0]
+        no_s1_s2_time = parse_pswave(170, 0)[0]
         self.assertEqual(normal_time, 969.3970522554712)
         self.assertEqual(depth_abnormal_time, None)
         self.assertEqual(time_abnormal_time, None)

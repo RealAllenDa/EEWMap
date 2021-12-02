@@ -92,7 +92,7 @@ window.intensity_station_icons = {
 };
 window.epicenter_icon = new L.Icon({
     iconUrl: "../static/image/epicenter.png",
-    iconSize: [45, 45]
+    iconSize: [40, 40]
 });
 window.iconGroup = L.featureGroup();
 var initializeMap = function () {
@@ -187,6 +187,9 @@ var deleteAllLayers = function () {
         if (window.swave_circle != undefined) {
             window.map.removeLayer(window.swave_circle);
         }
+        if (window.pwave_circle != undefined) {
+            window.map.removeLayer(window.pwave_circle);
+        }
     } catch (e) {
         window.logger.error("Failed to remove layers." + e);
     }
@@ -217,11 +220,20 @@ var parseColorStyle = function (feature) {
 };
 var addSWaveCircle = function (epicenter, swave_distance) {
     window.swave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], swave_distance * 1000, {
-        color: "#ff7800",
-        weight: 4,
+        color: "#E65A5A",
+        weight: 2,
         opacity: 1,
-        fillColor: '#ff7800',
+        fillColor: '#E65A5A',
         fillOpacity: 0.2
     }).addTo(window.map);
     window.swave_circle.bringToFront();
+};
+var addPWaveCircle = function (epicenter, pwave_distance) {
+    window.pwave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], pwave_distance * 1000, {
+        color: "#50A0FA",
+        weight: 2,
+        opacity: 1,
+        fill: false
+    }).addTo(window.map);
+    window.pwave_circle.bringToFront();
 };

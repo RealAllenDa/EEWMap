@@ -54,6 +54,12 @@ var splitEqInfo = function (result) {
                 window.logger.warn("Failed to bring the S wave circle to front. " +
                     "Check backend code.");
             }
+            if (window.pwave_circle != undefined) {
+                window.pwave_circle.bringToFront();
+            } else {
+                window.logger.warn("Failed to bring the P wave circle to front. " +
+                    "Check backend code.");
+            }
         } else if (!(_.isEqual(result["info"], messages_before_eew))) {
             window.logger.info("Earthquake info updated. Displaying new earthquake info.");
             messages_before_eew = result["info"];
@@ -67,6 +73,12 @@ var splitEqInfo = function (result) {
                 window.swave_circle.bringToFront();
             } else {
                 window.logger.warn("Failed to bring the S wave circle to front. " +
+                    "Check backend code.");
+            }
+            if (window.pwave_circle != undefined) {
+                window.pwave_circle.bringToFront();
+            } else {
+                window.logger.warn("Failed to bring the P wave circle to front. " +
                     "Check backend code.");
             }
         }
@@ -267,6 +279,8 @@ var parseEEWInfo = function (result, only_update_map = false) {
     }
     parseMapScale();
     window.DOM.expected_flag.style.display = "block";
+
+    // S wave
     if (result["s_wave"] != null) {
         addSWaveCircle(result["hypocenter"], result["s_wave"]);
     } else {
@@ -276,6 +290,20 @@ var parseEEWInfo = function (result, only_update_map = false) {
         window.swave_circle.bringToFront();
     } else {
         window.logger.warn("Failed to bring the S wave circle to front. " +
+            "Check backend code.");
+    }
+
+
+    // P wave
+    if (result["p_wave"] != null) {
+        addPWaveCircle(result["hypocenter"], result["p_wave"]);
+    } else {
+        window.logger.warn("P wave time equals null. Check server log.");
+    }
+    if (window.pwave_circle != undefined) {
+        window.pwave_circle.bringToFront();
+    } else {
+        window.logger.warn("Failed to bring the P wave circle to front. " +
             "Check backend code.");
     }
 };
