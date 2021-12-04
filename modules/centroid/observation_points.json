@@ -6098,7 +6098,7 @@
       "Longitude": 130.8564
     },
     "Point": {
-      "X": 45,
+      "X": 44,
       "Y": 364
     },
     "ClassificationId": null,
@@ -24699,7 +24699,7 @@
     },
     "Point": {
       "X": 47,
-      "Y": 364
+      "Y": 365
     },
     "ClassificationId": null,
     "PrefectureClassificationId": null
@@ -32931,7 +32931,7 @@
     },
     "Point": {
       "X": 216,
-      "Y": 287
+      "Y": 291
     },
     "ClassificationId": null,
     "PrefectureClassificationId": null
@@ -33287,8 +33287,8 @@
       "Longitude": 139.4825
     },
     "Point": {
-      "X": 216,
-      "Y": 291
+      "X": 221,
+      "Y": 298
     },
     "ClassificationId": null,
     "PrefectureClassificationId": null

@@ -109,36 +109,50 @@ var initializeMap = function () {
     attribution.setPrefix("QuakeMap by AllenDa");
     attribution.addAttribution("Map: Natural Earth | " +
         "Map Data: JMA");
-    var map_countries_url = "https://earthquake.daziannetwork.com/countries/{z}/{x}/{y}.pbf";
-    var map_borders_url = "https://earthquake.daziannetwork.com/japan_area_line/{z}/{x}/{y}.pbf";
-    var countries_tile_option = {
-        layerURL: map_countries_url,
-        rendererFactory: L.canvas.tile,
-        vectorTileLayerStyles: {
-            "bg_country": {
+    L.geoJSON(_GEOJSON_COUNTRIES, {
+        style: () => {
+            return {
+                stroke: true,
+                fill: true,
+                fillColor: "#3a3a3a",
+                fillOpacity: 1,
+                weight: 1,
+                color: "#3a3a3a"
+            }
+        }
+    }).addTo(window.map);
+    // Background (shapes)
+    L.geoJSON(_GEOJSON_JAPAN, {
+        style: () => {
+            return {
                 stroke: false,
                 fill: true,
                 fillColor: "#3a3a3a",
                 fillOpacity: 1
             }
-        },
-        bounds: [[-85.051129, -180.000000], [83.634101, 180.000000]]
-    };
-    var area_line_tile_option = {
-        layerURL: map_borders_url,
-        rendererFactory: L.canvas.tile,
-        vectorTileLayerStyles: {
-            "japan_area_line": {
+        }
+    }).addTo(window.map);
+    // Borderlines
+    L.geoJSON(_GEOJSON_JAPAN_WITH_SUB_AREAS, {
+        style: () => {
+            return {
+                stroke: true,
                 fill: false,
-                weight: 1,
-                fillOpacity: 0,
-                color: "#7e7e7e"
+                color: "#4e4e4e",
+                weight: 1
             }
-        },
-        bounds: [[-49.250870, -178.137086], [81.128531, 178.448622]]
-    };
-    new L.vectorGrid.protobuf(map_countries_url, countries_tile_option).addTo(window.map);
-    new L.vectorGrid.protobuf(map_borders_url, area_line_tile_option).addTo(window.map);
+        }
+    }).addTo(window.map);
+    L.geoJSON(_GEOJSON_JAPAN, {
+        style: () => {
+            return {
+                stroke: true,
+                fill: false,
+                color: "#7e7e7e",
+                weight: 1
+            }
+        }
+    }).addTo(window.map);
 };
 var addMapIntensities = function (intensityList) {
     for (var i in intensityList) {
