@@ -53,6 +53,9 @@ var setMapInfo = function (result) {
     }
     enable_okinawa_map = false;
     deleteAllStrokes();
+    if (map_result == undefined) {
+        return;
+    }
     if (!(_.isEqual({}, map_result)) && parseInt(result["status"]) == 1) {
         // Tsunami warning in effect
         document.getElementById("receive-time").innerText = result["map"]["time"];

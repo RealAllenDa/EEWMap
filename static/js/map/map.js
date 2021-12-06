@@ -92,7 +92,7 @@ window.intensity_station_icons = {
 };
 window.epicenter_icon = new L.Icon({
     iconUrl: "../static/image/epicenter.png",
-    iconSize: [35, 35]
+    iconSize: [40, 40]
 });
 window.iconGroup = L.featureGroup();
 var initializeMap = function () {
@@ -109,37 +109,67 @@ var initializeMap = function () {
     attribution.setPrefix("QuakeMap by AllenDa");
     attribution.addAttribution("Map: Natural Earth | " +
         "Map Data: JMA");
-    var map_countries_url = "https://earthquake.daziannetwork.com/countries/{z}/{x}/{y}.pbf";
-    var map_borders_url = "https://earthquake.daziannetwork.com/japan_area_line/{z}/{x}/{y}.pbf";
-    var countries_tile_option = {
-        layerURL: map_countries_url,
-        rendererFactory: L.canvas.tile,
-        vectorTileLayerStyles: {
-            "bg_country": {
+    L.geoJSON(_GEOJSON_COUNTRIES, {
+        style: () => {
+            return {
+                stroke: true,
+                fill: true,
+                fillColor: "#3a3a3a",
+                fillOpacity: 1,
+                weight: 1,
+                color: "#3a3a3a"
+            }
+        },
+        pane: "tilePane"
+    }).addTo(window.map);
+    // Background (shapes)
+    L.geoJSON(_GEOJSON_JAPAN, {
+        style: () => {
+            return {
                 stroke: false,
                 fill: true,
                 fillColor: "#3a3a3a",
                 fillOpacity: 1
             }
         },
-        bounds: [[-85.051129, -180.000000], [83.634101, 180.000000]]
-    };
-    var area_line_tile_option = {
-        layerURL: map_borders_url,
-        rendererFactory: L.canvas.tile,
-        vectorTileLayerStyles: {
-            "japan_area_line": {
+        pane: "tilePane"
+    }).addTo(window.map);
+    // Borderlines
+    window._SUB_AREAS_LAYER = L.geoJSON(_GEOJSON_JAPAN_WITH_SUB_AREAS, {
+        style: () => {
+            return {
+                stroke: true,
                 fill: false,
-                weight: 1,
-                fillOpacity: 0,
-                color: "#7e7e7e"
+                color: "#565656",
+                weight: 0.5
             }
         },
-        bounds: [[-49.250870, -178.137086], [81.128531, 178.448622]]
-    };
-    new L.vectorGrid.protobuf(map_countries_url, countries_tile_option).addTo(window.map);
-    new L.vectorGrid.protobuf(map_borders_url, area_line_tile_option).addTo(window.map);
+        pane: "tilePane"
+    });
+    window._PREF_LAYER = L.geoJSON(_GEOJSON_JAPAN, {
+        style: () => {
+            return {
+                stroke: true,
+                fill: false,
+                color: "#838383",
+                weight: 0.5
+            }
+        },
+        pane: "tilePane"
+    }).addTo(window.map);
+    window.map.on('zoomend', function () {
+        if (window.map.getZoom() < 6) {
+            if (window.map.hasLayer(window._SUB_AREAS_LAYER)) {
+                map.removeLayer(window._SUB_AREAS_LAYER);
+            }
+        } else {
+            if (!map.hasLayer(window._SUB_AREAS_LAYER)) {
+                map.addLayer(window._SUB_AREAS_LAYER);
+            }
+        }
+    });
 };
+
 var addMapIntensities = function (intensityList) {
     for (var i in intensityList) {
         var intensity = intensityList[i]["intensity"];
@@ -173,10 +203,8 @@ var addMapIntensities = function (intensityList) {
 };
 var addEpicenter = function (latitude, longitude) {
     var epicenterMarker = L.marker([latitude, longitude], {icon: window.epicenter_icon});
-    epicenterMarker.setZIndexOffset(50);
+    epicenterMarker.setZIndexOffset(5000000);
     window.iconGroup.addLayer(epicenterMarker);
-    window.map.removeLayer(window.iconGroup);
-    window.map.addLayer(window.iconGroup);
 };
 var deleteAllLayers = function () {
     try {
@@ -188,6 +216,9 @@ var deleteAllLayers = function () {
         }
         if (window.swave_circle != undefined) {
             window.map.removeLayer(window.swave_circle);
+        }
+        if (window.pwave_circle != undefined) {
+            window.map.removeLayer(window.pwave_circle);
         }
     } catch (e) {
         window.logger.error("Failed to remove layers." + e);
@@ -219,11 +250,20 @@ var parseColorStyle = function (feature) {
 };
 var addSWaveCircle = function (epicenter, swave_distance) {
     window.swave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], swave_distance * 1000, {
-        color: "#ff7800",
-        weight: 4,
+        color: "#E65A5A",
+        weight: 2,
         opacity: 1,
-        fillColor: '#ff7800',
+        fillColor: '#E65A5A',
         fillOpacity: 0.2
     }).addTo(window.map);
     window.swave_circle.bringToFront();
+};
+var addPWaveCircle = function (epicenter, pwave_distance) {
+    window.pwave_circle = L.circle([epicenter["latitude"], epicenter["longitude"]], pwave_distance * 1000, {
+        color: "#50A0FA",
+        weight: 2,
+        opacity: 1,
+        fill: false
+    }).addTo(window.map);
+    window.pwave_circle.bringToFront();
 };

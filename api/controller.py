@@ -2,7 +2,11 @@
  EEWMap - API - Views
  The controller (blueprint) for APIs.
 """
-from flask import Blueprint
+import json
+
+from flask import Blueprint, abort
+
+from modules.utilities import relpath
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -65,3 +69,21 @@ def tsunami_info_get():
         "info": return_dict,
         "watch": watch_return
     }
+
+
+@api_bp.route("/web/index_nav")
+def index_arrangement():
+    """
+    Returns the index items list.
+
+    :return: Index items JSON
+    :rtype: dict
+    """
+    # Open file dynamically so it can be updated realtime.
+    try:
+        with open(relpath("../modules/web/index.json"), "r") as f:
+            content = json.loads(f.read())
+            f.close()
+        return content
+    except:
+        abort(500)

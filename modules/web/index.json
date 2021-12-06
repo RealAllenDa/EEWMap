@@ -1,0 +1,102 @@
+{
+  "navbar": [
+    {
+      "name": "Earthquake",
+      "icon": "mdi-earth",
+      "content": [
+        {
+          "icon": "mdi-map-marker-radius",
+          "name": "Earthquake Map",
+          "href": "/earthquake/map"
+        },
+        {
+          "icon": "mdi-car-brake-fluid-level",
+          "name": "Shake Level",
+          "href": "/earthquake/shake_level"
+        }
+      ]
+    },
+    {
+      "name": "Tsunami",
+      "icon": "mdi-waves",
+      "content": [
+        {
+          "icon": "mdi-information",
+          "name": "Tsunami Information",
+          "href": "/tsunami/info"
+        },
+        {
+          "icon": "mdi-eye",
+          "name": "Tsunami Observation",
+          "href": "/tsunami/obs"
+        },
+        {
+          "icon": "mdi-map-marker",
+          "name": "Tsunami Map",
+          "href": "/tsunami/map"
+        },
+        {
+          "icon": "mdi-home-floor-1",
+          "name": "Tsunami Forecast",
+          "href": "/tsunami/forecast"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    [
+      {
+        "title": "Earthquake",
+        "text": "Earthquake related things, such as earthquake maps and shaking levels.",
+        "is_href_page": true,
+        "href": 1
+      },
+      {
+        "title": "Tsunami",
+        "text": "Tsunami related things, such as tsunami maps and information.",
+        "is_href_page": true,
+        "href": 2
+      }
+    ],
+    [
+      {
+        "title": "Earthquake Map",
+        "text": "Earthquake maps displaying EEWs and information.",
+        "is_href_page": false,
+        "href": "/earthquake/map"
+      },
+      {
+        "title": "Shake Level",
+        "text": "Shake level indicator displaying current shake level.",
+        "is_href_page": false,
+        "href": "/earthquake/shake_level"
+      }
+    ],
+    [
+      {
+        "title": "Tsunami Information",
+        "text": "Displaying tsunami information such as grades, names, height, etc.",
+        "is_href_page": false,
+        "href": "/tsunami/info"
+      },
+      {
+        "title": "Tsunami Observation",
+        "text": "Displaying tsunami observation information such as levels, status (rising), current height, etc.",
+        "is_href_page": false,
+        "href": "/tsunami/obs"
+      },
+      {
+        "title": "Tsunami Map",
+        "text": "Displaying tsunami map colored by grades (Major/Warning/Advisory).",
+        "is_href_page": false,
+        "href": "/tsunami/map"
+      },
+      {
+        "title": "Tsunami Forecast",
+        "text": "Displaying tsunami forecast areas.",
+        "is_href_page": false,
+        "href": "/tsunami/forecast"
+      }
+    ]
+  ]
+}
