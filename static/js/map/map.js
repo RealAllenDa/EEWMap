@@ -119,7 +119,8 @@ var initializeMap = function () {
                 weight: 1,
                 color: "#3a3a3a"
             }
-        }
+        },
+        pane: "tilePane"
     }).addTo(window.map);
     // Background (shapes)
     L.geoJSON(_GEOJSON_JAPAN, {
@@ -130,30 +131,45 @@ var initializeMap = function () {
                 fillColor: "#3a3a3a",
                 fillOpacity: 1
             }
-        }
+        },
+        pane: "tilePane"
     }).addTo(window.map);
     // Borderlines
-    L.geoJSON(_GEOJSON_JAPAN_WITH_SUB_AREAS, {
+    window._SUB_AREAS_LAYER = L.geoJSON(_GEOJSON_JAPAN_WITH_SUB_AREAS, {
         style: () => {
             return {
                 stroke: true,
                 fill: false,
-                color: "#4e4e4e",
-                weight: 1
+                color: "#565656",
+                weight: 0.5
             }
-        }
-    }).addTo(window.map);
-    L.geoJSON(_GEOJSON_JAPAN, {
+        },
+        pane: "tilePane"
+    });
+    window._PREF_LAYER = L.geoJSON(_GEOJSON_JAPAN, {
         style: () => {
             return {
                 stroke: true,
                 fill: false,
-                color: "#7e7e7e",
-                weight: 1
+                color: "#838383",
+                weight: 0.5
+            }
+        },
+        pane: "tilePane"
+    }).addTo(window.map);
+    window.map.on('zoomend', function () {
+        if (window.map.getZoom() < 6) {
+            if (window.map.hasLayer(window._SUB_AREAS_LAYER)) {
+                map.removeLayer(window._SUB_AREAS_LAYER);
+            }
+        } else {
+            if (!map.hasLayer(window._SUB_AREAS_LAYER)) {
+                map.addLayer(window._SUB_AREAS_LAYER);
             }
         }
-    }).addTo(window.map);
+    });
 };
+
 var addMapIntensities = function (intensityList) {
     for (var i in intensityList) {
         var intensity = intensityList[i]["intensity"];
