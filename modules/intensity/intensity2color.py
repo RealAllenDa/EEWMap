@@ -11,6 +11,17 @@ from PIL import Image
 from modules.sdk import relpath
 
 INTENSITY_DICT = {}
+AREA_INTENSITY_CORRESPOND = {
+    1: "1",
+    2: "2",
+    3: "3",
+    4: "4",
+    5: "5-",
+    6: "5+",
+    7: "6-",
+    8: "6+",
+    9: "7"
+}
 logger = None
 
 
@@ -47,6 +58,7 @@ def intensity2color(raw_response):
     start_time = time.perf_counter()
     logger.debug("Parsing EEW coloring...")
     intensities = {}
+    area_intensities = {}
     image_fp = Image.open(BytesIO(raw_response))
     image = image_fp.convert("RGBA").load()
     from modules.centroid import centroid_instance
@@ -62,32 +74,66 @@ def intensity2color(raw_response):
         if pixel_intensity != 0:
             # Have expected intensity
             if 0.5 < pixel_intensity < 1.5:
-                parsed_intensity = "1"
+                parsed_intensity = "1", 1
             elif 1.5 <= pixel_intensity < 2.5:
-                parsed_intensity = "2"
+                parsed_intensity = "2", 2
             elif 2.5 <= pixel_intensity < 3.5:
-                parsed_intensity = "3"
+                parsed_intensity = "3", 3
             elif 3.5 <= pixel_intensity < 4.5:
-                parsed_intensity = "4"
+                parsed_intensity = "4", 4
             elif 4.5 <= pixel_intensity < 5.0:
-                parsed_intensity = "5-"
+                parsed_intensity = "5-", 5
             elif 5.0 <= pixel_intensity < 5.5:
-                parsed_intensity = "5+"
+                parsed_intensity = "5+", 6
             elif 5.5 <= pixel_intensity < 6.0:
-                parsed_intensity = "6-"
+                parsed_intensity = "6-", 7
             elif 6.0 <= pixel_intensity < 6.5:
-                parsed_intensity = "6+"
+                parsed_intensity = "6+", 8
             elif pixel_intensity >= 6.5:
-                parsed_intensity = "7"
+                parsed_intensity = "7", 9
             else:
                 continue
-            intensities[i["Code"]] = {
-                "name": i["Region"] + i["Name"],
+            # Area
+            if i["SubRegionCode"] not in area_intensities:
+                area_intensities[i["SubRegionCode"]] = 0
+            if area_intensities[i["SubRegionCode"]] < parsed_intensity[1]:
+                area_intensities[i["SubRegionCode"]] = parsed_intensity[1]
+            # Station
+            full_name = i["Region"] + i["Name"]
+            intensities[full_name] = {
+                "name": full_name,
+                "area_code": i["RegionCode"],
+                "sub_area_code": i["SubRegionCode"],
                 "latitude": i["Location"]["Latitude"],
                 "longitude": i["Location"]["Longitude"],
-                "intensity": parsed_intensity,
+                "intensity": parsed_intensity[0],
                 "detail_intensity": pixel_intensity,
                 "is_area": False
             }
+    parsed_area_intensities, areas_to_parse = parse_area_intensities(area_intensities)
+    from modules.area import geojson_instance
+    parsed_area_coloring = geojson_instance.get_intensity_json(areas_to_parse, parsed_area_intensities)
     logger.debug(f"Successfully parsed EEW intensities in {(time.perf_counter() - start_time):.3f} seconds!")
-    return intensities
+    return intensities, parsed_area_intensities, parsed_area_coloring
+
+def parse_area_intensities(area_intensities):
+    parsed_area_int = {}
+    parse_areas = []
+    from modules.centroid import centroid_instance
+    for i in area_intensities.keys():
+        try:
+            intensity = AREA_INTENSITY_CORRESPOND[area_intensities[i]]
+            position_name = centroid_instance.area_position_centroid.get(i)
+            position = position_name["position"]
+            name = position_name["name"]
+        except:
+            continue
+        parsed_area_int[name] = {
+            "name": name,
+            "intensity": intensity,
+            "is_area": True,
+            "latitude": position[0],
+            "longitude": position[1]
+        }
+        parse_areas.append(name)
+    return parsed_area_int, parse_areas

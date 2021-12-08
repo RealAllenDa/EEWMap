@@ -2,23 +2,27 @@
  EEWMap - Modules - SDK
  HN-Python-SDK ver1.0
 """
+from typing import Tuple, Union, Any
+
 import requests
+from requests import Response
 
 
-def response_verify(resp):
+def response_verify(resp: Response) -> bool:
     """
      Verify if the response's status code is 200 or not.
 
      :return: True if response code is 200
      :rtype: bool
     """
+    # TODO: Change to private
     if resp.status_code != 200 or resp.text == "":
         return False
     else:
         return True
 
 
-def generate_list(name):
+def generate_list(name: Any) -> list:
     """
     Make sure parameters xmltodict generates is a list.
 
@@ -35,7 +39,7 @@ def generate_list(name):
 
 
 # noinspection PyProtectedMember
-def relpath(file):
+def relpath(file: str) -> str:
     """
     Always locate to the correct relative path.
 
@@ -48,7 +52,10 @@ def relpath(file):
     curr_file = Path(frame.f_code.co_filename)
     return str(curr_file.parent.joinpath(file).resolve())
 
-def make_web_request(url, proxies=None, timeout=None, to_json=False):
+def make_web_request(url: str,
+                     proxies: Union[None, dict]=None,
+                     timeout: Union[int, float]=None,
+                     to_json: bool=False) -> Tuple[bool, Union[Response, Any]]:
     """
     Makes web requests to API, URL, etc.
 
@@ -65,4 +72,4 @@ def make_web_request(url, proxies=None, timeout=None, to_json=False):
             return False, f"Failed response verifying (code={response.status_code})."
         return True, response.json() if to_json else response
     except Exception as e:
-        return False, f"Exception occurred: {e}"
+        return False, f"Exception occurred: {e}."

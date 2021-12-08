@@ -27,10 +27,11 @@ def preparse_tsunami_watch(information_urls, app):
         for i in information_urls:
             try:
                 response = make_web_request(url=i,
-                                        proxies=PROXY, timeout=3.5)
+                                        proxies=PROXY, timeout=3.5, to_json=False)
                 if not response[0]:
                     app.logger.warn(f"Failed to fetch tsunami watch information: {response[1]}.")
                     continue
+                response = response[1]
             except:
                 app.logger.warn(
                     "Failed to fetch tsunami watch information. Exception occurred: \n" + traceback.format_exc())

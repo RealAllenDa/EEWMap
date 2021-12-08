@@ -6,7 +6,7 @@ import json
 
 from flask import Blueprint, abort
 
-from modules.utilities import relpath
+from modules.sdk import relpath
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 

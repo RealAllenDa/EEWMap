@@ -20,7 +20,7 @@ import HTMLReport
 sys.path.append('../')
 # noinspection PyUnresolvedReferences
 from app import app  # In order to pre-initialize the application
-from classes import DemoRespOK, DemoRespError, DemoRespStatusError, DemoRespTextEmpty, DemoNormIntensityJson, \
+from classes import DemoNormIntensityJson, \
     DemoIntAbnIntensityJson, DemoAreaAbnIntensityJson, DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
     DemoAreaAbnTsunamiJson
 from config import VERSION
@@ -28,16 +28,6 @@ from config import VERSION
 
 class TestUtilities(unittest.TestCase):
     """The tests for utilities."""
-
-    def test_response_verify(self):
-        """
-        Tests response_verify.
-        """
-        from modules.sdk import response_verify
-        self.assertTrue(response_verify(DemoRespOK))
-        self.assertFalse(response_verify(DemoRespError))
-        self.assertFalse(response_verify(DemoRespStatusError))
-        self.assertFalse(response_verify(DemoRespTextEmpty))
 
     def test_generate_list(self):
         """

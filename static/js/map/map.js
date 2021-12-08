@@ -175,7 +175,8 @@ var addMapIntensities = function (intensityList) {
         var intensity = intensityList[i]["intensity"];
         var latitude = intensityList[i]["latitude"];
         var longitude = intensityList[i]["longitude"];
-        if (intensityList[i]["is_area"] == "true") {
+        if (intensityList[i]["is_area"] == "true" || intensityList[i]["is_area"] == true) {
+            // TODO: FIx
             var layer = L.marker([latitude, longitude], {icon: window.intensity_area_icons[intensity]});
         } else {
             layer = L.marker([latitude, longitude], {icon: window.intensity_station_icons[intensity]});
@@ -224,13 +225,27 @@ var deleteAllLayers = function () {
         window.logger.error("Failed to remove layers." + e);
     }
 };
+var parseDualMapScale = function (response) {
+    parseMapScale();
+ /*   if (window.map.getZoom() >= 7) {
+        window.colorMapLayer.remove();
+    } else {
+         window.iconGroup.clearLayers();
+         Add epicenter cause iconGroup has been cleared.
+        addEpicenter(response["hypocenter"]["latitude"],
+            response["hypocenter"]["longitude"]);
+    }*/
+};
 var parseMapScale = function () {
     window.logger.info(window.iconGroup.getBounds());
-    window.map.fitBounds(window.iconGroup.getBounds(), {padding: [0, 30]});
+    window.map.fitBounds(window.iconGroup.getBounds().extend(window.colorMapLayer.getBounds()).pad(-0.75), {padding: [0, 30]});
 };
 var addMapColoring = function (geojson_content) {
     window.colorMapLayer = L.geoJson(geojson_content,
-        {style: parseColorStyle}
+        {
+            style: parseColorStyle,
+            pane: "tilePane"
+        }
     );
     window.colorMapLayer.addTo(window.map);
 };

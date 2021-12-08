@@ -98,7 +98,7 @@ class GeoJson:
             "features": []
         }
         return_areas = self.return_format
-        self.logger.debug("Getting GeoJson for intensity reports...")
+        self.logger.debug("Getting GeoJson for map coloring...")
         for i in self.japan_areas["features"]:
             if i["properties"]["name"] in area_names:
                 try:

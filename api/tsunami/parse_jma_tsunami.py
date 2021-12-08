@@ -4,6 +4,7 @@
 """
 import time
 import traceback
+
 import xmltodict
 
 from api.tsunami.parse_jma_watch import preparse_tsunami_watch
@@ -77,10 +78,11 @@ def parse_current_tsunami_info(information_url, app):
     if not DEBUG_TSUNAMI:
         try:
             response = make_web_request(url=information_url,
-                                        proxies=PROXY, timeout=3.5)
+                                        proxies=PROXY, timeout=3.5, to_json=False)
             if not response[0]:
                 app.logger.error(f"Failed to fetch tsunami data: {response[1]}.")
                 return
+            response = response[1]
         except:
             app.logger.warn("Failed to fetch tsunami data. Exception occurred: \n" + traceback.format_exc())
             return
