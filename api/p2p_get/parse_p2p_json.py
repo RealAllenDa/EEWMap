@@ -238,8 +238,6 @@ def parse_intensities(eq_intensities_list: dict):
                     area_intensities[content["region_name"]]["intensity_code"] = content["intensity_code"]
                     # TODO: more optimization
                     area_intensities[content["region_name"]]["intensity"] = INTENSITIES.get(content["intensity_code"])
-            if content["region_name"] not in area_names:
-                area_names.append(content["region_name"])
     from modules.area import geojson_instance
     area_geojson = geojson_instance.get_intensity_json(area_names, area_intensities)
     return {

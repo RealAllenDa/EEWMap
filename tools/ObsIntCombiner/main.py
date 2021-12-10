@@ -35,12 +35,14 @@ def run():
                     "PrefectureClassificationId": None
                 })
             f.close()
-    except:
+    except Exception:
         print("Failed to open station.txt. Check file existence.")
         return
     print(content_stations)
     with open("observation_points.json", "w+", encoding="utf-8") as f:
         f.write(json.dumps(content_stations))
         f.close()
+
+
 if __name__ == "__main__":
     run()

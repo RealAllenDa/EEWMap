@@ -1,3 +1,5 @@
+// noinspection all
+
 (function () {
   'use strict';
 

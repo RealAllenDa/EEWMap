@@ -8,7 +8,7 @@ from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from config import ENABLE_P2P_TSUNAMI, ENABLE_EEW, ENABLE_SHAKE, ENABLE_QUAKE
+from config import CURRENT_CONFIG
 from .eew import get_eew_info
 from .p2p_get import get_p2p_json
 from .shake_level import get_shake_level
@@ -25,7 +25,7 @@ def refresh_p2p_info(app):
         start_time = time.perf_counter()
         get_p2p_json(app)
         app.logger.debug(f"Refreshed P2P info in {(time.perf_counter() - start_time):.3f} seconds.")
-    except:
+    except Exception:
         app.logger.error("Failed to refresh P2P info. \n" + traceback.format_exc())
 
 
@@ -39,7 +39,7 @@ def refresh_eew(app):
         start_time = time.perf_counter()
         get_eew_info(app)
         app.logger.debug(f"Refreshed EEW in {(time.perf_counter() - start_time):.3f} seconds.")
-    except:
+    except Exception:
         app.logger.error("Failed to refresh EEW. \n" + traceback.format_exc())
 
 
@@ -53,7 +53,7 @@ def refresh_shake_level(app):
         start_time = time.perf_counter()
         get_shake_level(app)
         app.logger.debug(f"Refreshed shaking level in {(time.perf_counter() - start_time):.3f} seconds.")
-    except:
+    except Exception:
         app.logger.error("Failed to refresh shaking level. \n" + traceback.format_exc())
 
 
@@ -67,7 +67,7 @@ def refresh_jma_tsunami(app):
         start_time = time.perf_counter()
         get_jma_tsunami(app)
         app.logger.debug(f"Refreshed tsunami info in {(time.perf_counter() - start_time):.3f} seconds.")
-    except:
+    except Exception:
         app.logger.error("Failed to refresh tsunami info. \n" + traceback.format_exc())
 
 
@@ -82,8 +82,9 @@ def refresh_stations(app):
         start_time = time.perf_counter()
         centroid_instance.refresh_stations()
         app.logger.debug(f"Refreshed station info in {(time.perf_counter() - start_time):.3f} seconds.")
-    except:
+    except Exception:
         app.logger.error("Failed to refresh station info. \n" + traceback.format_exc())
+
 
 def init_api(app):
     """
@@ -102,13 +103,19 @@ def init_api(app):
     }
     scheduler = BackgroundScheduler(jobstores=job_stores, executors=executors,
                                     job_defaults=job_defaults)
-    if ENABLE_QUAKE:
+    if CURRENT_CONFIG.ENABLE_QUAKE:
         scheduler.add_job(func=refresh_p2p_info, args=(app,), trigger="interval", seconds=2, id="p2p")
         scheduler.add_job(func=refresh_stations, args=(app,), trigger="interval", days=1, id="station_update")
-    if ENABLE_SHAKE: scheduler.add_job(func=refresh_shake_level, args=(app,), trigger="interval", seconds=2,
-                                       id="shake_level")
-    if ENABLE_EEW: scheduler.add_job(func=refresh_eew, args=(app,), trigger="interval", seconds=2, id="eew")
-    if ENABLE_P2P_TSUNAMI: scheduler.add_job(func=refresh_jma_tsunami, args=(app,), trigger="interval", seconds=4,
-                                             id="tsunami")
+    if CURRENT_CONFIG.ENABLE_SHAKE:
+        scheduler.add_job(func=refresh_shake_level, args=(app,), trigger="interval",
+                          seconds=2,
+                          id="shake_level")
+    if CURRENT_CONFIG.ENABLE_EEW:
+        scheduler.add_job(func=refresh_eew, args=(app,), trigger="interval", seconds=2,
+                          id="eew")
+    if CURRENT_CONFIG.ENABLE_P2P_TSUNAMI:
+        scheduler.add_job(func=refresh_jma_tsunami, args=(app,), trigger="interval",
+                          seconds=4,
+                          id="tsunami")
     scheduler.start()
     app.logger.debug("Successfully initialized API!")

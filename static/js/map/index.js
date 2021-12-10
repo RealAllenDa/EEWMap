@@ -23,6 +23,7 @@ var initializeDOM = function () {
 };
 window.onload = function () {
     try {
+        initializeLocale("map");
         initializeDOM();
         initializeMap();
         displayIntensityCode(0, false);

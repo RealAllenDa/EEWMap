@@ -7,7 +7,7 @@ import json
 import time
 import traceback
 
-from config import PROXY
+from config import CURRENT_CONFIG
 from modules.sdk import relpath, make_web_request
 
 
@@ -27,7 +27,8 @@ class Centroid:
         self._area_to_position_centroid = {}
         start_initialize_time = time.perf_counter()
         self.logger.debug("Initializing Centroid library...")
-        self.refresh_stations()
+        if CURRENT_CONFIG.ENABLE_UPDATING_CENTROID:
+            self.refresh_stations()
         self._init_area_centroid()
         self._init_earthquake_station_centroid()
         self._init_station_centroid()
@@ -44,14 +45,15 @@ class Centroid:
         self.logger.info("Updating intensity station names...")
         try:
             response = make_web_request(
-                url="https://api.dmdata.jp/v2/parameter/earthquake/station?key=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
-                proxies=PROXY, timeout=10, to_json=False
+                url="https://api.dmdata.jp/v2/parameter/earthquake/station?key"
+                    "=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
+                proxies=CURRENT_CONFIG.PROXY, timeout=10
             )
             if not response[0]:
                 self.logger.error(f"Failed to update intensity stations: {response[1]}.")
                 return
-            response = response[1].json()
-        except:
+            response = response[1]
+        except Exception:
             self.logger.error("Failed to update intensity stations. Exception occurred: \n" + traceback.format_exc())
             return
         if response.get("status", "") == "error":
@@ -129,7 +131,6 @@ class Centroid:
             self._area_to_position_centroid = json.loads(f.read())
         self.logger.debug(f"Successfully initialized centroid for area to position "
                           f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
-
 
     @property
     def station_centroid(self):

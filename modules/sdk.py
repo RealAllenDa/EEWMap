@@ -52,10 +52,11 @@ def relpath(file: str) -> str:
     curr_file = Path(frame.f_code.co_filename)
     return str(curr_file.parent.joinpath(file).resolve())
 
+
 def make_web_request(url: str,
-                     proxies: Union[None, dict]=None,
-                     timeout: Union[int, float]=None,
-                     to_json: bool=False) -> Tuple[bool, Union[Response, Any]]:
+                     proxies: Union[None, dict] = None,
+                     timeout: Union[int, float] = None,
+                     to_json: bool = False) -> Tuple[bool, Union[Response, Any]]:
     """
     Makes web requests to API, URL, etc.
 

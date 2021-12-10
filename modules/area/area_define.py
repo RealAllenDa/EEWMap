@@ -62,7 +62,7 @@ class GeoJson:
                 f.close()
             self.logger.debug(f"Successfully initialized GeoJson for earthquake "
                               f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
-        except:
+        except Exception:
             self.logger.fatal("Failed to initialize GeoJson for earthquake. \n" + traceback.format_exc())
             raise Exception("Failed to initialize GeoJson for earthquake.")
 
@@ -78,7 +78,7 @@ class GeoJson:
                 f.close()
             self.logger.debug(f"Successfully initialized GeoJson for tsunami "
                               f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
-        except:
+        except Exception:
             self.logger.fatal("Failed to initialize GeoJson for tsunami. \n" + traceback.format_exc())
             raise Exception("Failed to initialize GeoJson for tsunami.")
 
@@ -92,6 +92,7 @@ class GeoJson:
         :return: area-color pair
         :rtype: dict
         """
+        # TODO: replace area_names to area_intensities.keys
         start_time = time.perf_counter()
         self.return_format = {
             "type": "FeatureCollection",
@@ -103,13 +104,13 @@ class GeoJson:
             if i["properties"]["name"] in area_names:
                 try:
                     i["properties"]["intensity"] = area_intensities[i["properties"]["name"]]["intensity"]
-                except:
+                except Exception:
                     self.logger.error(f"Failed to parse intensity coloring for {i['properties']['name']}.")
                     traceback.print_exc()
                     i["properties"]["intensity"] = "0"
                 try:
                     i["properties"]["intensity_color"] = self.intensity_color[i["properties"]["intensity"]]
-                except:
+                except Exception:
                     self.logger.error(f"Failed to parse intensity coloring for {i['properties']['name']}.")
                     traceback.print_exc()
                     i["properties"]["intensity"] = "0"
@@ -139,7 +140,7 @@ class GeoJson:
             if i["properties"]["name"] in area_names:
                 try:
                     i["properties"]["grade"] = area_grades[i["properties"]["name"]]["grade"]
-                except:
+                except Exception:
                     self.logger.error(f"Failed to parse tsunami coloring for {i['properties']['name']}.")
                     traceback.print_exc()
                     i["properties"]["grade"] = "Unknown"

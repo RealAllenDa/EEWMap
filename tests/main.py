@@ -12,18 +12,19 @@
         - pswave
     Note: The station to English module isn't currently being used, so it won't be tested.
 """
-import sys
-import unittest
-
-import HTMLReport
-
-sys.path.append('../')
 # noinspection PyUnresolvedReferences
 from app import app  # In order to pre-initialize the application
 from classes import DemoNormIntensityJson, \
     DemoIntAbnIntensityJson, DemoAreaAbnIntensityJson, DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
     DemoAreaAbnTsunamiJson
 from config import VERSION
+
+import sys
+import unittest
+
+import HTMLReport
+
+sys.path.append('../')
 
 
 class TestUtilities(unittest.TestCase):

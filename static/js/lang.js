@@ -1,4 +1,4 @@
-window.LOCALE = {
+const LOCALE = {
     "en": {
         "js": {
             "map": {
@@ -60,5 +60,59 @@ window.LOCALE = {
             }
         }
     },
-    "zh": {}
+    "zh": {
+        "html": {
+            "map": {
+                "title": "地震地图",
+                "dom": {
+                    "intensity-label,eew-intensity-label": "最大震度",
+                    "intensity-report-label": "震级速报",
+                    "int-report-occur-label": "于 <span\n id=\"int-report-occur-time\">XXXX-XX-XX XX:XX</span> 发生",
+                    "eq-report-occur-label": "于 <span id=\"occur-time\">XXXX-XX-XX XX:XX</span> 发生",
+                    "epicenter-label,eew-epicenter-label": "震源",
+                    "depth-label,eew-depth-label": "深度",
+                    "magnitude-label,eew-magnitude-label": "震级",
+                    "banner-text-domestic,banner-text-foreign,eew-level,eew-advice": "获取信息中……",
+                    "drill-label": "训练 - 非真实情况",
+                    "expected-label": "预计震度",
+                    "eew-receive-label": "于 <span id=\"eew-receive-time\">XXXX/XX/XX XX:XX</span> 接收"
+                }
+            }
+        }
+    }
+};
+let selectLocale = () => {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == "locale") {
+            let content = pair[1];
+            if (LOCALE[content] === undefined) {
+                window.CURRENT_LOCALE = LOCALE["en"];
+                return;
+            } else {
+                window.CURRENT_LOCALE = LOCALE[content];
+                return;
+            }
+        }
+    }
+    window.CURRENT_LOCALE = LOCALE["en"];
+};
+let applyLocale = (module_name) => {
+    // TODO: Apply on JS
+    const currentModuleLocale = window.CURRENT_LOCALE.html[module_name];
+    document.title = currentModuleLocale.title;
+    for (var i in currentModuleLocale.dom) {
+        console.log(i);
+        const content = currentModuleLocale.dom[i];
+        const toApplyIds = i.split(",");
+        toApplyIds.forEach(id => {
+            document.getElementById(id).innerHTML = content;
+        });
+    }
+};
+let initializeLocale = (module_name) => {
+    selectLocale();
+    applyLocale(module_name);
 };

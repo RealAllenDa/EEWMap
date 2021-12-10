@@ -67,7 +67,7 @@ def intensity2color(raw_response):
             continue
         try:
             pixel_color = image[int(i["Point"]["X"]), int(i["Point"]["Y"])][0:3]
-        except:
+        except Exception:
             continue
         pixel_string = ",".join('%s' % list_id for list_id in pixel_color)
         pixel_intensity = INTENSITY_DICT.get(pixel_string, 0)
@@ -116,6 +116,7 @@ def intensity2color(raw_response):
     logger.debug(f"Successfully parsed EEW intensities in {(time.perf_counter() - start_time):.3f} seconds!")
     return intensities, parsed_area_intensities, parsed_area_coloring
 
+
 def parse_area_intensities(area_intensities):
     parsed_area_int = {}
     parse_areas = []
@@ -126,7 +127,7 @@ def parse_area_intensities(area_intensities):
             position_name = centroid_instance.area_position_centroid.get(i)
             position = position_name["position"]
             name = position_name["name"]
-        except:
+        except Exception:
             continue
         parsed_area_int[name] = {
             "name": name,

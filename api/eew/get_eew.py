@@ -5,7 +5,7 @@
 import time
 import traceback
 
-from config import PROXY, DEBUG_EEW_OVRD, DEBUG_EEW, DEBUG_EEW_IMAGE, DEBUG_EEW_IMAGE_OVRD
+from config import CURRENT_CONFIG
 from modules.intensity import intensity2color
 from modules.pswave import parse_pswave
 from modules.sdk import make_web_request
@@ -27,27 +27,27 @@ def get_eew_info(app):
     global return_dict
     try:
         response_time = make_web_request(url="http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json",
-                                        proxies=PROXY, timeout=3.5, to_json=True)
+                                         proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=True)
         if not response_time[0]:
             app.logger.warn("Failed to fetch EEW info (failed to get time).")
             return
         request_time = time.strptime(response_time[1]["latest_time"], "%Y/%m/%d %H:%M:%S")
         req_date = time.strftime("%Y%m%d", request_time)
         req_time = time.strftime("%Y%m%d%H%M%S", request_time)
-        if DEBUG_EEW:
-            time_offset = int(time.time()) - DEBUG_EEW_OVRD["origin_timestamp"]
-            req_date = str(DEBUG_EEW_OVRD["start_time"])[:8]
-            time_struct = time.strptime(str(DEBUG_EEW_OVRD["start_time"]), "%Y%m%d%H%M%S")
+        if CURRENT_CONFIG.DEBUG_EEW:
+            time_offset = int(time.time()) - CURRENT_CONFIG.DEBUG_EEW_OVRD["origin_timestamp"]
+            req_date = str(CURRENT_CONFIG.DEBUG_EEW_OVRD["start_time"])[:8]
+            time_struct = time.strptime(str(CURRENT_CONFIG.DEBUG_EEW_OVRD["start_time"]), "%Y%m%d%H%M%S")
             req_timestamp = time.mktime(time_struct) + time_offset
             req_time_transformed = time.localtime(req_timestamp)
             req_time = time.strftime("%Y%m%d%H%M%S", req_time_transformed)
         response = make_web_request(
             url=f"http://www.kmoni.bosai.go.jp/webservice/hypo/eew/{req_time}.json",
-            proxies=PROXY, timeout=3.5, to_json=True)
+            proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=True)
         if not response[0]:
             app.logger.warn(f"Failed to fetch EEW info: {response[1]}.")
             return
-    except:
+    except Exception:
         app.logger.warn("Failed to fetch EEW info. Exception occurred: \n" + traceback.format_exc())
         return
     converted_response = response[1]
@@ -81,30 +81,30 @@ def get_eew_info(app):
         area_intensities = {}
         area_coloring = {}
         try:
-            if not DEBUG_EEW_IMAGE:
+            if not CURRENT_CONFIG.DEBUG_EEW_IMAGE:
                 response = make_web_request(
                     url=f"http://www.kmoni.bosai.go.jp/data/map_img/EstShindoImg/eew/{req_date}/{req_time}.eew.gif",
-                    proxies=PROXY, timeout=3.5, to_json=False)
+                    proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=False)
                 resp_raw = response[1].content
             else:
-                with open(DEBUG_EEW_IMAGE_OVRD, "rb") as f:
+                with open(CURRENT_CONFIG.DEBUG_EEW_IMAGE_OVRD, "rb") as f:
                     resp_raw = f.read()
                     f.close()
             if not response[0]:
                 app.logger.warn(f"Failed to fetch EEW image: {response[1]}.")
             else:
                 intensities, area_intensities, area_coloring = intensity2color(resp_raw)
-        except:
+        except Exception:
             app.logger.warn("Failed to fetch EEW image. Exception occurred: \n" + traceback.format_exc())
         try:
             origin_time = time.strptime(converted_response["origin_time"], "%Y%m%d%H%M%S")
             origin_timestamp = float(time.mktime(origin_time))
-            if DEBUG_EEW:
-                origin_timestamp = DEBUG_EEW_OVRD["origin_timestamp"]
+            if CURRENT_CONFIG.DEBUG_EEW:
+                origin_timestamp = CURRENT_CONFIG.DEBUG_EEW_OVRD["origin_timestamp"]
             depth = int(converted_response["depth"].replace("km", ""))
             s_wave_time, p_wave_time = parse_pswave(depth, float(
-                time.time() + (3600 if not DEBUG_EEW else 0) - origin_timestamp))  # Japanese time
-        except:
+                time.time() + (3600 if not CURRENT_CONFIG.DEBUG_EEW else 0) - origin_timestamp))  # Japanese time
+        except Exception:
             app.logger.warn("Failed to get PS wave time. Exception occurred: \n" + traceback.format_exc())
             s_wave_time, p_wave_time = None, None
         return_dict = {

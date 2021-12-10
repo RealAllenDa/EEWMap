@@ -85,5 +85,5 @@ def index_arrangement():
             content = json.loads(f.read())
             f.close()
         return content
-    except:
+    except Exception:
         abort(500)

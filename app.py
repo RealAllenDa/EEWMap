@@ -21,6 +21,7 @@ from tsunami import tsunami_bp
 
 app = Flask("EEWMap")
 
+
 # noinspection SpellCheckingInspection
 def config_logger():
     """
@@ -28,18 +29,20 @@ def config_logger():
     """
     if not os.path.exists(relpath("./logs/")):
         os.mkdir("logs")
-    flask_logger = app.logger
-    flask_logger.setLevel("DEBUG")
+    app.logger.handlers.clear()
+    app.logger.setLevel("DEBUG")
+
     console_handler = logging.StreamHandler()
     console_formatter = logging.Formatter(fmt="[%(asctime)s] [%(levelname)s] [%(module)s] %(funcName)s: %(message)s")
     console_handler.setFormatter(console_formatter)
-    flask_logger.addHandler(console_handler)
+    app.logger.addHandler(console_handler)
+
     file_handler = RotatingFileHandler(filename=relpath("logs/main.log"), maxBytes=100 * 1024 * 1024, backupCount=10)
     file_formatter = logging.Formatter(
         fmt="[%(asctime)s] [%(levelname)s] [%(filename)s %(module)s:%(lineno)d] %(funcName)s: %(message)s")
     file_handler.setFormatter(file_formatter)
     file_handler.setLevel("DEBUG")
-    flask_logger.addHandler(file_handler)
+    app.logger.addHandler(file_handler)
 
 
 config_logger()
