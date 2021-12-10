@@ -1,0 +1,86 @@
+.intensity-big {
+    width: 25px !important;
+    height: 25px !important;
+    display: flex !important;
+    box-sizing: border-box;
+
+    font-weight: bold;
+    font-size: 19px !important;
+    font-family: 'B612', sans-serif;
+
+    justify-content: center;
+    line-height: 29px;
+}
+
+.intensity-small {
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    font-weight: bold;
+    font-size: 14px !important;
+    font-family: 'B612', sans-serif;
+
+    justify-content: center;
+    line-height: 24px;
+}
+
+.intensity-1 {
+    background: var(--intensity-1);
+}
+
+.intensity-2 {
+    background: var(--intensity-2);
+}
+
+.intensity-3 {
+    background: var(--intensity-3);
+    color: black;
+}
+
+.intensity-4 {
+    background: var(--intensity-4);
+    color: black;
+}
+
+.intensity-5 {
+    background: var(--intensity-5);
+    color: black;
+}
+
+.intensity-5_and_up {
+    background: var(--intensity-5-and-up);
+    color: black;
+}
+
+.intensity-6 {
+    background: var(--intensity-6);
+    color: black;
+}
+
+.intensity-7 {
+    background: var(--intensity-7);
+}
+
+.intensity-8 {
+    background: var(--intensity-8);
+}
+
+.intensity-9 {
+    background: var(--intensity-9);
+}
+
+.intensity-unknown {
+    background: var(--intensity-0);
+}
+
+.intensity-add {
+    align-self: flex-end;
+    font-size: 13px;
+}
+
+.special-intensity-add {
+    font-size: 12px;
+}

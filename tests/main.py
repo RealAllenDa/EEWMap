@@ -72,12 +72,9 @@ class TestModules(unittest.TestCase):
         """
         Tests get_intensity_json function.
         """
-        normal_geojson = self.geojson_instance.get_intensity_json(DemoNormIntensityJson.area_names,
-                                                                  DemoNormIntensityJson.area_intensities)
-        intensity_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoIntAbnIntensityJson.area_names,
-                                                                              DemoIntAbnIntensityJson.area_intensities)
-        area_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoAreaAbnIntensityJson.area_names,
-                                                                         DemoAreaAbnIntensityJson.area_intensities)
+        normal_geojson = self.geojson_instance.get_intensity_json(DemoNormIntensityJson.area_intensities)
+        intensity_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoIntAbnIntensityJson.area_intensities)
+        area_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoAreaAbnIntensityJson.area_intensities)
         self.assertEqual(normal_geojson["features"][0]["properties"]["intensity"], "5+")
         self.assertEqual(intensity_abnormal_geojson["features"][0]["properties"]["intensity"], "0")
         self.assertEqual(area_abnormal_geojson["features"], [])
@@ -90,12 +87,9 @@ class TestModules(unittest.TestCase):
         """
         Tests get_tsunami_json function.
         """
-        normal_tsunami_geojson = self.geojson_instance.get_tsunami_json(DemoNormTsunamiJson.area_names,
-                                                                        DemoNormTsunamiJson.area_grades)
-        grade_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoGradeAbnTsunamiJson.area_names,
-                                                                        DemoGradeAbnTsunamiJson.area_grades)
-        area_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoAreaAbnTsunamiJson.area_names,
-                                                                       DemoAreaAbnTsunamiJson.area_grades)
+        normal_tsunami_geojson = self.geojson_instance.get_tsunami_json(DemoNormTsunamiJson.area_grades)
+        grade_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoGradeAbnTsunamiJson.area_grades)
+        area_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoAreaAbnTsunamiJson.area_grades)
         self.assertEqual(normal_tsunami_geojson["features"][0]["properties"]["grade"], "MajorWarning")
         self.assertEqual(area_abnormal_geojson["features"], [])
         self.assertFalse("intensity_color" in grade_abnormal_geojson["features"][0]["properties"])

@@ -8,14 +8,13 @@ import requests
 from requests import Response
 
 
-def response_verify(resp: Response) -> bool:
+def _response_verify(resp: Response) -> bool:
     """
      Verify if the response's status code is 200 or not.
 
      :return: True if response code is 200
      :rtype: bool
     """
-    # TODO: Change to private
     if resp.status_code != 200 or resp.text == "":
         return False
     else:
@@ -69,7 +68,7 @@ def make_web_request(url: str,
     try:
         response = requests.get(url=url, proxies=proxies, timeout=timeout)
         response.encoding = 'utf-8'
-        if not response_verify(response):
+        if not _response_verify(response):
             return False, f"Failed response verifying (code={response.status_code})."
         return True, response.json() if to_json else response
     except Exception as e:

@@ -82,23 +82,22 @@ class GeoJson:
             self.logger.fatal("Failed to initialize GeoJson for tsunami. \n" + traceback.format_exc())
             raise Exception("Failed to initialize GeoJson for tsunami.")
 
-    def get_intensity_json(self, area_names, area_intensities):
+    def get_intensity_json(self, area_intensities):
         """
         Tries to get the areas corresponding to the areas in the earthquake,
         then color it with different intensity colours.
 
-        :param area_names: Areas in the earthquake
         :param area_intensities: The intensities of areas in the earthquake
         :return: area-color pair
         :rtype: dict
         """
-        # TODO: replace area_names to area_intensities.keys
         start_time = time.perf_counter()
         self.return_format = {
             "type": "FeatureCollection",
             "features": []
         }
         return_areas = self.return_format
+        area_names = area_intensities.keys()
         self.logger.debug("Getting GeoJson for map coloring...")
         for i in self.japan_areas["features"]:
             if i["properties"]["name"] in area_names:
@@ -119,12 +118,11 @@ class GeoJson:
         self.logger.debug(f"Successfully got GeoJson in {(time.perf_counter() - start_time):.3f} seconds.")
         return return_areas
 
-    def get_tsunami_json(self, area_names, area_grades):
+    def get_tsunami_json(self, area_grades: dict):
         """
         Tries to get the areas corresponding to the areas in tsunami warning,
         then color it with different tsunami type colours.
 
-        :param area_names: Tsunami warning areas
         :param area_grades: The area warning grade
         :return: area-color pair
         :rtype: dict
@@ -135,6 +133,7 @@ class GeoJson:
             "features": []
         }
         return_areas = self.return_format
+        area_names = area_grades.keys()
         self.logger.debug("Getting GeoJson for tsunami warnings...")
         for i in self.tsunami_areas["features"]:
             if i["properties"]["name"] in area_names:

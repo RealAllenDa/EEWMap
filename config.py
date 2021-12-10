@@ -51,12 +51,17 @@ class DevelopmentConfig(_BaseConfig):
         "http": "127.0.0.1:7890",
         "https": "127.0.0.1:7890"
     }
-    DEBUG_P2P_TSUNAMI = True
-    ENABLE_UPDATING_CENTROID = True
+    DEBUG_P2P_TSUNAMI = False
+    ENABLE_UPDATING_CENTROID = False
+    DEBUG_EEW = True
+    DEBUG_EEW_OVRD = {
+        "start_time": 20211209110520,
+        "origin_timestamp": 1639149965
+    }
 
 
 class ProductionConfig(_BaseConfig):
     pass
 
 
-CURRENT_CONFIG = DevelopmentConfig()
+CURRENT_CONFIG = ProductionConfig()

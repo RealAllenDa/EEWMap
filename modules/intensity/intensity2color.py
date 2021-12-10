@@ -110,16 +110,16 @@ def intensity2color(raw_response):
                 "detail_intensity": pixel_intensity,
                 "is_area": False
             }
-    parsed_area_intensities, areas_to_parse = parse_area_intensities(area_intensities)
+    parsed_area_intensities, recommend_area_coloring = parse_area_intensities(area_intensities)
     from modules.area import geojson_instance
-    parsed_area_coloring = geojson_instance.get_intensity_json(areas_to_parse, parsed_area_intensities)
+    parsed_area_coloring = geojson_instance.get_intensity_json(parsed_area_intensities)
     logger.debug(f"Successfully parsed EEW intensities in {(time.perf_counter() - start_time):.3f} seconds!")
-    return intensities, parsed_area_intensities, parsed_area_coloring
+    return intensities, parsed_area_intensities, parsed_area_coloring, recommend_area_coloring
 
 
 def parse_area_intensities(area_intensities):
     parsed_area_int = {}
-    parse_areas = []
+    recommend_areas = False
     from modules.centroid import centroid_instance
     for i in area_intensities.keys():
         try:
@@ -127,6 +127,8 @@ def parse_area_intensities(area_intensities):
             position_name = centroid_instance.area_position_centroid.get(i)
             position = position_name["position"]
             name = position_name["name"]
+            if area_intensities[i] >= 4:
+                recommend_areas = True
         except Exception:
             continue
         parsed_area_int[name] = {
@@ -136,5 +138,4 @@ def parse_area_intensities(area_intensities):
             "latitude": position[0],
             "longitude": position[1]
         }
-        parse_areas.append(name)
-    return parsed_area_int, parse_areas
+    return parsed_area_int, recommend_areas

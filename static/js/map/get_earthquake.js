@@ -179,8 +179,8 @@ var parseEqInfo = function (result) {
             addMapIntensities(resp_content["area_intensity"]["station"]);
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
-            addMapColoring(resp_content["area_intensity"]["geojson"]);
-            parseDualMapScale(resp_content);
+            //addMapColoring(resp_content["area_intensity"]["geojson"]);
+            parseMapScale();
         } else if (resp_content["type"] == "Foreign") {
             /*
             * For Foreign (Foreign Earthquake Report):
@@ -275,15 +275,24 @@ var parseEEWInfo = function (result, only_update_map = false) {
     deleteAllLayers();
     addEpicenter(result["hypocenter"]["latitude"], result["hypocenter"]["longitude"]);
 
-    addMapIntensities(result["area_coloring"]["areas"]);
-    if (result["area_coloring"]["geojson"] != "null") {
-        addMapColoring(result["area_coloring"]["geojson"]);
-    }
-/*    if (result["area_intensity"] != {}) {
-        addMapIntensities(result["area_intensity"]);
+    if (result["area_coloring"]["recommended_areas"]) {
+        if (!_.isEqual({}, result["area_coloring"]["areas"]) ) {
+            addMapIntensities(result["area_coloring"]["areas"]);
+        } else {
+            console.warn("Areas equals null. Check server log.");
+        }
+        if (!_.isEqual({}, result["area_coloring"]["geojson"]) ) {
+            addMapColoring(result["area_coloring"]["geojson"]);
+        } else {
+            console.warn("GeoJson equals null. Check server log.");
+        }
     } else {
-        window.logger.warn("No points exist. Check server log.");
-    }*/
+        if (result["area_intensity"] != {}) {
+            addMapIntensities(result["area_intensity"]);
+        } else {
+            window.logger.warn("No points exist. Check server log.");
+        }
+    }
     parseMapScale();
     window.DOM.expected_flag.style.display = "block";
 

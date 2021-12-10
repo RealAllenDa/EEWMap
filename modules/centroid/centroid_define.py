@@ -47,7 +47,7 @@ class Centroid:
             response = make_web_request(
                 url="https://api.dmdata.jp/v2/parameter/earthquake/station?key"
                     "=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
-                proxies=CURRENT_CONFIG.PROXY, timeout=10
+                proxies=CURRENT_CONFIG.PROXY, timeout=10, to_json=True
             )
             if not response[0]:
                 self.logger.error(f"Failed to update intensity stations: {response[1]}.")

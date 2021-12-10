@@ -56,7 +56,7 @@ class DemoNormIntensityJson:
             "intensity": "5+",
             "longitude": 123,
             "latitude": 123,
-            "is_area": "true"
+            "is_area": True
         }
     }
     intensity_color = "#FF7800"
@@ -71,7 +71,7 @@ class DemoIntAbnIntensityJson(DemoNormIntensityJson):
             "intensity": "TEST",
             "longitude": 123,
             "latitude": 123,
-            "is_area": "true"
+            "is_area": True
         }
     }
     intensity_color = "#666666"
@@ -86,7 +86,7 @@ class DemoAreaAbnIntensityJson(DemoNormIntensityJson):
             "intensity": "5+",
             "longitude": 123,
             "latitude": 123,
-            "is_area": "true"
+            "is_area": True
         }
     }
 

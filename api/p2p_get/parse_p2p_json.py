@@ -128,7 +128,7 @@ def parse_p2p_info(raw_json, app):
                             "intensity": INTENSITIES.get(j["scale"]),
                             "latitude": point[0],
                             "longitude": point[1],
-                            "is_area": "true",
+                            "is_area": True,
                             "intensity_code": j["scale"]
                         }
                         geojson_areas_earthquake.append(j["addr"])
@@ -143,7 +143,7 @@ def parse_p2p_info(raw_json, app):
                             "intensity": INTENSITIES.get(j["scale"]),
                             "latitude": point_long_lat[0],
                             "longitude": point_long_lat[1],
-                            "is_area": "false",
+                            "is_area": False,
                             "region_code": point_region["code"],
                             "region_name": point_region["name"],
                             "intensity_code": j["scale"]
@@ -163,9 +163,9 @@ def parse_p2p_info(raw_json, app):
                 "tsunami_comments": earthquake_tsunami_comment,
                 "hypocenter": earthquake_hypocenter,
                 "area_intensity": {
-                    "areas": parsed_intensities["area"]["intensity"],
-                    "geojson": parsed_intensities["area"]["geojson"],
-                    "station": parsed_intensities["station"]
+                    "areas": parsed_intensities["area"]["intensity"] if parsed_intensities != {} else {},
+                    "geojson": parsed_intensities["area"]["geojson"] if parsed_intensities != {} else {},
+                    "station": parsed_intensities["station"] if parsed_intensities != {} else {}
                 }
             }
 
@@ -195,11 +195,9 @@ def parse_p2p_info(raw_json, app):
                 tsunami_warning_in_effect = "0"
                 continue
             tsunami_warning_in_effect = "1"
-            geojson_areas_tsunami = []
             tsunami_areas_warn = {}
             tsunami_return = {}
             for j in i["areas"]:
-                geojson_areas_tsunami.append(j["name"])
                 tsunami_areas_warn[j["name"]] = {
                     "name": j["name"],
                     "immediate": j["immediate"],
@@ -208,17 +206,16 @@ def parse_p2p_info(raw_json, app):
             from modules.area import geojson_instance
             tsunami_return = {
                 "time": i["time"],
-                "areas": geojson_instance.get_tsunami_json(geojson_areas_tsunami, tsunami_areas_warn)
+                "areas": geojson_instance.get_tsunami_json(tsunami_areas_warn)
             }
 
 
 def parse_intensities(eq_intensities_list: dict):
     area_intensities = {}
     station_intensities = {}
-    area_names = []
     for i in eq_intensities_list.keys():
         content = eq_intensities_list[i]
-        if content["is_area"] == "true":
+        if content["is_area"]:
             area_intensities[content["name"]] = content
         else:
             station_intensities[content["name"]] = content
@@ -230,16 +227,15 @@ def parse_intensities(eq_intensities_list: dict):
                     "intensity": INTENSITIES.get(content["intensity_code"]),
                     "latitude": position[0],
                     "longitude": position[1],
-                    "is_area": "true",
+                    "is_area": True,
                     "intensity_code": content["intensity_code"]
                 }
             else:
                 if content["intensity_code"] > area_intensities[content["region_name"]]["intensity_code"]:
                     area_intensities[content["region_name"]]["intensity_code"] = content["intensity_code"]
-                    # TODO: more optimization
                     area_intensities[content["region_name"]]["intensity"] = INTENSITIES.get(content["intensity_code"])
     from modules.area import geojson_instance
-    area_geojson = geojson_instance.get_intensity_json(area_names, area_intensities)
+    area_geojson = geojson_instance.get_intensity_json(area_intensities)
     return {
         "area": {
             "intensity": area_intensities,
