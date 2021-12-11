@@ -22,6 +22,9 @@ class _BaseConfig:
     ENABLE_QUAKE = True
     ENABLE_UPDATING_CENTROID = True
 
+    # EEW Settings
+    USE_SVIR_LEVEL = 5
+
     # Debugging
     DEBUG_EEW = False
     DEBUG_EEW_OVRD = {
@@ -45,6 +48,8 @@ class _BaseConfig:
     DEBUG_TSUNAMI_WATCH = False
     DEBUG_TSUNAMI_WATCH_OVRD = relpath("./misc/demo/demo_watch.xml")
 
+    DEBUG_IGNORE_SVIR_OUTDATE = False
+
 
 class DevelopmentConfig(_BaseConfig):
     PROXY = {
@@ -53,7 +58,7 @@ class DevelopmentConfig(_BaseConfig):
     }
     DEBUG_P2P_TSUNAMI = False
     ENABLE_UPDATING_CENTROID = False
-    DEBUG_EEW = True
+    DEBUG_EEW = False
     DEBUG_EEW_OVRD = {
         "start_time": 20211209110520,
         "origin_timestamp": 1639149965

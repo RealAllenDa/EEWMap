@@ -110,6 +110,8 @@ def get_eew_info(app):
             s_wave_time, p_wave_time = None, None
         return_dict = {
             "status": 0,
+            "type": "kmoni",
+            "is_plum": False,
             "is_cancel": converted_response["is_cancel"],
             "is_test": converted_response["is_training"],
             "max_intensity": parsed_intensity,

@@ -10,6 +10,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from config import CURRENT_CONFIG
 from .eew import get_eew_info
+from .eew.get_svir_eew import get_svir_eew_info
 from .p2p_get import get_p2p_json
 from .shake_level import get_shake_level
 from .tsunami import get_jma_tsunami
@@ -41,6 +42,20 @@ def refresh_eew(app):
         app.logger.debug(f"Refreshed EEW in {(time.perf_counter() - start_time):.3f} seconds.")
     except Exception:
         app.logger.error("Failed to refresh EEW. \n" + traceback.format_exc())
+
+
+def refresh_svir_eew(app):
+    """
+    Refreshes the SVIR EEW.
+
+    :param app: The Flask app instance
+    """
+    try:
+        start_time = time.perf_counter()
+        get_svir_eew_info(app)
+        app.logger.debug(f"Refreshed SVIR EEW in {(time.perf_counter() - start_time):.3f} seconds.")
+    except Exception:
+        app.logger.error("Failed to refresh SVIR EEW. \n" + traceback.format_exc())
 
 
 def refresh_shake_level(app):
@@ -113,6 +128,8 @@ def init_api(app):
     if CURRENT_CONFIG.ENABLE_EEW:
         scheduler.add_job(func=refresh_eew, args=(app,), trigger="interval", seconds=2,
                           id="eew")
+        scheduler.add_job(func=refresh_svir_eew, args=(app,), trigger="interval", seconds=2,
+                          id="svir_eew")
     if CURRENT_CONFIG.ENABLE_P2P_TSUNAMI:
         scheduler.add_job(func=refresh_jma_tsunami, args=(app,), trigger="interval",
                           seconds=4,

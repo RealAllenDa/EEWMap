@@ -239,20 +239,22 @@ var parseEEWInfo = function (result, only_update_map = false) {
         } else {
             window.DOM.eew_report_number.innerText = "#" + result["report_num"];
         }
-        if (parseInt(result["report_flag"]) == 0) {
-            // Earthquake Forecast
+        if (result["is_plum"]) {
+            // PLUM
             window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
-            window.DOM.eew_banner.innerText = "Earthquake Early Warning (Forecast)";
-        } else if (parseInt(result["report_flag"]) == 1) {
-            // EEW
-            window.DOM.eew_banner_div.style.background = "var(--intensity-8)";
-            window.DOM.eew_banner.innerText = "Earthquake Early Warning (Warning) - Strong Shaking Expected";
+            window.DOM.eew_banner.innerText = "PLUM determined epicenter - No detailed information available";
         } else {
-            // Unknown
-            window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
-            window.DOM.eew_banner.innerText = "Unknown EEW (Probably PLUM, etc.)";
+            if (parseInt(result["report_flag"]) == 0) {
+                // Earthquake Forecast
+                window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
+                window.DOM.eew_banner.innerText = "Earthquake Early Warning (Forecast)";
+            } else if (parseInt(result["report_flag"]) == 1) {
+                // EEW
+                window.DOM.eew_banner_div.style.background = "var(--intensity-8)";
+                window.DOM.eew_banner.innerText = "Earthquake Early Warning (Warning) - Strong Shaking Expected";
+            }
         }
-        if (result["max_intensity"] == "0") {
+        if (result["max_intensity"] == "0" || result["is_plum"]) {
             window.DOM.eew_advice.style.background = "var(--info-background-color)";
             window.DOM.eew_advice.innerText = "Wait for further information";
         } else if (result["hypocenter"]["depth"] >= 100) {
