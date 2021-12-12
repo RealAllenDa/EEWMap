@@ -163,8 +163,7 @@ def parse_p2p_info(raw_json, app):
                 "tsunami_comments": earthquake_tsunami_comment,
                 "hypocenter": earthquake_hypocenter,
                 "area_intensity": {
-                    "areas": parsed_intensities["area"]["intensity"] if parsed_intensities != {} else {},
-                    "geojson": parsed_intensities["area"]["geojson"] if parsed_intensities != {} else {},
+                    "areas": parsed_intensities["area"] if parsed_intensities != {} else {},
                     "station": parsed_intensities["station"] if parsed_intensities != {} else {}
                 }
             }
@@ -234,12 +233,7 @@ def parse_intensities(eq_intensities_list: dict):
                 if content["intensity_code"] > area_intensities[content["region_name"]]["intensity_code"]:
                     area_intensities[content["region_name"]]["intensity_code"] = content["intensity_code"]
                     area_intensities[content["region_name"]]["intensity"] = INTENSITIES.get(content["intensity_code"])
-    from modules.area import geojson_instance
-    area_geojson = geojson_instance.get_intensity_json(area_intensities)
     return {
-        "area": {
-            "intensity": area_intensities,
-            "geojson": area_geojson
-        },
+        "area": area_intensities,
         "station": station_intensities
     }

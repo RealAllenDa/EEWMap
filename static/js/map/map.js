@@ -96,6 +96,19 @@ window.epicenter_icon = new L.Icon({
 });
 window.iconGroup = L.featureGroup();
 window.epicenterGroup = L.featureGroup(); // Extremely unlikely, but dual epicenters can happen.
+window.INTENSITY_COLORS = {
+    "0": "#666666",
+    "1": "#46646E",
+    "2": "#1E6EE6",
+    "3": "#00C8C8",
+    "4": "#FAFA64",
+    "5-": "#FFB400",
+    "5+": "#FF7800",
+    "5?": "#FFFF00",
+    "6-": "#E60000",
+    "6+": "#A00000",
+    "7": "#960096"
+};
 var initializeMap = function () {
     window.map = L.map('map', {
         zoomControl: false,
@@ -176,7 +189,6 @@ var addMapIntensities = function (intensityList) {
         var latitude = intensityList[i]["latitude"];
         var longitude = intensityList[i]["longitude"];
         if (intensityList[i]["is_area"] == true) {
-            // TODO: Fix
             var layer = L.marker([latitude, longitude], {icon: window.intensity_area_icons[intensity]});
         } else {
             layer = L.marker([latitude, longitude], {icon: window.intensity_station_icons[intensity]});
@@ -242,23 +254,45 @@ var parseMapScale = function () {
     }
     window.map.fitBounds(currentBounds, {padding: [0, 30]});
 };
-var addMapColoring = function (geojson_content) {
-    window.colorMapLayer = L.geoJson(geojson_content,
+var addMapColoring = function (intensities) {
+    areaIntensityToColor(intensities);
+    window.colorMapLayer = L.geoJson(_GEOJSON_JAPAN_WITH_SUB_AREAS,
         {
             style: parseColorStyle,
+            filter: filterMapColoring,
             pane: "tilePane"
         }
     );
     window.colorMapLayer.addTo(window.map);
+};
+var areaIntensityToColor = function (intensities) {
+    window.mapColoring = {
+        "colors": {},
+        "areas": []
+    };
+    for (var i in intensities) {
+        window.mapColoring["colors"][i] = window.INTENSITY_COLORS[intensities[i]["intensity"]];
+        window.mapColoring["areas"].push(i);
+    }
+};
+var filterMapColoring = function (feature) {
+    /**
+     * @typedef {Object} feature
+     * @property {Object} properties
+     * @property {String} intensity_color
+     * @property {String} name
+     */
+    return window.mapColoring["areas"].indexOf(feature.properties.name) != -1;
 };
 var parseColorStyle = function (feature) {
     /**
      * @typedef {Object} feature
      * @property {Object} properties
      * @property {String} intensity_color
+     * @property {String} name
      */
     return {
-        fillColor: feature.properties.intensity_color,
+        fillColor: window.mapColoring["colors"][feature.properties.name],
         fillOpacity: 1.0,
         stroke: true,
         color: "#000000",

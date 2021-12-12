@@ -79,7 +79,6 @@ def get_eew_info(app):
             parsed_intensity = "0"
         intensities = {}
         area_intensities = {}
-        area_coloring = {}
         recommend_area_coloring = False
         try:
             if not CURRENT_CONFIG.DEBUG_EEW_IMAGE:
@@ -94,7 +93,7 @@ def get_eew_info(app):
             if not response[0]:
                 app.logger.warn(f"Failed to fetch EEW image: {response[1]}.")
             else:
-                intensities, area_intensities, area_coloring, recommend_area_coloring = intensity2color(resp_raw)
+                intensities, area_intensities, recommend_area_coloring = intensity2color(resp_raw)
         except Exception:
             app.logger.warn("Failed to fetch EEW image. Exception occurred: \n" + traceback.format_exc())
         try:
@@ -130,7 +129,6 @@ def get_eew_info(app):
             "area_intensity": intensities,
             "area_coloring": {
                 "areas": area_intensities,
-                "geojson": area_coloring,
                 "recommended_areas": recommend_area_coloring
             },
             "s_wave": s_wave_time,

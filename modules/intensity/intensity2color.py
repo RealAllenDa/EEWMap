@@ -111,10 +111,8 @@ def intensity2color(raw_response):
                 "is_area": False
             }
     parsed_area_intensities, recommend_area_coloring = parse_area_intensities(area_intensities)
-    from modules.area import geojson_instance
-    parsed_area_coloring = geojson_instance.get_intensity_json(parsed_area_intensities)
     logger.debug(f"Successfully parsed EEW intensities in {(time.perf_counter() - start_time):.3f} seconds!")
-    return intensities, parsed_area_intensities, parsed_area_coloring, recommend_area_coloring
+    return intensities, parsed_area_intensities, recommend_area_coloring
 
 
 def parse_area_intensities(area_intensities):

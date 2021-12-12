@@ -122,9 +122,9 @@ var parseEqInfo = function (result) {
             window.DOM.intensity_report_occur_time.innerText = resp_content["occur_time"];
             displayIntensityCode(resp_content["max_intensity"], false);
             deleteAllLayers();
-            addMapIntensities(resp_content["area_intensity"]["areas"]);
-            if (resp_content["area_intensity"]["geojson"] != "null") {
-                addMapColoring(resp_content["area_intensity"]["geojson"]);
+            if (resp_content["area_intensity"]["areas"] != null) {
+                addMapIntensities(resp_content["area_intensity"]["areas"]);
+                addMapColoring(resp_content["area_intensity"]["areas"]);
             }
             parseMapScale();
             setBannerContent(resp_content["tsunami_comments"]);
@@ -156,9 +156,9 @@ var parseEqInfo = function (result) {
             deleteAllLayers();
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
-            addMapIntensities(resp_content["area_intensity"]["areas"]);
-            if (resp_content["area_intensity"]["geojson"] != "null") {
-                addMapColoring(resp_content["area_intensity"]["geojson"]);
+            if (resp_content["area_intensity"]["areas"] != null) {
+                addMapIntensities(resp_content["area_intensity"]["areas"]);
+                addMapColoring(resp_content["area_intensity"]["areas"]);
             }
             parseMapScale();
             setBannerContent(resp_content["tsunami_comments"]);
@@ -257,7 +257,7 @@ var parseEEWInfo = function (result, only_update_map = false) {
         if (result["max_intensity"] == "0" || result["is_plum"]) {
             window.DOM.eew_advice.style.background = "var(--info-background-color)";
             window.DOM.eew_advice.innerText = "Wait for further information";
-        } else if (result["hypocenter"]["depth"] >= 100) {
+        } else if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
             window.DOM.eew_advice.style.background = "#C37807";
             window.DOM.eew_advice.innerText = "Deep earthquake - Information may not be accurate";
         } else if (["1", "2", "3", "4"].indexOf(result["max_intensity"]) != -1) {
@@ -280,13 +280,9 @@ var parseEEWInfo = function (result, only_update_map = false) {
     if (result["area_coloring"]["recommended_areas"]) {
         if (!_.isEqual({}, result["area_coloring"]["areas"]) ) {
             addMapIntensities(result["area_coloring"]["areas"]);
+            addMapColoring(result["area_coloring"]["areas"]);
         } else {
             console.warn("Areas equals null. Check server log.");
-        }
-        if (!_.isEqual({}, result["area_coloring"]["geojson"]) ) {
-            addMapColoring(result["area_coloring"]["geojson"]);
-        } else {
-            console.warn("GeoJson equals null. Check server log.");
         }
     } else {
         if (result["area_intensity"] != {}) {
@@ -342,5 +338,5 @@ var displayEarthquakeInformation = function (resp_content, is_eew) {
     }
     epicenter.innerText = resp_content["hypocenter"]["name"];
     depth.innerText = resp_content["hypocenter"]["depth"];
-    magnitude.innerText = resp_content["magnitude"];
+    magnitude.innerText = parseFloat(resp_content["magnitude"]).toFixed(1).toString();
 };

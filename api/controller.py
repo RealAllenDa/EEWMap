@@ -41,7 +41,13 @@ def use_svir_or_kmoni(return_dict, return_dict_svir):
     elif svir_on and (not kmoni_on):
         return return_dict_svir
     elif svir_on and kmoni_on:
-        return return_dict_svir if return_dict_svir["report_flag"] == 1 else return_dict
+        try:
+            if int(return_dict_svir["hypocenter"]["depth"][:-2]) >= 150:
+                return return_dict_svir
+            else:
+                return return_dict_svir if return_dict_svir["report_flag"] == 1 else return_dict
+        except:
+            return return_dict
 
 @api_bp.route("/earthquake_info")
 def earthquake_info_get():

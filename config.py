@@ -32,6 +32,9 @@ class _BaseConfig:
         "origin_timestamp": 1638808716
     }
 
+    DEBUG_SVIR_EEW = False
+    DEBUG_SVIR_EEW_OVRD = relpath("./misc/svir_eew.json")
+
     DEBUG_EEW_IMAGE = False
     DEBUG_EEW_IMAGE_OVRD = relpath("./tests/test_intensity_to_color.gif")
 
@@ -48,21 +51,14 @@ class _BaseConfig:
     DEBUG_TSUNAMI_WATCH = False
     DEBUG_TSUNAMI_WATCH_OVRD = relpath("./misc/demo/demo_watch.xml")
 
-    DEBUG_IGNORE_SVIR_OUTDATE = False
-
-
 class DevelopmentConfig(_BaseConfig):
     PROXY = {
         "http": "127.0.0.1:7890",
         "https": "127.0.0.1:7890"
     }
-    DEBUG_P2P_TSUNAMI = False
+    DEBUG_P2P_TSUNAMI = True
     ENABLE_UPDATING_CENTROID = False
-    DEBUG_EEW = False
-    DEBUG_EEW_OVRD = {
-        "start_time": 20211209110520,
-        "origin_timestamp": 1639149965
-    }
+    DEBUG_SVIR_EEW = False
 
 
 class ProductionConfig(_BaseConfig):
