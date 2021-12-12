@@ -14,8 +14,7 @@
 """
 # noinspection PyUnresolvedReferences
 from app import app  # In order to pre-initialize the application
-from classes import DemoNormIntensityJson, \
-    DemoIntAbnIntensityJson, DemoAreaAbnIntensityJson, DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
+from classes import DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
     DemoAreaAbnTsunamiJson
 from config import VERSION
 
@@ -67,21 +66,6 @@ class TestModules(unittest.TestCase):
         self.geojson_instance = geojson_instance
         self.assertNotEqual(self.geojson_instance.japan_areas, {})
         self.assertNotEqual(self.geojson_instance.tsunami_areas, {})
-
-    def test_area_coloring(self):
-        """
-        Tests get_intensity_json function.
-        """
-        normal_geojson = self.geojson_instance.get_intensity_json(DemoNormIntensityJson.area_intensities)
-        intensity_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoIntAbnIntensityJson.area_intensities)
-        area_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoAreaAbnIntensityJson.area_intensities)
-        self.assertEqual(normal_geojson["features"][0]["properties"]["intensity"], "5+")
-        self.assertEqual(intensity_abnormal_geojson["features"][0]["properties"]["intensity"], "0")
-        self.assertEqual(area_abnormal_geojson["features"], [])
-        self.assertEqual(normal_geojson["features"][0]["properties"]["intensity_color"],
-                         DemoNormIntensityJson.intensity_color)
-        self.assertEqual(intensity_abnormal_geojson["features"][0]["properties"]["intensity_color"],
-                         DemoIntAbnIntensityJson.intensity_color)
 
     def test_tsunami_coloring(self):
         """

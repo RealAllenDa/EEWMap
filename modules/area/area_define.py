@@ -19,19 +19,6 @@ class GeoJson:
         :param logger: The Flask app logger
         """
         self.logger = logger
-        self.intensity_color = {
-            "0": "#666666",
-            "1": "#46646E",
-            "2": "#1E6EE6",
-            "3": "#00C8C8",
-            "4": "#FAFA64",
-            "5-": "#FFB400",
-            "5+": "#FF7800",
-            "5?": "#FFFF00",
-            "6-": "#E60000",
-            "6+": "#A00000",
-            "7": "#960096"
-        }
         self.tsunami_color = {
             "MajorWarning": "#B65BD2",
             "Warning": "#DE3329",
@@ -81,42 +68,6 @@ class GeoJson:
         except Exception:
             self.logger.fatal("Failed to initialize GeoJson for tsunami. \n" + traceback.format_exc())
             raise Exception("Failed to initialize GeoJson for tsunami.")
-
-    def get_intensity_json(self, area_intensities):
-        """
-        Tries to get the areas corresponding to the areas in the earthquake,
-        then color it with different intensity colours.
-
-        :param area_intensities: The intensities of areas in the earthquake
-        :return: area-color pair
-        :rtype: dict
-        """
-        start_time = time.perf_counter()
-        self.return_format = {
-            "type": "FeatureCollection",
-            "features": []
-        }
-        return_areas = self.return_format
-        area_names = area_intensities.keys()
-        self.logger.debug("Getting GeoJson for map coloring...")
-        for i in self.japan_areas["features"]:
-            if i["properties"]["name"] in area_names:
-                try:
-                    i["properties"]["intensity"] = area_intensities[i["properties"]["name"]]["intensity"]
-                except Exception:
-                    self.logger.error(f"Failed to parse intensity coloring for {i['properties']['name']}.")
-                    traceback.print_exc()
-                    i["properties"]["intensity"] = "0"
-                try:
-                    i["properties"]["intensity_color"] = self.intensity_color[i["properties"]["intensity"]]
-                except Exception:
-                    self.logger.error(f"Failed to parse intensity coloring for {i['properties']['name']}.")
-                    traceback.print_exc()
-                    i["properties"]["intensity"] = "0"
-                    i["properties"]["intensity_color"] = self.intensity_color[i["properties"]["intensity"]]
-                return_areas["features"].append(i)
-        self.logger.debug(f"Successfully got GeoJson in {(time.perf_counter() - start_time):.3f} seconds.")
-        return return_areas
 
     def get_tsunami_json(self, area_grades: dict):
         """

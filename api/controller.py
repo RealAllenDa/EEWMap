@@ -6,7 +6,6 @@ import json
 
 from flask import Blueprint, abort
 
-from config import CURRENT_CONFIG
 from modules.sdk import relpath
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -46,8 +45,9 @@ def use_svir_or_kmoni(return_dict, return_dict_svir):
                 return return_dict_svir
             else:
                 return return_dict_svir if return_dict_svir["report_flag"] == 1 else return_dict
-        except:
+        except Exception:
             return return_dict
+
 
 @api_bp.route("/earthquake_info")
 def earthquake_info_get():

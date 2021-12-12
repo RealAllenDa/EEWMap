@@ -10,7 +10,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from config import CURRENT_CONFIG
 from .eew import get_eew_info
-from .eew.get_svir_eew import get_svir_eew_info
+from .eew.get_svir_eew import get_svir_iedred_eew_info
 from .p2p_get import get_p2p_json
 from .shake_level import get_shake_level
 from .tsunami import get_jma_tsunami
@@ -52,7 +52,7 @@ def refresh_svir_eew(app):
     """
     try:
         start_time = time.perf_counter()
-        get_svir_eew_info(app)
+        get_svir_iedred_eew_info(app)
         app.logger.debug(f"Refreshed SVIR EEW in {(time.perf_counter() - start_time):.3f} seconds.")
     except Exception:
         app.logger.error("Failed to refresh SVIR EEW. \n" + traceback.format_exc())
