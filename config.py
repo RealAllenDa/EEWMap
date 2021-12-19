@@ -30,7 +30,7 @@ class _BaseConfig:
     DEBUG_EEW = False
     DEBUG_EEW_OVRD = {
         "start_time": 20210213230800,
-        "origin_timestamp": 1638808716
+        "origin_timestamp": 1639740544
     }
 
     DEBUG_IGNORE_EEW_OUTDATE = False
@@ -65,10 +65,12 @@ class DevelopmentConfig(_BaseConfig):
     }
     ENABLE_UPDATING_CENTROID = False
     DEBUG_IGNORE_EEW_OUTDATE = True
+    DEBUG_EEW = True
+
 
 
 class ProductionConfig(_BaseConfig):
     pass
 
 
-CURRENT_CONFIG = ProductionConfig()
+CURRENT_CONFIG = DevelopmentConfig()

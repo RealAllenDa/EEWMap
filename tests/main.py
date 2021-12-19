@@ -14,7 +14,8 @@
 """
 # noinspection PyUnresolvedReferences
 from app import app  # In order to pre-initialize the application
-from classes import DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
+from modules.sdk import relpath
+from .classes import DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
     DemoAreaAbnTsunamiJson
 from config import VERSION
 
@@ -94,14 +95,21 @@ class TestModules(unittest.TestCase):
         So, all the intensity stations' detailed_intensity should be 7.0, intensity should be "7".
         """
         from modules.intensity import intensity2color
-        with open("./test_intensity_to_color.gif", "rb") as f:
+        with open(relpath("./test_intensity_to_color.gif"), "rb") as f:
             resp_raw = f.read()
             f.close()
-        int2color_response = intensity2color(resp_raw)
-        self.assertNotEqual(int2color_response, {})
-        self.assertTrue("ABSH01" in int2color_response)
-        self.assertEqual(int2color_response["ABSH01"]["detail_intensity"], 7.0)
-        self.assertEqual(int2color_response["ABSH01"]["intensity"], "7")
+        station_intensities, area_intensities, recommended_areas = intensity2color(resp_raw)
+        self.assertNotEqual(station_intensities, {})
+        self.assertNotEqual(area_intensities, {})
+
+        self.assertTrue("その他平塚ST1" in station_intensities)
+        self.assertEqual(station_intensities["その他平塚ST1"]["detail_intensity"], 7.0)
+        self.assertEqual(station_intensities["その他平塚ST1"]["intensity"], "7")
+
+        self.assertTrue("石狩地方北部" in area_intensities)
+        self.assertEqual(area_intensities["石狩地方北部"]["intensity"], "7")
+
+        self.assertTrue(recommended_areas)
 
     def test_pswave(self):
         """

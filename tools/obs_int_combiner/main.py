@@ -1,5 +1,5 @@
 """
- EEWMap - Tools - ObsIntCombiner
+ EEWMap - Tools - obs_int_combiner
  Combines the observation_points.json and intensity_stations.csv together.
  NOTES:
     - Before running, make sure that following files are present in this folder:
