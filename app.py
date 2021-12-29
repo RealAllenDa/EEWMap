@@ -7,6 +7,8 @@ import os
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
+from flask_compress import Compress
+from urllib3.exceptions import InsecureRequestWarning
 
 from api import api_bp, init_api
 from index import index_bp
@@ -18,8 +20,17 @@ from modules.pswave import init_pswave
 from modules.sdk import relpath
 from shake_level import shake_level_bp
 from tsunami import tsunami_bp
+from requests.packages import urllib3
 
 app = Flask("EEWMap")
+app.config["COMPRESS_MIMETYPES"] = (
+    'text/html',
+    'text/css',
+    'text/xml',
+    'application/json',
+    'application/javascript',
+    'text/plain')
+Compress(app)
 
 
 # noinspection SpellCheckingInspection
@@ -45,6 +56,7 @@ def config_logger():
     app.logger.addHandler(file_handler)
 
 
+urllib3.disable_warnings(InsecureRequestWarning)
 config_logger()
 # Register module blueprints
 app.register_blueprint(api_bp)

@@ -2,9 +2,16 @@
  EEWMap - Modules - SDK
  HN-Python-SDK ver1.0
 """
+import gzip
+import json
+import re
+from copy import copy
+from types import FunctionType
 from typing import Tuple, Union, Any
 
+import flask
 import requests
+from flask import make_response
 from requests import Response
 
 
@@ -19,6 +26,18 @@ def _response_verify(resp: Response) -> bool:
         return False
     else:
         return True
+
+
+def parse_jsonp(jsonp_str: str) -> str:
+    """
+    Parses the jsonp string into a json string.
+    :param jsonp_str: JSONP string
+    :return: JSON String
+    """
+    try:
+        return re.search('^[^(]*?\((.*)\)[^)]*$', jsonp_str).group(1)
+    except:
+        return "Invalid JSONP"
 
 
 def generate_list(name: Any) -> list:
@@ -55,7 +74,8 @@ def relpath(file: str) -> str:
 def make_web_request(url: str,
                      proxies: Union[None, dict] = None,
                      timeout: Union[int, float] = None,
-                     to_json: bool = False) -> Tuple[bool, Union[Response, Any]]:
+                     to_json: bool = False,
+                     verify: bool = True) -> Tuple[bool, Union[Response, Any]]:
     """
     Makes web requests to API, URL, etc.
 
@@ -63,10 +83,11 @@ def make_web_request(url: str,
     :param proxies: The proxy information
     :param timeout: The timeout
     :param to_json: Whether to return it as JSON or not
+    :param verify: Whether to verify the certificate
     :return: Raw response if to_json is False; JSON if to_json is True
     """
     try:
-        response = requests.get(url=url, proxies=proxies, timeout=timeout)
+        response = requests.get(url=url, proxies=proxies, timeout=timeout, verify=verify)
         response.encoding = 'utf-8'
         if not _response_verify(response):
             return False, f"Failed response verifying (code={response.status_code})."

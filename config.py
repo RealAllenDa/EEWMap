@@ -2,10 +2,12 @@
  EEWMap - Config
  The configuration file for all modules.
 """
+import time
+
 from modules.sdk import relpath
 
 # Version
-VERSION = "1.0.1-Build1 Release"
+VERSION = "2.1.0 Release"
 
 
 class _BaseConfig:
@@ -21,16 +23,20 @@ class _BaseConfig:
     ENABLE_SHAKE = True
     ENABLE_QUAKE = True
     ENABLE_UPDATING_CENTROID = True
+    ENABLE_GLOBAL_EARTHQUAKE = True
 
     # EEW Settings
     USE_SVIR_LEVEL = 5
     USE_SVIR_EEW = True
 
+    # CEIC Settings
+    CEIC_LIST_COUNT = 5
+
     # Debugging
     DEBUG_EEW = False
     DEBUG_EEW_OVRD = {
         "start_time": 20210213230800,
-        "origin_timestamp": 1639740544
+        "origin_timestamp": int(time.time())
     }
 
     DEBUG_IGNORE_EEW_OUTDATE = False
@@ -57,6 +63,9 @@ class _BaseConfig:
     DEBUG_TSUNAMI_WATCH = False
     DEBUG_TSUNAMI_WATCH_OVRD = relpath("./misc/demo/demo_watch.xml")
 
+    DEBUG_CEIC_EARTHQUAKE = False
+    DEBUG_CEIC_EARTHQUAKE_OVRD = None
+
 
 class DevelopmentConfig(_BaseConfig):
     PROXY = {
@@ -64,13 +73,22 @@ class DevelopmentConfig(_BaseConfig):
         "https": "127.0.0.1:7890"
     }
     ENABLE_UPDATING_CENTROID = False
-    DEBUG_IGNORE_EEW_OUTDATE = True
-    DEBUG_EEW = True
-
 
 
 class ProductionConfig(_BaseConfig):
     pass
 
 
-CURRENT_CONFIG = DevelopmentConfig()
+class TestingEEWConfig(DevelopmentConfig):
+    DEBUG_EEW = True
+    DEBUG_EEW_OVRD = {
+        "start_time": 20211209110520,
+        "origin_timestamp": int(time.time())
+    }
+
+
+class TestingCEICConfig(DevelopmentConfig):
+    CEIC_LIST_COUNT = 0
+
+
+CURRENT_CONFIG = ProductionConfig()  # TODO

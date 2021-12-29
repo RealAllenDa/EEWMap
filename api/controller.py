@@ -114,3 +114,17 @@ def index_arrangement():
         return content
     except Exception:
         abort(500)
+
+@api_bp.route("/global_earthquake_info")
+def global_earthquake_get():
+    """
+    Returns global earthquake info.
+
+    :return: Global earthquake info list
+    :rtype: list
+    """
+    from .global_earthquake.get_ceic_earthquake import return_earthquake
+    return {
+        "status": 0,
+        "data": return_earthquake
+    }

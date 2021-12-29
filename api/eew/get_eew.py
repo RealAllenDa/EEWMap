@@ -85,15 +85,16 @@ def get_eew_info(app):
                 response = make_web_request(
                     url=f"http://www.kmoni.bosai.go.jp/data/map_img/EstShindoImg/eew/{req_date}/{req_time}.eew.gif",
                     proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=False)
-                resp_raw = response[1].content
+                if not response[0]:
+                    app.logger.warn(f"Failed to fetch EEW image: {response[1]}.")
+                    return
+                else:
+                    resp_raw = response[1].content
             else:
                 with open(CURRENT_CONFIG.DEBUG_EEW_IMAGE_OVRD, "rb") as f:
                     resp_raw = f.read()
                     f.close()
-            if not response[0]:
-                app.logger.warn(f"Failed to fetch EEW image: {response[1]}.")
-            else:
-                intensities, area_intensities, recommend_area_coloring = intensity2color(resp_raw)
+            intensities, area_intensities, recommend_area_coloring = intensity2color(resp_raw)
         except Exception:
             app.logger.warn("Failed to fetch EEW image. Exception occurred: \n" + traceback.format_exc())
         try:

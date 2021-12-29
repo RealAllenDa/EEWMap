@@ -245,13 +245,20 @@ var deleteAllLayers = function () {
     }
 };
 var parseMapScale = function () {
-    var currentBounds = window.iconGroup.getBounds();
-    if (window.colorMapLayer != undefined) {
+    var currentBounds = L.latLngBounds();
+    if (window.iconGroup != undefined && window.map.hasLayer(window.iconGroup)) {
+        console.log("Icon Group Bounds =>", window.iconGroup.getBounds());
+        currentBounds.extend(window.iconGroup.getBounds());
+    }
+    if (window.colorMapLayer != undefined && window.map.hasLayer(window.colorMapLayer)) {
+        console.log("Color Map Bounds =>", window.colorMapLayer.getBounds());
         currentBounds.extend(window.colorMapLayer.getBounds());
     }
-    if (window.epicenterGroup != undefined) {
+    if (window.epicenterGroup != undefined && window.map.hasLayer(window.epicenterGroup)) {
+        console.log("Epicenter Bounds =>", window.epicenterGroup.getBounds());
         currentBounds.extend(window.epicenterGroup.getBounds());
     }
+    console.log("Final Bounds =>", currentBounds);
     window.map.fitBounds(currentBounds, {padding: [0, 30]});
 };
 var addMapColoring = function (intensities) {

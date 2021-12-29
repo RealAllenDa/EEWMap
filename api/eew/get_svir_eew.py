@@ -54,6 +54,7 @@ def get_svir_eew_info(app):
                                         proxies=CURRENT_CONFIG.PROXY, to_json=True)
             if not response[0]:
                 app.logger.warn("Failed to fetch EEW info (failed to get svir json).")
+                return
             converted_response = response[1]
         else:
             with open(CURRENT_CONFIG.DEBUG_SVIR_EEW_OVRD, "r", encoding="utf-8") as f:

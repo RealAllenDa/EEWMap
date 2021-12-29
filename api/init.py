@@ -14,6 +14,7 @@ from .eew.get_svir_eew import get_svir_iedred_eew_info
 from .p2p_get import get_p2p_json
 from .shake_level import get_shake_level
 from .tsunami import get_jma_tsunami
+from .global_earthquake import get_ceic_info
 
 
 def refresh_p2p_info(app):
@@ -101,6 +102,20 @@ def refresh_stations(app):
         app.logger.error("Failed to refresh station info. \n" + traceback.format_exc())
 
 
+def refresh_global_earthquake(app):
+    """
+    Refreshes the intensity station properties.
+
+    :param app: The Flask app instance
+    """
+    try:
+        start_time = time.perf_counter()
+        get_ceic_info(app)
+        app.logger.debug(f"Refreshed global earthquake info in {(time.perf_counter() - start_time):.3f} seconds.")
+    except Exception:
+        app.logger.error("Failed to refresh global earthquake info. \n" + traceback.format_exc())
+
+
 def init_api(app):
     """
     Initializes the APIs.
@@ -134,5 +149,9 @@ def init_api(app):
         scheduler.add_job(func=refresh_jma_tsunami, args=(app,), trigger="interval",
                           seconds=4,
                           id="tsunami")
+    if CURRENT_CONFIG.ENABLE_GLOBAL_EARTHQUAKE:
+        scheduler.add_job(func=refresh_global_earthquake, args=(app,), trigger="interval",
+                          seconds=5,
+                          id="global_eq")
     scheduler.start()
     app.logger.debug("Successfully initialized API!")
