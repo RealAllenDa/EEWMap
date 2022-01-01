@@ -206,7 +206,7 @@ def parse_iedred_eew_info(app, converted_response):
         is_final = True
 
     if is_final:
-        timespan = int(time.time()) - converted_response["AnnouncedTime"]["UnixTime"]
+        timespan = int(time.time()) + 3600 - converted_response["AnnouncedTime"]["UnixTime"]  # China time
         # Outdated report
         if not (-12 < timespan < 180):
             # >= 1min

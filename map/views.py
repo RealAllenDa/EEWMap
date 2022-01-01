@@ -15,6 +15,7 @@ def map_render():
     """
     return render_template("map.html")
 
+
 @map_bp.route("/global_list")
 def global_earthquake_list_render():
     """

@@ -5,3 +5,4 @@ apscheduler~=3.7.0
 htmlreport~=2.2.2
 pillow~=8.3.1
 urllib3~=1.25.11
+dataclasses-json~=0.5.6

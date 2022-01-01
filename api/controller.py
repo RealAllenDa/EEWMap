@@ -6,7 +6,7 @@ import json
 
 from flask import Blueprint, abort
 
-from modules.sdk import relpath
+from modules.sdk import relpath, api_return
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -19,8 +19,8 @@ def shake_level_get():
     :return: status=-1 if failed, shake_level=... if success
     :rtype: dict
     """
-    from .shake_level.get_shake_level import return_dict
-    return return_dict
+    from .shake_level.get_shake_level import return_shake_level
+    return api_return(return_shake_level)
 
 
 def use_svir_or_kmoni(return_dict, return_dict_svir):
@@ -114,6 +114,7 @@ def index_arrangement():
         return content
     except Exception:
         abort(500)
+
 
 @api_bp.route("/global_earthquake_info")
 def global_earthquake_get():

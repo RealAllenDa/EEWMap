@@ -241,7 +241,7 @@ var deleteAllLayers = function () {
             window.map.removeLayer(window.pwave_circle);
         }
     } catch (e) {
-        window.logger.error("Failed to remove layers." + e);
+        console.error("Failed to remove layers." + e);
     }
 };
 var parseMapScale = function () {

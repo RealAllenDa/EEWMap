@@ -75,7 +75,7 @@ var displayIntensityCode = function (intensity, is_eew) {
     }
 };
 var setBannerContent = function (commentId) {
-    window.logger.debug("Comment ids: " + commentId);
+    console.log("Comment ids: ", commentId);
     let domesticId = commentId["domestic"];
     let foreignId = commentId["foreign"];
     // noinspection LoopStatementThatDoesntLoopJS,JSUnusedAssignment

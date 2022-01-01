@@ -11,6 +11,7 @@ from modules.sdk import make_web_request
 
 return_earthquake = []
 
+
 def get_ceic_info(app):
     """
      Gets CEIC's latest earthquake telegram.
@@ -31,6 +32,7 @@ def get_ceic_info(app):
     else:
         with open(CURRENT_CONFIG.DEBUG_P2P_OVRD["file"], "r", encoding="utf-8") as f:
             parse_ceic_info(json.loads(f.read()), app)
+
 
 def parse_ceic_info(response, app):
     """
@@ -60,6 +62,7 @@ def parse_ceic_info(response, app):
             return_earthquake.append(earthquake_temp)
     except Exception:
         app.logger.error("Failed to parse CEIC data. Exception occurred: \n" + traceback.format_exc())
+
 
 def m_to_mmi(m):
     """

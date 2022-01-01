@@ -13,6 +13,10 @@ from .parse_p2p_json import parse_p2p_info
 
 
 def get_p2p_json(app):
+    parse_p2p_info(_get_p2p_telegram(app), app)
+
+
+def _get_p2p_telegram(app, limit=5):
     """
      Gets P2PQuake's JSON telegram.
 
@@ -20,7 +24,7 @@ def get_p2p_json(app):
     """
     if not CURRENT_CONFIG.DEBUG_P2P_TSUNAMI:
         try:
-            response = make_web_request(url="https://api.p2pquake.net/v2/history?codes=551&codes=552&limit=5",
+            response = make_web_request(url=f"https://api.p2pquake.net/v2/history?codes=551&codes=552&limit={limit}",
                                         proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=True)
             if not response[0]:
                 app.logger.warn(f"Failed to fetch P2P JSON data: {response[1]}.")
@@ -28,7 +32,7 @@ def get_p2p_json(app):
         except Exception:
             app.logger.warn("Failed to fetch P2P JSON data. Exception occurred: \n" + traceback.format_exc())
             return
-        parse_p2p_info(response[1], app)
+        return response[1]
     else:
         with open(CURRENT_CONFIG.DEBUG_P2P_OVRD["file"], "r", encoding="utf-8") as f:
-            parse_p2p_info(json.loads(f.read()), app)
+            return json.loads(f.read())

@@ -7,7 +7,7 @@ var getEqInfo = function () {
         timeout: 2500,
         success: splitEqInfo,
         error: function () {
-            window.logger.warn("Failed to retrieve data.");
+            console.warn("Failed to retrieve data.");
         }
     });
 };
@@ -17,68 +17,68 @@ var messages_before_eew = [];
 var eew_in_effect = false;
 var suspend_eew_until_number_change = false;
 var splitEqInfo = function (result) {
-    window.logger.debug(result);
+    console.debug(result);
     var result_for_compare = result;
     // Pre-check info
     if (!result.hasOwnProperty("eew") || !result.hasOwnProperty("info")) {
-        window.logger.error("Message format incorrect. Breaking.");
+        console.error("Message format incorrect. Breaking.");
         return;
     } else if (_.isEqual([], result["info"])) {
-        window.logger.warn("Info has no message inside.");
+        console.warn("Info has no message inside.");
     }
     if (_.isEqual(last_message, result_for_compare)) {
-        window.logger.debug("Identical information. No need to update.");
+        console.debug("Identical information. No need to update.");
         return;
     } else {
         last_message = result_for_compare;
-        window.logger.debug("Updated message. Parsing...");
+        console.debug("Updated message. Parsing...");
     }
     if (result["eew"]["status"] == 0) {
-        window.logger.info("EEW received. Parsing...");
+        console.info("EEW received. Parsing...");
         if (!eew_in_effect) {
             // EEW first received
-            window.logger.info("EEW first received. Setting variables to default.");
+            console.info("EEW first received. Setting variables to default.");
             messages_before_eew = result["info"];
             eew_in_effect = true;
             last_eew_report_num = -1;
         }
         if (parseInt(result["eew"]["report_num"]) > parseInt(last_eew_report_num)) {
             // New EEW, display EEW
-            window.logger.info("EEW updated (num != last_num). Displaying EEW.");
+            console.info("EEW updated (num != last_num). Displaying EEW.");
             last_eew_report_num = result["eew"]["report_num"];
             suspend_eew_until_number_change = false;
             parseEEWInfo(result);
             if (window.swave_circle != undefined) {
                 window.swave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the S wave circle to front. " +
+                console.warn("Failed to bring the S wave circle to front. " +
                     "Check backend code.");
             }
             if (window.pwave_circle != undefined) {
                 window.pwave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the P wave circle to front. " +
+                console.warn("Failed to bring the P wave circle to front. " +
                     "Check backend code.");
             }
         } else if (!(_.isEqual(result["info"], messages_before_eew))) {
-            window.logger.info("Earthquake info updated. Displaying new earthquake info.");
+            console.info("Earthquake info updated. Displaying new earthquake info.");
             messages_before_eew = result["info"];
             suspend_eew_until_number_change = true;
             parseEqInfo(result);
         } else if (!suspend_eew_until_number_change) {
-            window.logger.info("Parameter updated. Displaying EEW.");
+            console.info("Parameter updated. Displaying EEW.");
             // In this case, we only updates the map, not the information.
             parseEEWInfo(result, true);
             if (window.swave_circle != undefined) {
                 window.swave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the S wave circle to front. " +
+                console.warn("Failed to bring the S wave circle to front. " +
                     "Check backend code.");
             }
             if (window.pwave_circle != undefined) {
                 window.pwave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the P wave circle to front. " +
+                console.warn("Failed to bring the P wave circle to front. " +
                     "Check backend code.");
             }
         }
@@ -288,7 +288,7 @@ var parseEEWInfo = function (result, only_update_map = false) {
         if (result["area_intensity"] != {}) {
             addMapIntensities(result["area_intensity"]);
         } else {
-            window.logger.warn("No points exist. Check server log.");
+            console.warn("No points exist. Check server log.");
         }
     }
     parseMapScale();
@@ -298,12 +298,12 @@ var parseEEWInfo = function (result, only_update_map = false) {
     if (result["s_wave"] != null) {
         addSWaveCircle(result["hypocenter"], result["s_wave"]);
     } else {
-        window.logger.warn("S wave time equals null. Check server log.");
+        console.warn("S wave time equals null. Check server log.");
     }
     if (window.swave_circle != undefined) {
         window.swave_circle.bringToFront();
     } else {
-        window.logger.warn("Failed to bring the S wave circle to front. " +
+        console.warn("Failed to bring the S wave circle to front. " +
             "Check backend code.");
     }
 
@@ -312,12 +312,12 @@ var parseEEWInfo = function (result, only_update_map = false) {
     if (result["p_wave"] != null) {
         addPWaveCircle(result["hypocenter"], result["p_wave"]);
     } else {
-        window.logger.warn("P wave time equals null. Check server log.");
+        console.warn("P wave time equals null. Check server log.");
     }
     if (window.pwave_circle != undefined) {
         window.pwave_circle.bringToFront();
     } else {
-        window.logger.warn("Failed to bring the P wave circle to front. " +
+        console.warn("Failed to bring the P wave circle to front. " +
             "Check backend code.");
     }
 };

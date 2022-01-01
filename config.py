@@ -91,4 +91,13 @@ class TestingCEICConfig(DevelopmentConfig):
     CEIC_LIST_COUNT = 0
 
 
-CURRENT_CONFIG = ProductionConfig()  # TODO
+class DevelopListConfig(DevelopmentConfig):
+    ENABLE_EEW = False
+    ENABLE_P2P_TSUNAMI = False
+    ENABLE_SHAKE = False
+    ENABLE_QUAKE = True
+    ENABLE_UPDATING_CENTROID = False
+    ENABLE_GLOBAL_EARTHQUAKE = False
+
+
+CURRENT_CONFIG = DevelopmentConfig()  # TODO

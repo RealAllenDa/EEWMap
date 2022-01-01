@@ -2,13 +2,13 @@
  EEWMap - API - shake_level - Get_Shake
  Gets shake level, etc. from kmoni API.
 """
-import time
 import traceback
 
 from config import CURRENT_CONFIG
+from model.shake_level import ReturnShakeLevelJSON, ShakeLevelJSON
 from modules.sdk import make_web_request
 
-return_dict = {}
+return_shake_level = None
 
 
 def get_shake_level(app):
@@ -18,20 +18,23 @@ def get_shake_level(app):
      :return: The status and the shaking level
      :rtype: dict
     """
-    global return_dict
+    global return_shake_level
     try:
-        response = make_web_request(url="http://kwatch-24h.net/EQLevel.json?" + str(int(time.time())),
-                                    timeout=3.5, proxies=CURRENT_CONFIG.PROXY, to_json=True)
+        response = make_web_request(url="http://kwatch-24h.net/EQLevel.json",
+                                    timeout=3.5,
+                                    proxies=CURRENT_CONFIG.PROXY,
+                                    add_time=True,
+                                    to_dataclass=ShakeLevelJSON)
         if not response[0]:
             app.logger.warn(f"Failed to fetch shake level: {response[1]}.")
             return
     except Exception:
         app.logger.warn("Failed to fetch shake level. Exception occurred: \n" + traceback.format_exc())
         return
-    return_dict = {
-        "status": 0,
-        "shake_level": response[1]["l"],
-        "green": response[1]["g"],
-        "yellow": response[1]["y"],
-        "red": response[1]["r"]
-    }
+    return_shake_level = ReturnShakeLevelJSON(
+        status=0,
+        shake_level=response[1].l,
+        green=response[1].g,
+        yellow=response[1].y,
+        red=response[1].r
+    )

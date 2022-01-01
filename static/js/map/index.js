@@ -28,7 +28,7 @@ window.onload = function () {
         initializeMap();
         displayIntensityCode(0, false);
     } catch (e) {
-        window.logger.fatal("Failed to initialize the map." + e);
+        console.error("Failed to initialize the map." + e);
     }
 
     setInterval(function () {
