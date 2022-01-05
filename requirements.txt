@@ -6,3 +6,4 @@ htmlreport~=2.2.2
 pillow~=8.3.1
 urllib3~=1.25.11
 dataclasses-json~=0.5.6
+flask-compress~=1.10.1

@@ -7,7 +7,7 @@ import time
 from modules.sdk import relpath
 
 # Version
-VERSION = "2.1.0 Release"
+VERSION = "2.1.2 Release"
 
 
 class _BaseConfig:
@@ -91,13 +91,4 @@ class TestingCEICConfig(DevelopmentConfig):
     CEIC_LIST_COUNT = 0
 
 
-class DevelopListConfig(DevelopmentConfig):
-    ENABLE_EEW = False
-    ENABLE_P2P_TSUNAMI = False
-    ENABLE_SHAKE = False
-    ENABLE_QUAKE = True
-    ENABLE_UPDATING_CENTROID = False
-    ENABLE_GLOBAL_EARTHQUAKE = False
-
-
-CURRENT_CONFIG = DevelopmentConfig()  # TODO
+CURRENT_CONFIG = ProductionConfig()

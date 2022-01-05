@@ -5,12 +5,31 @@
     margin-bottom: 5px;
     padding: 5px;
     box-sizing: border-box;
+    cursor: pointer;
 }
+
+.earthquake-item:hover {
+    border: 3px solid white;
+}
+
+#container-wrapper {
+    display: flex;
+}
+
+#detail-map-container {
+    width: 780px;
+    height: 680px;
+    display: inline-block;
+    border: none;
+    margin-left: 10px;
+}
+
 .sub-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .important {
     font-weight: bold;
     font-size: 18px;

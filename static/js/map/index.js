@@ -31,7 +31,7 @@ window.onload = function () {
         console.error("Failed to initialize the map." + e);
     }
 
-    setInterval(function () {
+    window.getEqInfoTimer = setInterval(function () {
         getEqInfo();
     }, 2000);
 };

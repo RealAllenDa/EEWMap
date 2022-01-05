@@ -57,7 +57,8 @@ def parse_ceic_info(response, app):
                 },
                 "magnitude": i["M"],
                 "mmi": m_to_mmi(i["M"]),
-                "occur_time": i["O_TIME"]
+                "occur_time": i["O_TIME"],
+                "receive_time": i["SYNC_TIME"]
             }
             return_earthquake.append(earthquake_temp)
     except Exception:

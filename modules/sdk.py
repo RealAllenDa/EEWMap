@@ -82,7 +82,7 @@ def relpath(file: str) -> str:
 
 def make_web_request(url: str,
                      proxies: Optional[dict] = None,
-                     timeout: Union[int, float] = None,
+                     timeout: Union[int, float] = 3.5,
                      add_time: bool = False,
                      to_json: bool = False,
                      to_dataclass: Optional[_R] = None,

@@ -11,8 +11,11 @@
 </head>
 <body>
     <script src="{{ url_for('static', filename='js/global_map/index.js') }}"></script>
-    <div id="main-container">
+    <div id="container-wrapper">
+        <div id="main-container">
 
+        </div>
+        <iframe src="/map" id="detail-map-container"></iframe>
     </div>
 </body>
 </html>
