@@ -8,9 +8,12 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 from flask_compress import Compress
+from flask_cors import CORS
+from requests.packages import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
 from api import api_bp, init_api
+from config import CURRENT_CONFIG
 from index import index_bp
 from map import map_bp
 from modules.area import init_geojson_instance
@@ -20,7 +23,6 @@ from modules.pswave import init_pswave
 from modules.sdk import relpath
 from shake_level import shake_level_bp
 from tsunami import tsunami_bp
-from requests.packages import urllib3
 
 app = Flask("EEWMap")
 app.config["COMPRESS_MIMETYPES"] = (
@@ -56,6 +58,8 @@ def config_logger():
     app.logger.addHandler(file_handler)
 
 
+if CURRENT_CONFIG.ENABLE_CORS:
+    cors = CORS(app, resources={"*": {"origins": "*"}})
 urllib3.disable_warnings(InsecureRequestWarning)
 config_logger()
 # Register module blueprints

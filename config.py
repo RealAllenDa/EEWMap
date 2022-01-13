@@ -24,6 +24,7 @@ class _BaseConfig:
     ENABLE_QUAKE = True
     ENABLE_UPDATING_CENTROID = True
     ENABLE_GLOBAL_EARTHQUAKE = True
+    ENABLE_CORS = False
 
     # EEW Settings
     USE_SVIR_LEVEL = 5
@@ -73,6 +74,7 @@ class DevelopmentConfig(_BaseConfig):
         "https": "127.0.0.1:7890"
     }
     ENABLE_UPDATING_CENTROID = False
+    ENABLE_CORS = True
 
 
 class ProductionConfig(_BaseConfig):
@@ -83,12 +85,19 @@ class TestingEEWConfig(DevelopmentConfig):
     DEBUG_EEW = True
     DEBUG_EEW_OVRD = {
         "start_time": 20211209110520,
+        # "start_time": 20210213230800,
         "origin_timestamp": int(time.time())
     }
+
+
+class TestingTsunamiConfig(DevelopmentConfig):
+    DEBUG_TSUNAMI = True
+    DEBUG_TSUNAMI_WATCH = True
+    DEBUG_P2P_TSUNAMI = True
 
 
 class TestingCEICConfig(DevelopmentConfig):
     CEIC_LIST_COUNT = 0
 
 
-CURRENT_CONFIG = ProductionConfig()
+CURRENT_CONFIG = TestingEEWConfig()
