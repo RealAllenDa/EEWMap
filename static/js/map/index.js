@@ -23,14 +23,15 @@ var initializeDOM = function () {
 };
 window.onload = function () {
     try {
+        initializeLocale("map");
         initializeDOM();
         initializeMap();
         displayIntensityCode(0, false);
     } catch (e) {
-        window.logger.fatal("Failed to initialize the map." + e);
+        console.error("Failed to initialize the map." + e);
     }
 
-    setInterval(function () {
+    window.getEqInfoTimer = setInterval(function () {
         getEqInfo();
     }, 2000);
 };

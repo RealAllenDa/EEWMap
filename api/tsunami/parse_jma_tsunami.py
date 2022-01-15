@@ -2,19 +2,20 @@
  EEWMap - API - Tsunami - JMA_Tsunami
  Parses tsunami information (Expected arrival time) from JMA XML.
 """
-import requests
 import time
 import traceback
+
 import xmltodict
 
 from api.tsunami.parse_jma_watch import preparse_tsunami_watch
-from config import PROXY, DEBUG_TSUNAMI, DEBUG_TSUNAMI_OVRD, DEBUG_TSUNAMI_WATCH
-from modules.utilities import generate_list, response_verify
+from config import CURRENT_CONFIG
+from modules.sdk import generate_list, make_web_request
 
 last_jma_info = {}
 last_jma_tsunami_watch = []
 return_dict = {}
 tsunami_watch_in_effect = '0'
+
 
 def parse_jma_tsunami(response, app):
     """
@@ -35,7 +36,7 @@ def parse_jma_tsunami(response, app):
     if last_jma_info != converted_response:
         app.logger.debug("New JMA XML updated. Parsing messages...")
         last_jma_info = converted_response
-    elif not DEBUG_TSUNAMI:
+    elif not CURRENT_CONFIG.DEBUG_TSUNAMI:
         app.logger.debug("No new JMA XML info.")
         return
     for i in response_entries:
@@ -47,11 +48,12 @@ def parse_jma_tsunami(response, app):
             if not i["id"] in last_jma_tsunami_watch:
                 response_urls_watch[i["id"]] = int(i["id"].split("/")[-1].split("_")[0])
                 last_jma_tsunami_watch.append(i["id"])
-    if (not response_urls_info) and (not DEBUG_TSUNAMI) and (not response_urls_watch) and (not DEBUG_TSUNAMI_WATCH):
+    if (not response_urls_info) and (not CURRENT_CONFIG.DEBUG_TSUNAMI) and \
+            (not response_urls_watch) and (not CURRENT_CONFIG.DEBUG_TSUNAMI_WATCH):
         app.logger.debug("No tsunami warning in effect.")
         return_dict = {}
         return
-    if not DEBUG_TSUNAMI and not DEBUG_TSUNAMI_WATCH:
+    if not CURRENT_CONFIG.DEBUG_TSUNAMI and not CURRENT_CONFIG.DEBUG_TSUNAMI_WATCH:
         latest_information_url = max(response_urls_info, key=lambda x: response_urls_info[x])
     else:
         latest_information_url = "TEST"
@@ -59,9 +61,9 @@ def parse_jma_tsunami(response, app):
                      f"Parsing: {latest_information_url}...")
     # First parse regular tsunami info, then parse watch info
     parse_current_tsunami_info(latest_information_url, app)
-    if response_urls_watch or DEBUG_TSUNAMI_WATCH:
+    if response_urls_watch or CURRENT_CONFIG.DEBUG_TSUNAMI_WATCH:
         # Have watch information
-        if not DEBUG_TSUNAMI_WATCH:
+        if not CURRENT_CONFIG.DEBUG_TSUNAMI_WATCH:
             watch_information_urls = sorted(response_urls_watch, key=lambda x: response_urls_watch[x])
         else:
             watch_information_urls = ["TEST"]
@@ -75,20 +77,20 @@ def parse_current_tsunami_info(information_url, app):
     :param information_url: The information url
     :param app: The Flask app instance
     """
-    if not DEBUG_TSUNAMI:
+    if not CURRENT_CONFIG.DEBUG_TSUNAMI:
         try:
-            response = requests.get(url=information_url,
-                                    proxies=PROXY, timeout=3.5)
-            response.encoding = "utf-8"
-            if not response_verify(response):
-                app.logger.error("Failed to fetch tsunami data. (response code not 200)")
+            response = make_web_request(url=information_url,
+                                        proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=False)
+            if not response[0]:
+                app.logger.error(f"Failed to fetch tsunami data: {response[1]}.")
                 return
-        except:
+            response = response[1]
+        except Exception:
             app.logger.warn("Failed to fetch tsunami data. Exception occurred: \n" + traceback.format_exc())
             return
         converted_response = xmltodict.parse(response.text, encoding="utf-8")
     else:
-        with open(DEBUG_TSUNAMI_OVRD["file"], encoding="utf-8") as f:
+        with open(CURRENT_CONFIG.DEBUG_TSUNAMI_OVRD["file"], encoding="utf-8") as f:
             converted_response = xmltodict.parse(f.read(), encoding="utf-8")
     if converted_response["Report"]["Control"]["Status"] != "通常":
         app.logger.info("Drill/Other tsunami message. Skipped.")
@@ -148,7 +150,7 @@ def parse_tsunami_areas(response_items, app):
             "type": "no_time",
             "time": "Unknown"
         }
-        if not area_grade in ["Forecast", "Unknown"]:
+        if area_grade not in ["Forecast", "Unknown"]:
             first_time_estimation = i["FirstHeight"]
             if "Condition" in first_time_estimation:
                 if first_time_estimation["Condition"] == "ただちに津波来襲と予測":
@@ -194,7 +196,7 @@ def parse_tsunami_areas(response_items, app):
                     area_height = "1m"
                 else:
                     area_height = "Unknown"
-            except:
+            except Exception:
                 app.logger.warn("Failed to parse tsunami area height."
                                 " Exception occurred: \n" + traceback.format_exc())
                 area_height = "Unknown"

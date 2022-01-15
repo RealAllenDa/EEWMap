@@ -14,3 +14,12 @@ def map_render():
     :return: None
     """
     return render_template("map.html")
+
+
+@map_bp.route("/global_list")
+def global_earthquake_list_render():
+    """
+    Renders the global earthquake list.
+    :return: None
+    """
+    return render_template("global.html")

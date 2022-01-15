@@ -7,7 +7,7 @@ var getEqInfo = function () {
         timeout: 2500,
         success: splitEqInfo,
         error: function () {
-            window.logger.warn("Failed to retrieve data.");
+            console.warn("Failed to retrieve data.");
         }
     });
 };
@@ -17,68 +17,68 @@ var messages_before_eew = [];
 var eew_in_effect = false;
 var suspend_eew_until_number_change = false;
 var splitEqInfo = function (result) {
-    window.logger.debug(result);
+    console.debug(result);
     var result_for_compare = result;
     // Pre-check info
     if (!result.hasOwnProperty("eew") || !result.hasOwnProperty("info")) {
-        window.logger.error("Message format incorrect. Breaking.");
+        console.error("Message format incorrect. Breaking.");
         return;
     } else if (_.isEqual([], result["info"])) {
-        window.logger.warn("Info has no message inside.");
+        console.warn("Info has no message inside.");
     }
     if (_.isEqual(last_message, result_for_compare)) {
-        window.logger.debug("Identical information. No need to update.");
+        console.debug("Identical information. No need to update.");
         return;
     } else {
         last_message = result_for_compare;
-        window.logger.debug("Updated message. Parsing...");
+        console.debug("Updated message. Parsing...");
     }
     if (result["eew"]["status"] == 0) {
-        window.logger.info("EEW received. Parsing...");
+        console.info("EEW received. Parsing...");
         if (!eew_in_effect) {
             // EEW first received
-            window.logger.info("EEW first received. Setting variables to default.");
+            console.info("EEW first received. Setting variables to default.");
             messages_before_eew = result["info"];
             eew_in_effect = true;
             last_eew_report_num = -1;
         }
         if (parseInt(result["eew"]["report_num"]) > parseInt(last_eew_report_num)) {
             // New EEW, display EEW
-            window.logger.info("EEW updated (num != last_num). Displaying EEW.");
+            console.info("EEW updated (num != last_num). Displaying EEW.");
             last_eew_report_num = result["eew"]["report_num"];
             suspend_eew_until_number_change = false;
             parseEEWInfo(result);
             if (window.swave_circle != undefined) {
                 window.swave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the S wave circle to front. " +
+                console.warn("Failed to bring the S wave circle to front. " +
                     "Check backend code.");
             }
             if (window.pwave_circle != undefined) {
                 window.pwave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the P wave circle to front. " +
+                console.warn("Failed to bring the P wave circle to front. " +
                     "Check backend code.");
             }
         } else if (!(_.isEqual(result["info"], messages_before_eew))) {
-            window.logger.info("Earthquake info updated. Displaying new earthquake info.");
+            console.info("Earthquake info updated. Displaying new earthquake info.");
             messages_before_eew = result["info"];
             suspend_eew_until_number_change = true;
             parseEqInfo(result);
         } else if (!suspend_eew_until_number_change) {
-            window.logger.info("Parameter updated. Displaying EEW.");
+            console.info("Parameter updated. Displaying EEW.");
             // In this case, we only updates the map, not the information.
             parseEEWInfo(result, true);
             if (window.swave_circle != undefined) {
                 window.swave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the S wave circle to front. " +
+                console.warn("Failed to bring the S wave circle to front. " +
                     "Check backend code.");
             }
             if (window.pwave_circle != undefined) {
                 window.pwave_circle.bringToFront();
             } else {
-                window.logger.warn("Failed to bring the P wave circle to front. " +
+                console.warn("Failed to bring the P wave circle to front. " +
                     "Check backend code.");
             }
         }
@@ -122,9 +122,9 @@ var parseEqInfo = function (result) {
             window.DOM.intensity_report_occur_time.innerText = resp_content["occur_time"];
             displayIntensityCode(resp_content["max_intensity"], false);
             deleteAllLayers();
-            addMapIntensities(resp_content["area_intensity"]["areas"]);
-            if (resp_content["area_intensity"]["geojson"] != "null") {
-                addMapColoring(resp_content["area_intensity"]["geojson"]);
+            if (resp_content["area_intensity"]["areas"] != null) {
+                addMapIntensities(resp_content["area_intensity"]["areas"]);
+                addMapColoring(resp_content["area_intensity"]["areas"]);
             }
             parseMapScale();
             setBannerContent(resp_content["tsunami_comments"]);
@@ -156,9 +156,9 @@ var parseEqInfo = function (result) {
             deleteAllLayers();
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
-            addMapIntensities(resp_content["area_intensity"]["areas"]);
-            if (resp_content["area_intensity"]["geojson"] != "null") {
-                addMapColoring(resp_content["area_intensity"]["geojson"]);
+            if (resp_content["area_intensity"]["areas"] != null) {
+                addMapIntensities(resp_content["area_intensity"]["areas"]);
+                addMapColoring(resp_content["area_intensity"]["areas"]);
             }
             parseMapScale();
             setBannerContent(resp_content["tsunami_comments"]);
@@ -176,9 +176,10 @@ var parseEqInfo = function (result) {
             displayEarthquakeInformation(resp_content, false);
             deleteAllLayers();
             displayIntensityCode(resp_content["max_intensity"], false);
-            addMapIntensities(resp_content["area_intensity"]["areas"]);
+            addMapIntensities(resp_content["area_intensity"]["station"]);
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
+            //addMapColoring(resp_content["area_intensity"]["geojson"]);
             parseMapScale();
         } else if (resp_content["type"] == "Foreign") {
             /*
@@ -238,23 +239,25 @@ var parseEEWInfo = function (result, only_update_map = false) {
         } else {
             window.DOM.eew_report_number.innerText = "#" + result["report_num"];
         }
-        if (parseInt(result["report_flag"]) == 0) {
-            // Earthquake Forecast
+        if (result["is_plum"]) {
+            // PLUM
             window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
-            window.DOM.eew_banner.innerText = "Earthquake Early Warning (Forecast)";
-        } else if (parseInt(result["report_flag"]) == 1) {
-            // EEW
-            window.DOM.eew_banner_div.style.background = "var(--intensity-8)";
-            window.DOM.eew_banner.innerText = "Earthquake Early Warning (Warning) - Strong Shaking Expected";
+            window.DOM.eew_banner.innerText = "PLUM determined epicenter - No detailed information available";
         } else {
-            // Unknown
-            window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
-            window.DOM.eew_banner.innerText = "Unknown EEW (Probably PLUM, etc.)";
+            if (parseInt(result["report_flag"]) == 0) {
+                // Earthquake Forecast
+                window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
+                window.DOM.eew_banner.innerText = "Earthquake Early Warning (Forecast)";
+            } else if (parseInt(result["report_flag"]) == 1) {
+                // EEW
+                window.DOM.eew_banner_div.style.background = "var(--intensity-8)";
+                window.DOM.eew_banner.innerText = "Earthquake Early Warning (Warning) - Strong Shaking Expected";
+            }
         }
-        if (result["max_intensity"] == "0") {
+        if (result["max_intensity"] == "0" || result["is_plum"]) {
             window.DOM.eew_advice.style.background = "var(--info-background-color)";
             window.DOM.eew_advice.innerText = "Wait for further information";
-        } else if (result["hypocenter"]["depth"] >= 100) {
+        } else if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
             window.DOM.eew_advice.style.background = "#C37807";
             window.DOM.eew_advice.innerText = "Deep earthquake - Information may not be accurate";
         } else if (["1", "2", "3", "4"].indexOf(result["max_intensity"]) != -1) {
@@ -270,12 +273,23 @@ var parseEEWInfo = function (result, only_update_map = false) {
             window.DOM.drill_flag.style.display = "none";
         }
     }
+
     deleteAllLayers();
     addEpicenter(result["hypocenter"]["latitude"], result["hypocenter"]["longitude"]);
-    if (result["area_intensity"] != {}) {
-        addMapIntensities(result["area_intensity"]);
+
+    if (result["area_coloring"]["recommended_areas"]) {
+        if (!_.isEqual({}, result["area_coloring"]["areas"]) ) {
+            addMapIntensities(result["area_coloring"]["areas"]);
+            addMapColoring(result["area_coloring"]["areas"]);
+        } else {
+            console.warn("Areas equals null. Check server log.");
+        }
     } else {
-        window.logger.warn("No points exist. Check server log.");
+        if (result["area_intensity"] != {}) {
+            addMapIntensities(result["area_intensity"]);
+        } else {
+            console.warn("No points exist. Check server log.");
+        }
     }
     parseMapScale();
     window.DOM.expected_flag.style.display = "block";
@@ -284,12 +298,12 @@ var parseEEWInfo = function (result, only_update_map = false) {
     if (result["s_wave"] != null) {
         addSWaveCircle(result["hypocenter"], result["s_wave"]);
     } else {
-        window.logger.warn("S wave time equals null. Check server log.");
+        console.warn("S wave time equals null. Check server log.");
     }
     if (window.swave_circle != undefined) {
         window.swave_circle.bringToFront();
     } else {
-        window.logger.warn("Failed to bring the S wave circle to front. " +
+        console.warn("Failed to bring the S wave circle to front. " +
             "Check backend code.");
     }
 
@@ -298,12 +312,12 @@ var parseEEWInfo = function (result, only_update_map = false) {
     if (result["p_wave"] != null) {
         addPWaveCircle(result["hypocenter"], result["p_wave"]);
     } else {
-        window.logger.warn("P wave time equals null. Check server log.");
+        console.warn("P wave time equals null. Check server log.");
     }
     if (window.pwave_circle != undefined) {
         window.pwave_circle.bringToFront();
     } else {
-        window.logger.warn("Failed to bring the P wave circle to front. " +
+        console.warn("Failed to bring the P wave circle to front. " +
             "Check backend code.");
     }
 };
@@ -324,5 +338,5 @@ var displayEarthquakeInformation = function (resp_content, is_eew) {
     }
     epicenter.innerText = resp_content["hypocenter"]["name"];
     depth.innerText = resp_content["hypocenter"]["depth"];
-    magnitude.innerText = resp_content["magnitude"];
+    magnitude.innerText = parseFloat(resp_content["magnitude"]).toFixed(1).toString();
 };

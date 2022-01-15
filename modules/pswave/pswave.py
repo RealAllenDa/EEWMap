@@ -5,7 +5,7 @@
 import re
 import time
 
-from modules.utilities import relpath
+from modules.sdk import relpath
 
 logger = None
 pswave_list = []
@@ -32,6 +32,7 @@ def init_pswave(app):
             continue
         pswave_list.append([float(temp_2[1]), float(temp_2[2]), int(temp_2[3]), int(temp_2[4])])
     logger.debug(f"Successfully initialized PSWave in {(time.perf_counter() - start_time):.3f} seconds.")
+
 
 # noinspection PyUnresolvedReferences
 def parse_pswave(depth, time_passed):

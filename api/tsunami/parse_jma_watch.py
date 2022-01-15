@@ -5,11 +5,10 @@
 import time
 import traceback
 
-import requests
 import xmltodict
 
-from config import PROXY, DEBUG_TSUNAMI_WATCH_OVRD
-from modules.utilities import response_verify, generate_list
+from config import CURRENT_CONFIG
+from modules.sdk import generate_list, make_web_request
 
 watch_return = {}
 
@@ -27,13 +26,13 @@ def preparse_tsunami_watch(information_urls, app):
     if information_urls != ["TEST"]:
         for i in information_urls:
             try:
-                response = requests.get(url=i,
-                                        proxies=PROXY, timeout=3.5)
-                response.encoding = "utf-8"
-                if not response_verify(response):
-                    app.logger.warn("Failed to fetch tsunami watch information. (response code not 200)")
+                response = make_web_request(url=i,
+                                            proxies=CURRENT_CONFIG.PROXY, timeout=3.5, to_json=False)
+                if not response[0]:
+                    app.logger.warn(f"Failed to fetch tsunami watch information: {response[1]}.")
                     continue
-            except:
+                response = response[1]
+            except Exception:
                 app.logger.warn(
                     "Failed to fetch tsunami watch information. Exception occurred: \n" + traceback.format_exc())
                 continue
@@ -45,7 +44,7 @@ def preparse_tsunami_watch(information_urls, app):
                 to_parse_response = converted_response
                 break
     else:
-        with open(DEBUG_TSUNAMI_WATCH_OVRD, encoding="utf-8") as f:
+        with open(CURRENT_CONFIG.DEBUG_TSUNAMI_WATCH_OVRD, encoding="utf-8") as f:
             to_parse_response = xmltodict.parse(f.read(), encoding="utf-8")
             f.close()
     if not to_parse_response:
@@ -116,7 +115,7 @@ def parse_tsunami_watch_information(to_parse_raw_response, app):
                     height_is_max = True
                 else:
                     height_is_max = False
-            except:
+            except Exception:
                 app.logger.warn("Failed to parse tsunami watch areas."
                                 " Exception occurred: \n" + traceback.format_exc())
                 continue

@@ -1,0 +1,86 @@
+.earthquake-item {
+    width: 355px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.earthquake-item:hover {
+    border: 3px solid white;
+}
+
+#container-wrapper {
+    display: flex;
+}
+
+#detail-map-container {
+    width: 780px;
+    height: 680px;
+    display: inline-block;
+    border: none;
+    margin-left: 10px;
+}
+
+.sub-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.important {
+    font-weight: bold;
+    font-size: 18px;
+}
+.highlighted {
+    font-size: 20px;
+}
+.unimportant {
+    font-weight: normal;
+    font-size: 15px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.intensity-1 {
+    background: var(--intensity-1);
+    color: white;
+}
+.intensity-2 {
+    background: var(--intensity-2);
+    color: white;
+}
+.intensity-3 {
+    background: var(--intensity-3);
+    color: black;
+}
+.intensity-4 {
+    background: var(--intensity-4);
+    color: black;
+}
+.intensity-5 {
+    background: var(--intensity-5);
+    color: black;
+}
+.intensity-6 {
+    background: var(--intensity-6);
+    color: black;
+}
+.intensity-7 {
+    background: var(--intensity-7);
+    color: white;
+}
+.intensity-8 {
+    background: var(--intensity-8);
+    color: white;
+}
+.intensity-9 {
+    background: var(--intensity-9);
+    color: white;
+}
+.intensity-10 {
+    background: black;
+    color: yellow;
+    border: 2px solid purple;
+}

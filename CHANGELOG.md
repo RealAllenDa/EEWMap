@@ -2,7 +2,7 @@
 
 # 1.1.2 Release
 
-- [feature] [map] Earthquake maps will now rendered by geojson.
+- [feature] [map] Earthquake maps will now be rendered by geojson.
 - [bugfix] [tsunami/map] Fixed when information was obtained incorrectly.
 - [feature] [general] Updated earthquake observation points.
 

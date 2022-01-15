@@ -6,7 +6,7 @@ import json
 
 from flask import Blueprint, abort
 
-from modules.utilities import relpath
+from modules.sdk import relpath, api_return
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -19,8 +19,34 @@ def shake_level_get():
     :return: status=-1 if failed, shake_level=... if success
     :rtype: dict
     """
-    from .shake_level.get_shake_level import return_dict
-    return return_dict
+    from .shake_level.get_shake_level import return_shake_level
+    return api_return(return_shake_level)
+
+
+def use_svir_or_kmoni(return_dict, return_dict_svir):
+    """
+    Determines whether to use kmoni eew or svir eew.
+    :param return_dict: Kmoni eew
+    :param return_dict_svir: Svir eew
+    :return: Only an eew
+    :rtype: dict
+    """
+    svir_on = return_dict_svir.get("status", -1) != -1
+    kmoni_on = return_dict.get("status", -1) != -1
+    if (not svir_on) and (not kmoni_on):
+        return {}
+    elif (not svir_on) and kmoni_on:
+        return return_dict
+    elif svir_on and (not kmoni_on):
+        return return_dict_svir
+    elif svir_on and kmoni_on:
+        try:
+            if int(return_dict_svir["hypocenter"]["depth"][:-2]) >= 150:
+                return return_dict_svir
+            else:
+                return return_dict_svir if return_dict_svir["report_flag"] == 1 else return_dict
+        except Exception:
+            return return_dict
 
 
 @api_bp.route("/earthquake_info")
@@ -33,9 +59,10 @@ def earthquake_info_get():
     """
     from .eew.get_eew import return_dict
     from .p2p_get.parse_p2p_json import return_list
+    from .eew.get_svir_eew import return_dict_svir
     return {
         "info": return_list,
-        "eew": return_dict
+        "eew": use_svir_or_kmoni(return_dict, return_dict_svir)
     }
 
 
@@ -85,5 +112,20 @@ def index_arrangement():
             content = json.loads(f.read())
             f.close()
         return content
-    except:
+    except Exception:
         abort(500)
+
+
+@api_bp.route("/global_earthquake_info")
+def global_earthquake_get():
+    """
+    Returns global earthquake info.
+
+    :return: Global earthquake info list
+    :rtype: list
+    """
+    from .global_earthquake.get_ceic_earthquake import return_earthquake
+    return {
+        "status": 0,
+        "data": return_earthquake
+    }

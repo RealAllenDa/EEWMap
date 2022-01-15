@@ -7,10 +7,8 @@ import json
 import time
 import traceback
 
-import requests
-
-from config import PROXY
-from modules.utilities import response_verify, relpath
+from config import CURRENT_CONFIG
+from modules.sdk import relpath, make_web_request
 
 
 class Centroid:
@@ -26,12 +24,15 @@ class Centroid:
         self._area_centroid = {}
         self._station_centroid = {}
         self._eq_station_centroid = {}
+        self._area_to_position_centroid = {}
         start_initialize_time = time.perf_counter()
         self.logger.debug("Initializing Centroid library...")
-        self.refresh_stations()
+        if CURRENT_CONFIG.ENABLE_UPDATING_CENTROID:
+            self.refresh_stations()
         self._init_area_centroid()
         self._init_earthquake_station_centroid()
         self._init_station_centroid()
+        self._init_area_to_position_centroid()
         self.logger.debug(f"Successfully initialized centroid library "
                           f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
@@ -43,29 +44,31 @@ class Centroid:
         """
         self.logger.info("Updating intensity station names...")
         try:
-            response = requests.get(
-                url="https://api.dmdata.jp/v2/parameter/earthquake/station?key=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
-                proxies=PROXY, timeout=10
+            response = make_web_request(
+                url="https://api.dmdata.jp/v2/parameter/earthquake/station?key"
+                    "=1603dbeeac99a4df6b61403626b9decc19850c571809edc1",
+                proxies=CURRENT_CONFIG.PROXY, timeout=10, to_json=True
             )
-            response.encoding = "utf-8"
-            if not response_verify(response):
-                self.logger.error("Failed to update intensity stations. (response code not 200)")
+            if not response[0]:
+                self.logger.error(f"Failed to update intensity stations: {response[1]}.")
                 return
-        except:
+            response = response[1]
+        except Exception:
             self.logger.error("Failed to update intensity stations. Exception occurred: \n" + traceback.format_exc())
             return
-        response = response.json()
         if response.get("status", "") == "error":
             self.logger.error("Failed to update intensity stations. (response status error)")
             return
         to_write = ""
         for i in response["items"]:
-            if i["status"] != "現":
+            if i["status"] == "廃止":
                 continue
             name = i["name"]
             latitude = i["latitude"]
             longitude = i["longitude"]
-            to_write += f"{name},{latitude},{longitude}\n"
+            region_code = i["region"]["code"]
+            region_name = i["region"]["name"]
+            to_write += f"{name},{region_code},{region_name},{latitude},{longitude}\n"
         with open(relpath("./intensity_stations.csv"), "w+", encoding="utf-8") as f:
             f.write(to_write)
             f.close()
@@ -92,10 +95,16 @@ class Centroid:
         """
         start_initialize_time = time.perf_counter()
         with open(relpath("./intensity_stations.csv"), "r", encoding="utf-8") as f:
-            fieldnames = ("name", "latitude", "longitude")
+            fieldnames = ("name", "region_code", "region_name", "latitude", "longitude")
             reader = csv.DictReader(f, fieldnames)
             for row in reader:
-                self._station_centroid[row["name"]] = (row["latitude"], row["longitude"])
+                self._station_centroid[row["name"]] = {
+                    "location": (row["latitude"], row["longitude"]),
+                    "region": {
+                        "code": row["region_code"],
+                        "name": row["region_name"]
+                    }
+                }
             f.close()
         self.logger.debug(f"Successfully initialized centroid for stations "
                           f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
@@ -113,6 +122,16 @@ class Centroid:
         self.logger.debug(f"Successfully initialized centroid for observation stations "
                           f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
 
+    def _init_area_to_position_centroid(self):
+        """
+        Initializes the centroid for sub region codes & position conversion.
+        """
+        start_initialize_time = time.perf_counter()
+        with open(relpath("./area_position.json"), "r", encoding="utf-8") as f:
+            self._area_to_position_centroid = json.loads(f.read())
+        self.logger.debug(f"Successfully initialized centroid for area to position "
+                          f"in {(time.perf_counter() - start_initialize_time):.3f} seconds.")
+
     @property
     def station_centroid(self):
         return self._station_centroid
@@ -124,3 +143,7 @@ class Centroid:
     @property
     def earthquake_station_centroid(self):
         return self._eq_station_centroid
+
+    @property
+    def area_position_centroid(self):
+        return self._area_to_position_centroid

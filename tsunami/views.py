@@ -38,6 +38,7 @@ def tsunami_banner_render():
     """
     return render_template("tsunami_banner.html")
 
+
 @tsunami_bp.route("/tsunami_forecast")
 def tsunami_forecast_render():
     """

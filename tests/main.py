@@ -12,32 +12,23 @@
         - pswave
     Note: The station to English module isn't currently being used, so it won't be tested.
 """
+# noinspection PyUnresolvedReferences
+from app import app  # In order to pre-initialize the application
+from modules.sdk import relpath
+from .classes import DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
+    DemoAreaAbnTsunamiJson
+from config import VERSION
+
 import sys
 import unittest
 
 import HTMLReport
 
 sys.path.append('../')
-# noinspection PyUnresolvedReferences
-from app import app  # In order to pre-initialize the application
-from classes import DemoRespOK, DemoRespError, DemoRespStatusError, DemoRespTextEmpty, DemoNormIntensityJson, \
-    DemoIntAbnIntensityJson, DemoAreaAbnIntensityJson, DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
-    DemoAreaAbnTsunamiJson
-from config import VERSION
 
 
 class TestUtilities(unittest.TestCase):
     """The tests for utilities."""
-
-    def test_response_verify(self):
-        """
-        Tests response_verify.
-        """
-        from modules.utilities import response_verify
-        self.assertTrue(response_verify(DemoRespOK))
-        self.assertFalse(response_verify(DemoRespError))
-        self.assertFalse(response_verify(DemoRespStatusError))
-        self.assertFalse(response_verify(DemoRespTextEmpty))
 
     def test_generate_list(self):
         """
@@ -47,7 +38,7 @@ class TestUtilities(unittest.TestCase):
             - An empty string "" -> []
             - A False -> []
         """
-        from modules.utilities import generate_list
+        from modules.sdk import generate_list
         self.assertEqual(generate_list("123"), ["123"])
         self.assertEqual(generate_list(["123", "456"]), ["123", "456"])
         self.assertEqual(generate_list(""), [])
@@ -58,7 +49,7 @@ class TestUtilities(unittest.TestCase):
         Tests relpath by reading test_file.txt.
         If the content isn't "TEST", then the function is broken.
         """
-        from modules.utilities import relpath
+        from modules.sdk import relpath
         path_to_test_file = relpath("./test_file.txt")
         self.assertNotEqual(path_to_test_file, "")
         fp = open(path_to_test_file, "r+")
@@ -77,34 +68,13 @@ class TestModules(unittest.TestCase):
         self.assertNotEqual(self.geojson_instance.japan_areas, {})
         self.assertNotEqual(self.geojson_instance.tsunami_areas, {})
 
-    def test_area_coloring(self):
-        """
-        Tests get_intensity_json function.
-        """
-        normal_geojson = self.geojson_instance.get_intensity_json(DemoNormIntensityJson.area_names,
-                                                                  DemoNormIntensityJson.area_intensities)
-        intensity_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoIntAbnIntensityJson.area_names,
-                                                                              DemoIntAbnIntensityJson.area_intensities)
-        area_abnormal_geojson = self.geojson_instance.get_intensity_json(DemoAreaAbnIntensityJson.area_names,
-                                                                         DemoAreaAbnIntensityJson.area_intensities)
-        self.assertEqual(normal_geojson["features"][0]["properties"]["intensity"], "5+")
-        self.assertEqual(intensity_abnormal_geojson["features"][0]["properties"]["intensity"], "0")
-        self.assertEqual(area_abnormal_geojson["features"], [])
-        self.assertEqual(normal_geojson["features"][0]["properties"]["intensity_color"],
-                         DemoNormIntensityJson.intensity_color)
-        self.assertEqual(intensity_abnormal_geojson["features"][0]["properties"]["intensity_color"],
-                         DemoIntAbnIntensityJson.intensity_color)
-
     def test_tsunami_coloring(self):
         """
         Tests get_tsunami_json function.
         """
-        normal_tsunami_geojson = self.geojson_instance.get_tsunami_json(DemoNormTsunamiJson.area_names,
-                                                                        DemoNormTsunamiJson.area_grades)
-        grade_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoGradeAbnTsunamiJson.area_names,
-                                                                        DemoGradeAbnTsunamiJson.area_grades)
-        area_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoAreaAbnTsunamiJson.area_names,
-                                                                       DemoAreaAbnTsunamiJson.area_grades)
+        normal_tsunami_geojson = self.geojson_instance.get_tsunami_json(DemoNormTsunamiJson.area_grades)
+        grade_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoGradeAbnTsunamiJson.area_grades)
+        area_abnormal_geojson = self.geojson_instance.get_tsunami_json(DemoAreaAbnTsunamiJson.area_grades)
         self.assertEqual(normal_tsunami_geojson["features"][0]["properties"]["grade"], "MajorWarning")
         self.assertEqual(area_abnormal_geojson["features"], [])
         self.assertFalse("intensity_color" in grade_abnormal_geojson["features"][0]["properties"])
@@ -125,14 +95,21 @@ class TestModules(unittest.TestCase):
         So, all the intensity stations' detailed_intensity should be 7.0, intensity should be "7".
         """
         from modules.intensity import intensity2color
-        with open("./test_intensity_to_color.gif", "rb") as f:
+        with open(relpath("./test_intensity_to_color.gif"), "rb") as f:
             resp_raw = f.read()
             f.close()
-        int2color_response = intensity2color(resp_raw)
-        self.assertNotEqual(int2color_response, {})
-        self.assertTrue("ABSH01" in int2color_response)
-        self.assertEqual(int2color_response["ABSH01"]["detail_intensity"], 7.0)
-        self.assertEqual(int2color_response["ABSH01"]["intensity"], "7")
+        station_intensities, area_intensities, recommended_areas = intensity2color(resp_raw)
+        self.assertNotEqual(station_intensities, {})
+        self.assertNotEqual(area_intensities, {})
+
+        self.assertTrue("その他平塚ST1" in station_intensities)
+        self.assertEqual(station_intensities["その他平塚ST1"]["detail_intensity"], 7.0)
+        self.assertEqual(station_intensities["その他平塚ST1"]["intensity"], "7")
+
+        self.assertTrue("石狩地方北部" in area_intensities)
+        self.assertEqual(area_intensities["石狩地方北部"]["intensity"], "7")
+
+        self.assertTrue(recommended_areas)
 
     def test_pswave(self):
         """

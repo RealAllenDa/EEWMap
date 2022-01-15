@@ -40,6 +40,7 @@ body {
     --intensity-8: rgb(160, 0, 0);
     --intensity-9: rgb(150, 0, 150);
     --intensity-0: rgb(102, 102, 102);
+    --intensity-5-and-up: rgb(255, 255, 0);
     --major-tsunami-warn: #B65BD2;
     --tsunami-warn: #FF2800;
     --tsunami-advisory: #FAF500;
