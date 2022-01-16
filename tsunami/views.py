@@ -45,3 +45,11 @@ def tsunami_forecast_render():
     Renders the tsunami forecast index.
     """
     return render_template("tsunami_forecast.html")
+
+
+@tsunami_bp.route("/tsunami_forecast_map")
+def tsunami_forecast_map_render():
+    """
+    Renders the tsunami forecast map.
+    """
+    return render_template("tsunami_forecast_map.html")

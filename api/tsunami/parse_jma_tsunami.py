@@ -67,7 +67,7 @@ def parse_jma_tsunami(response, app):
             watch_information_urls = sorted(response_urls_watch, key=lambda x: response_urls_watch[x])
         else:
             watch_information_urls = ["TEST"]
-        preparse_tsunami_watch(watch_information_urls, app)
+        preparse_tsunami_watch(reversed(watch_information_urls), app)
 
 
 def parse_current_tsunami_info(information_url, app):

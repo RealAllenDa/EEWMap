@@ -64,7 +64,6 @@ def parse_p2p_info(raw_json, app):
     for i in reversed(parsing_list):
         app.logger.debug(f"Parsing ID: {i['code']}-{i['id']}")
         start_parse_time = time.perf_counter()
-
         if i["code"] == 551:
             # Earthquake information
             if i["issue"]["source"] == "TR.tr(\\":
@@ -183,7 +182,8 @@ def parse_p2p_info(raw_json, app):
                              f"in {(time.perf_counter() - start_parse_time):.3f} seconds.")
             return_list.append(return_temp)
 
-        elif i["code"] == 552:
+    for i in reversed(raw_json):
+        if i["code"] == 552:
             # Tsunami information
             if i["issue"]["type"] != "Focus":
                 app.logger.warn("RARE: Tsunami information type isn't focus. "

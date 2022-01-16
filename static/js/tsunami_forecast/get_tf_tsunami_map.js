@@ -1,4 +1,4 @@
-var getTsunamiMapInfo = function () {
+var getTsunamiForecastMapInfo = function () {
     $.ajax({
         type: "GET",
         url: "/api/tsunami_info",
@@ -25,11 +25,6 @@ var enable_ogasawara_map = false;
 var tsunami_map_layer1 = undefined;
 var tsunami_map_layer2 = undefined;
 var tsunami_map_layer3 = undefined;
-var current_grade_list = {
-    "Advisory": false,
-    "Warning": false,
-    "MajorWarning": false
-};
 var last_message = {};
 var is_first_time = true;
 var parseMapInfo = function (result) {
@@ -46,8 +41,14 @@ var parseMapInfo = function (result) {
     }
     window.location.reload();
 };
+var parseTsunamiFCAreas = function (result) {
+    window.TSUNAMI_FORECAST_AREAS = [];
+    result.forEach(content => {
+        window.TSUNAMI_FORECAST_AREAS.push(content.name);
+    })
+};
 var setMapInfo = function (result) {
-    var map_result = result["map"]["areas"];
+    var map_result = result["info"]["forecast_areas"];
     if (window.map_flash_interval != undefined) {
         clearInterval(window.map_flash_interval);
     }
@@ -56,24 +57,15 @@ var setMapInfo = function (result) {
     if (map_result == undefined) {
         return;
     }
-    if (!(_.isEqual({}, map_result)) && parseInt(result["status"]) == 1) {
+    parseTsunamiFCAreas(map_result);
+    if (!(_.isEqual({}, map_result)) && parseInt(result["status_forecast"]) == 1) {
         // Tsunami warning in effect
-        document.getElementById("receive-time").innerText = result["map"]["time"];
+        document.getElementById("receive-time").innerText = result["info"]["receive_time"];
         var bound_japan = L.latLngBounds();
         // noinspection JSUnusedGlobalSymbols
-        tsunami_map_layer1 = L.geoJson(map_result, {
+        tsunami_map_layer1 = L.geoJson(_GEOJSON_TSUNAMI, {
             style: parseMapStyle,
             onEachFeature: function (feature, layer) {
-                var current_area_grade = feature["properties"]["grade"];
-                if (current_area_grade == "Watch") {
-                    current_grade_list["Advisory"] = true;
-                }
-                if (current_area_grade == "Warning") {
-                    current_grade_list["Warning"] = true;
-                }
-                if (current_area_grade == "MajorWarning") {
-                    current_grade_list["MajorWarning"] = true;
-                }
                 if (latLngBounds_japan_map.contains([layer._bounds._northEast, layer._bounds._southWest])) {
                     bound_japan.extend([layer._bounds._northEast, layer._bounds._southWest]);
                 }
@@ -96,11 +88,11 @@ var setMapInfo = function (result) {
             $("#map_ogasawara_overlay")[0].style.display = "none";
         }
         // noinspection JSUnusedGlobalSymbols
-        tsunami_map_layer2 = L.geoJson(map_result, {
+        tsunami_map_layer2 = L.geoJson(_GEOJSON_TSUNAMI, {
             style: parseMapStyle
         });
         // noinspection JSUnusedGlobalSymbols
-        tsunami_map_layer3 = L.geoJson(map_result, {
+        tsunami_map_layer3 = L.geoJson(_GEOJSON_TSUNAMI, {
             style: parseMapStyle
         });
         tsunami_map_layer1.addTo(window.map_japan);
@@ -111,28 +103,9 @@ var setMapInfo = function (result) {
         } else {
             window.map_japan.fitBounds(latLngBounds_japan_map);
         }
-        setMapLegends(current_grade_list);
         setMapFlashInterval();
     } else {
         document.getElementById("receive-time").innerText = "XXXX-XX-XX XX:XX";
-    }
-};
-var setMapLegends = function (current_grade_list) {
-    var legends_div = $("#legends div");
-    var major_legend = legends_div[0];
-    var warn_legend = legends_div[1];
-    var advisory_legend = legends_div[2];
-    major_legend.style.display = "none";
-    warn_legend.style.display = "none";
-    advisory_legend.style.display = "none";
-    if (current_grade_list["Advisory"]) {
-        advisory_legend.style.display = "flex";
-    }
-    if (current_grade_list["Warning"]) {
-        warn_legend.style.display = "flex";
-    }
-    if (current_grade_list["MajorWarning"]) {
-        major_legend.style.display = "flex";
     }
 };
 var deleteAllStrokes = function () {
@@ -151,9 +124,13 @@ var deleteAllStrokes = function () {
     }
 };
 var parseMapStyle = function (feature) {
+    var color = "";
+    if (window.TSUNAMI_FORECAST_AREAS.indexOf(feature.properties.name) > 0) {
+        color = "#00aaff";
+    }
     return {
         stroke: true,
-        color: feature.properties.intensity_color,
+        color: color,
         weight: 4
     }
 };

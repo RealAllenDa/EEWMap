@@ -101,8 +101,8 @@ window.onload = function () {
         console.error("Failed to initialize the map. ", e);
     }
     // Call now to avoid waiting for 5 seconds.
-    getTsunamiMapInfo();
+    getTsunamiForecastMapInfo();
     setInterval(function () {
-        getTsunamiMapInfo();
+        getTsunamiForecastMapInfo();
     }, 5000);
 };

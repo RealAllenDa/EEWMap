@@ -7,7 +7,7 @@ import time
 from modules.sdk import relpath
 
 # Version
-VERSION = "2.1.3 Release"
+VERSION = "2.2.0 Release"
 
 
 class _BaseConfig:
@@ -92,6 +92,9 @@ class TestingEEWConfig(DevelopmentConfig):
 
 class TestingTsunamiConfig(DevelopmentConfig):
     DEBUG_TSUNAMI = True
+    DEBUG_P2P_OVRD = {
+        "file": relpath("./misc/demo/p2p_tsunami.json")
+    }
     DEBUG_TSUNAMI_WATCH = True
     DEBUG_P2P_TSUNAMI = True
 
@@ -100,4 +103,4 @@ class TestingCEICConfig(DevelopmentConfig):
     CEIC_LIST_COUNT = 0
 
 
-CURRENT_CONFIG = TestingEEWConfig()
+CURRENT_CONFIG = ProductionConfig()

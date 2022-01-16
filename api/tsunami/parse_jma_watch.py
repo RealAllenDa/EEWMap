@@ -68,7 +68,7 @@ def parse_tsunami_watch_information(to_parse_raw_response, app):
     watch_return = {"areas": []}
     start_parse_time = time.perf_counter()
     app.logger.debug("Parsing tsunami watch information...")
-    receive_time = time.strptime(to_parse_raw_response["Report"]["Control"]["DateTime"], "%Y-%m-%dT%H:%M:%SZ")
+    receive_time = time.strptime(to_parse_raw_response["Report"]["Head"]["ReportDateTime"][:19], "%Y-%m-%dT%H:%M:%S")
     receive_time_formatted = time.strftime("%Y/%m/%d %H:%M:%S", receive_time)
     watch_return["receive_time"] = receive_time_formatted
     report_items = generate_list(to_parse_raw_response["Report"]["Body"]["Tsunami"]["Observation"]["Item"])

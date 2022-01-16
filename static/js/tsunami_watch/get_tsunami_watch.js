@@ -166,7 +166,6 @@ var displayWatchInfo = function (array) {
             if (array[i]["height_is_max"]) {
                 tsunami_height.innerText = "Over ";
             }
-            tsunami_height.innerText += array[i]["height"];
             if (array[i]["height_condition"] == "Rising") {
                 tsunami_status.innerText = "RISING";
                 tsunami_status.className = "rising-alert";
@@ -178,7 +177,13 @@ var displayWatchInfo = function (array) {
             } else if (parseFloat(array[i]["height"]) >= 0.5) {
                 tsunami_container.className += " advisory";
             }
-            tsunami_height.innerText += "m";
+            // Parse tsunami height
+            var height_m = Math.floor(array[i]["height"]);
+            var height_cm = (parseFloat(array[i]["height"]) - height_m) * 100;
+            if (height_m != 0) {
+                tsunami_height.innerText += height_m + "m ";
+            }
+            tsunami_height.innerText += height_cm + "cm";
         }
         tsunami_container.appendChild(tsunami_name);
         tsunami_container.appendChild(tsunami_time);

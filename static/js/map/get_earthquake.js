@@ -260,12 +260,12 @@ var parseEEWInfo = function (result, only_update_map = false) {
         } else if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
             window.DOM.eew_advice.style.background = "#C37807";
             window.DOM.eew_advice.innerText = "Deep earthquake - Information may not be accurate";
-        } else if (["1", "2", "3", "4"].indexOf(result["max_intensity"]) != -1) {
-            window.DOM.eew_advice.style.background = "var(--intensity-2)";
-            window.DOM.eew_advice.innerText = "Pay attention to coastal areas";
-        } else {
+        } else if (parseFloat(result["magnitude"]) >= 6.0) {
             window.DOM.eew_advice.style.background = "var(--intensity-7)";
             window.DOM.eew_advice.innerText = "Stay away from coastal areas";
+        } else {
+            window.DOM.eew_advice.style.background = "var(--intensity-2)";
+            window.DOM.eew_advice.innerText = "Pay attention to coastal areas";
         }
         if (result["is_test"]) {
             window.DOM.drill_flag.style.display = "block";
@@ -338,5 +338,9 @@ var displayEarthquakeInformation = function (resp_content, is_eew) {
     }
     epicenter.innerText = resp_content["hypocenter"]["name"];
     depth.innerText = resp_content["hypocenter"]["depth"];
-    magnitude.innerText = parseFloat(resp_content["magnitude"]).toFixed(1).toString();
+    if (parseFloat(resp_content["magnitude"]) < 0) {
+        magnitude.innerText = "Unknown";
+    } else {
+        magnitude.innerText = parseFloat(resp_content["magnitude"]).toFixed(1).toString();
+    }
 };
