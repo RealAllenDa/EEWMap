@@ -48,7 +48,7 @@ var sortByArrivalTime = function (array_for_sort) {
         } else if (time_f1["type"] == "no_time" && time_f2["type"] == "no_time") {
             return time_f1["status"] - time_f2["status"];
         } else {
-            return time_f1["timestamp"] - time_f2["timestamp"];
+            return -(time_f1["timestamp"] - time_f2["timestamp"]);
         }
     });
     area_entries = area_entries.reverse();

@@ -8,6 +8,7 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="{{ url_for('static', filename='js/tsunami_map/get_tsunami.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lang.js') }}"></script>
 </head>
 <body>
 <script src="{{ url_for('static', filename='js/tsunami_map/index.js') }}"></script>
@@ -16,17 +17,17 @@
         <div id="tsunami-show">
             <span id="tsunami-title">Tsunami Information</span>
             <span id="receive-title"><span id="report-origin">--</span> #<span id="report-pages">--</span>/<span
-                    id="report-final-pages">--</span> Received at <span
+                    id="report-final-pages">--</span> <span id="receive-label">Received at</span> <span
                     id="receive-time">XXXX/XX/XX XX:XX</span></span>
         </div>
         <div id="evacuate-sign">EVACUATE!</div>
     </div>
     <div id="tsunami-information">
         <div class="tsunami-item" id="tsunami-description">
-            <div>Grade</div>
-            <div>Tsunami Forecast Region</div>
-            <div>Initial tsunami arrival time</div>
-            <div>Height</div>
+            <div id="grade-indicator">Grade</div>
+            <div id="region-indicator">Tsunami Forecast Region</div>
+            <div id="arr-time-indicator">Initial tsunami arrival time</div>
+            <div id="height-indicator">Height</div>
         </div>
     </div>
     <div id="information-overlay">

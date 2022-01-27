@@ -206,7 +206,7 @@ var addMapIntensities = function (intensityList) {
         } else if (intensity == "7") {
             layer.setZIndexOffset(900);
         } else if (intensity == "5?") {
-            layer.setZIndexOffset(50);
+            layer.setZIndexOffset(450);
         } else {
             layer.setZIndexOffset(0);
         }

@@ -6,6 +6,7 @@ import json
 
 from flask import Blueprint, abort
 
+from api.eew.eew_middleware import use_svir_or_kmoni
 from modules.sdk import relpath, api_return
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -21,32 +22,6 @@ def shake_level_get():
     """
     from .shake_level.get_shake_level import return_shake_level
     return api_return(return_shake_level)
-
-
-def use_svir_or_kmoni(return_dict, return_dict_svir):
-    """
-    Determines whether to use kmoni eew or svir eew.
-    :param return_dict: Kmoni eew
-    :param return_dict_svir: Svir eew
-    :return: Only an eew
-    :rtype: dict
-    """
-    svir_on = return_dict_svir.get("status", -1) != -1
-    kmoni_on = return_dict.get("status", -1) != -1
-    if (not svir_on) and (not kmoni_on):
-        return {}
-    elif (not svir_on) and kmoni_on:
-        return return_dict
-    elif svir_on and (not kmoni_on):
-        return return_dict_svir
-    elif svir_on and kmoni_on:
-        try:
-            if int(return_dict_svir["hypocenter"]["depth"][:-2]) >= 150:
-                return return_dict_svir
-            else:
-                return return_dict_svir if return_dict_svir["report_flag"] == 1 else return_dict
-        except Exception:
-            return return_dict
 
 
 @api_bp.route("/earthquake_info")

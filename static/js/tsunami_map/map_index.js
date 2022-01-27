@@ -14,7 +14,10 @@ var initializeMap = function () {
     });
     window.map_okinawa = L.map('map_okinawa', {
         zoomControl: false,
-        center: [25.918526162075153, 127.17773437500001],
+        center: {
+            "lat": 26.674949874061767,
+            "lng": 127.24804714322093
+        },
         zoom: 5,
         attributionControl: false,
         maxZoom: 8,
@@ -35,11 +38,12 @@ var initializeMap = function () {
     L.geoJson(_GEOJSON_TSUNAMI_JAPAN, {
         style: {
             weight: 0,
+            stroke: false,
             fillColor: "#5e5e5e",
             fillOpacity: 1,
             fill: true
         },
-        pane: "tilePane"
+        pane: "overlayPane"
     }).addTo(window.map_japan);
     L.geoJson(_GEOJSON_TSUNAMI_JAPAN, {
         style: {
@@ -48,7 +52,7 @@ var initializeMap = function () {
             fillOpacity: 1,
             fill: true
         },
-        pane: "tilePane"
+        pane: "overlayPane"
     }).addTo(window.map_okinawa);
     L.geoJson(_GEOJSON_TSUNAMI_JAPAN, {
         style: {
@@ -57,33 +61,17 @@ var initializeMap = function () {
             fillOpacity: 1,
             fill: true
         },
-        pane: "tilePane"
+        pane: "overlayPane"
     }).addTo(window.map_ogasawara);
-
     L.geoJson(_GEOJSON_JAPAN_AREA_LINE, {
         style: {
-            weight: 1,
-            fillOpacity: 0,
-            color: "#000000"
+            stroke: true,
+            fill: false,
+            color: "#000000",
+            weight: 0.5
         },
-        pane: "tilePane"
+        pane: "overlayPane"
     }).addTo(window.map_japan);
-    L.geoJson(_GEOJSON_JAPAN_AREA_LINE, {
-        style: {
-            weight: 1,
-            fillOpacity: 0,
-            color: "#000000"
-        },
-        pane: "tilePane"
-    }).addTo(window.map_okinawa);
-    L.geoJson(_GEOJSON_JAPAN_AREA_LINE, {
-        style: {
-            weight: 1,
-            fillOpacity: 0,
-            color: "#000000"
-        },
-        pane: "tilePane"
-    }).addTo(window.map_ogasawara);
     window.map_ogasawara.scrollWheelZoom.disable();
     window.map_ogasawara.dragging.disable();
     window.map_ogasawara.doubleClickZoom.disable();

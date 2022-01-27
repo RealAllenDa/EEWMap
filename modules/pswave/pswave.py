@@ -43,7 +43,7 @@ def parse_pswave(depth, time_passed):
     :param time_passed: The passed time of the earthquake
     :return: The S wave time
     """
-    logger.debug("Parsing PS wave times...")
+    logger.debug(f"Parsing PS wave times -> depth:{depth}, time:{time_passed}")
     # --- Preparation
     start_time = time.perf_counter()
     if depth > 700 or time_passed > 2000:

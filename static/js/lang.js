@@ -38,7 +38,12 @@ const LOCALE = {
                 "preliminary": "TSUNAMI INFORMATION (PRELIMINARY)",
                 "detailed": "TSUNAMI INFORMATION (DETAILED)",
                 "none": "No tsunami warning in effect.",
+                "wait": "Waiting for messages...",
                 "none_title": "TSUNAMI INFORMATION",
+                "major_wrn_flag": "MAJOR",
+                "wrn_flag": "WRN",
+                "adv_flag": "ADV",
+                "unk_flag": "UNK",
             }
         },
         "html": {
@@ -56,6 +61,19 @@ const LOCALE = {
                     "drill-label": "Drill - Not Real Situation",
                     "expected-label": "Expected Intensity",
                     "eew-receive-label": "Received at <span id=\"eew-receive-time\">XXXX/XX/XX XX:XX</span>"
+                }
+            },
+            "tsunami_info": {
+                "title": "Tsunami Info",
+                "dom": {
+                    "tsunami-title": "Tsunami Information",
+                    "receive-label": "Received at",
+                    "evacuate-sign": "EVACUATE!",
+                    "grade-indicator": "Grade",
+                    "region-indicator": "Tsunami Forecast Region",
+                    "arr-time-indicator": "Initial tsunami arrival time",
+                    "height-indicator": "Height",
+                    "information-overlay": "Waiting for messages..."
                 }
             }
         }
@@ -76,6 +94,19 @@ const LOCALE = {
                     "drill-label": "训练 - 非真实情况",
                     "expected-label": "预计震度",
                     "eew-receive-label": "于 <span id=\"eew-receive-time\">XXXX/XX/XX XX:XX</span> 接收"
+                }
+            },
+            "tsunami_info": {
+                "title": "海啸预报信息",
+                "dom": {
+                    "tsunami-title": "海啸预报信息",
+                    "receive-label": "接收于",
+                    "evacuate-sign": "避难!",
+                    "grade-indicator": "等级",
+                    "region-indicator": "海啸预报区域",
+                    "arr-time-indicator": "第一波海啸到达时间",
+                    "height-indicator": "高度",
+                    "information-overlay": "等待消息..."
                 }
             }
         }

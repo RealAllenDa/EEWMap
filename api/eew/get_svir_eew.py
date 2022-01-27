@@ -276,10 +276,10 @@ def parse_iedred_eew_info(app, converted_response):
     try:
         origin_timestamp = converted_response["OriginTime"]["UnixTime"]
         if CURRENT_CONFIG.DEBUG_EEW:
-            origin_timestamp = CURRENT_CONFIG.DEBUG_EEW_OVRD["origin_timestamp"]
+            origin_timestamp = CURRENT_CONFIG.DEBUG_EEW_OVRD["origin_timestamp"] + 3600
         depth = int(converted_response["Hypocenter"]["Location"]["Depth"]["Int"])
         s_wave_time, p_wave_time = parse_pswave(depth, float(
-            time.time() - origin_timestamp))  # Japanese time
+            time.time() + 3600 - origin_timestamp))  # Japanese time
     except Exception:
         app.logger.warn("Failed to get PS wave time. Exception occurred: \n" + traceback.format_exc())
         s_wave_time, p_wave_time = None, None

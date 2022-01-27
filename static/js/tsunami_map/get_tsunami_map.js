@@ -63,7 +63,11 @@ var setMapInfo = function (result) {
         // noinspection JSUnusedGlobalSymbols
         tsunami_map_layer1 = L.geoJson(map_result, {
             style: parseMapStyle,
+            pane: "tilePane",
             onEachFeature: function (feature, layer) {
+                if (feature.properties.name == "奄美群島・トカラ列島") {
+                    layer.options.stroke = false;
+                }
                 var current_area_grade = feature["properties"]["grade"];
                 if (current_area_grade == "Watch") {
                     current_grade_list["Advisory"] = true;
@@ -97,10 +101,12 @@ var setMapInfo = function (result) {
         }
         // noinspection JSUnusedGlobalSymbols
         tsunami_map_layer2 = L.geoJson(map_result, {
+            pane: "tilePane",
             style: parseMapStyle
         });
         // noinspection JSUnusedGlobalSymbols
         tsunami_map_layer3 = L.geoJson(map_result, {
+            pane: "tilePane",
             style: parseMapStyle
         });
         tsunami_map_layer1.addTo(window.map_japan);
@@ -154,12 +160,12 @@ var parseMapStyle = function (feature) {
     return {
         stroke: true,
         color: feature.properties.intensity_color,
-        weight: 4
+        weight: 5
     }
 };
 var setMapFlashInterval = function () {
     window.map_flash_interval = setInterval(function () {
-        var paths = $(".leaflet-overlay-pane");
+        var paths = $(".leaflet-tile-pane");
         for (var i = 0; i < paths.length; i++) {
             paths[i].style.display = "block";
         }

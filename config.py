@@ -7,7 +7,7 @@ import time
 from modules.sdk import relpath
 
 # Version
-VERSION = "2.2.0 Release"
+VERSION = "2.2.1 Release"
 
 
 class _BaseConfig:
@@ -83,6 +83,16 @@ class ProductionConfig(_BaseConfig):
 
 class TestingEEWConfig(DevelopmentConfig):
     DEBUG_EEW = True
+    DEBUG_EEW_OVRD = {
+        "start_time": 20211209110520,
+        # "start_time": 20210213230800,
+        "origin_timestamp": int(time.time())
+    }
+
+
+class TestingSVIREEWConfig(DevelopmentConfig):
+    DEBUG_EEW = True
+    DEBUG_IGNORE_EEW_OUTDATE = True
     DEBUG_EEW_OVRD = {
         "start_time": 20211209110520,
         # "start_time": 20210213230800,

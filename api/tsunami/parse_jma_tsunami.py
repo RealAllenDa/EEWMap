@@ -156,19 +156,19 @@ def parse_tsunami_areas(response_items, app):
                 if first_time_estimation["Condition"] == "ただちに津波来襲と予測":
                     area_time = {
                         "type": "no_time",
-                        "time": "Tsunami Will Arrive Soon",
+                        "time": "Arriving Soon",
                         "status": 0
                     }
                 elif first_time_estimation["Condition"] == "津波到達中と推測":
                     area_time = {
                         "type": "no_time",
-                        "time": "Tsunami Arrival Expected",
+                        "time": "Expected To Arrive",
                         "status": 1
                     }
                 elif first_time_estimation["Condition"] == "第１波の到達を確認":
                     area_time = {
                         "type": "no_time",
-                        "time": "Arrival of Initial Tsunami Confirmed",
+                        "time": "Arrived",
                         "status": 2
                     }
             else:
@@ -185,7 +185,7 @@ def parse_tsunami_areas(response_items, app):
                 elif max_height["@description"] == "高い":
                     area_height = "HIGH"
                 elif max_height["@description"] == "１０ｍ超":
-                    area_height = "10m+"
+                    area_height = "ABOVE 10m"
                 elif max_height["@description"] == "１０ｍ":
                     area_height = "10m"
                 elif max_height["@description"] == "５ｍ":
