@@ -72,17 +72,17 @@
 
 .tsunami-warn {
     font-weight: bolder;
-    background: var(--tsunami-warn);
+    background: var(--map-tsunami-warn);
 }
 
 .major-tsunami-warn {
     font-weight: bolder;
-    background: var(--major-tsunami-warn);
+    background: var(--map-major-tsunami-warn);
 }
 
 .tsunami-advisory {
     font-weight: bold;
-    background: var(--tsunami-advisory);
+    background: var(--map-tsunami-advisory);
     color: black;
 }
 
@@ -97,4 +97,12 @@
     font-size: 30px;
     text-align: center;
     line-height: 45px;
+}
+
+.tsunami-time {
+    font-weight: bold;
+}
+
+.tsunami-height {
+    font-size: 22px;
 }

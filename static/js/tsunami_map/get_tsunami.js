@@ -232,10 +232,12 @@ var displayTsunamiInfo = function (array) {
         }
         tsunami_name.innerText = array[i]["name"];
         tsunami_time.innerText = array[i]["time"]["time"];
+        tsunami_time.className = "tsunami-time";
         if (array[i]["height"] == "Unknown") {
             tsunami_height.className = "";
         } else {
-            tsunami_height.innerText = array[i]["height"];
+            tsunami_height.classList.add("tsunami-height");
+            tsunami_height.innerHTML = array[i]["height"];
         }
         tsunami_container.appendChild(tsunami_grade);
         tsunami_container.appendChild(tsunami_name);

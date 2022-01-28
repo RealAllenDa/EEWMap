@@ -162,12 +162,16 @@ var displayWatchInfo = function (array) {
             tsunami_time.innerText = array[i]["time"];
         }
         if (array[i]["condition"] == "None") {
+            tsunami_height.style.fontSize = "25px";
             tsunami_time.innerText = array[i]["time"];
             if (array[i]["height_is_max"]) {
                 tsunami_height.innerText = "Over ";
             }
             if (array[i]["height_condition"] == "Rising") {
-                tsunami_status.innerText = "RISING";
+                var status_rising = document.createElement("img");
+                status_rising.src = "static/image/rising.svg";
+                status_rising.className = "rising-icon";
+                tsunami_status.appendChild(status_rising);
                 tsunami_status.className = "rising-alert";
             }
             if (parseFloat(array[i]["height"]) >= 3) {
@@ -179,11 +183,13 @@ var displayWatchInfo = function (array) {
             }
             // Parse tsunami height
             var height_m = Math.floor(array[i]["height"]);
-            var height_cm = (parseFloat(array[i]["height"]) - height_m) * 100;
+            var height_cm = Math.round((parseFloat(array[i]["height"]).toFixed(2) - height_m) * 100);
             if (height_m != 0) {
-                tsunami_height.innerText += height_m + "m ";
+                tsunami_height.innerHTML += height_m + "<span class='indicator'>m</span> ";
             }
-            tsunami_height.innerText += height_cm + "cm";
+            if (height_cm != 0) {
+                tsunami_height.innerHTML += height_cm + "<span class='indicator'>cm</span>";
+            }
         }
         tsunami_container.appendChild(tsunami_name);
         tsunami_container.appendChild(tsunami_time);

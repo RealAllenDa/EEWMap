@@ -7,7 +7,7 @@ import time
 from modules.sdk import relpath
 
 # Version
-VERSION = "2.2.1 Release"
+VERSION = "2.2.2 Release"
 
 
 class _BaseConfig:

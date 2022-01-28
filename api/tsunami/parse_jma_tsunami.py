@@ -156,13 +156,13 @@ def parse_tsunami_areas(response_items, app):
                 if first_time_estimation["Condition"] == "ただちに津波来襲と予測":
                     area_time = {
                         "type": "no_time",
-                        "time": "Arriving Soon",
+                        "time": "Arriving Now",
                         "status": 0
                     }
                 elif first_time_estimation["Condition"] == "津波到達中と推測":
                     area_time = {
                         "type": "no_time",
-                        "time": "Expected To Arrive",
+                        "time": "Arrival Expected",
                         "status": 1
                     }
                 elif first_time_estimation["Condition"] == "第１波の到達を確認":
@@ -185,15 +185,15 @@ def parse_tsunami_areas(response_items, app):
                 elif max_height["@description"] == "高い":
                     area_height = "HIGH"
                 elif max_height["@description"] == "１０ｍ超":
-                    area_height = "ABOVE 10m"
+                    area_height = "10<span class='indicator'>m</span> ABOVE"
                 elif max_height["@description"] == "１０ｍ":
-                    area_height = "10m"
+                    area_height = "10<span class='indicator'>m</span>"
                 elif max_height["@description"] == "５ｍ":
-                    area_height = "5m"
+                    area_height = "5<span class='indicator'>m</span>"
                 elif max_height["@description"] == "３ｍ":
-                    area_height = "3m"
+                    area_height = "3<span class='indicator'>m</span>"
                 elif max_height["@description"] == "１ｍ":
-                    area_height = "1m"
+                    area_height = "1<span class='indicator'>m</span>"
                 else:
                     area_height = "Unknown"
             except Exception:

@@ -8,6 +8,10 @@
     src: url("../font/Geometos.ttf");
 }
 
+.indicator {
+    font-size: 18px;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -44,5 +48,8 @@ body {
     --major-tsunami-warn: #B65BD2;
     --tsunami-warn: #FF2800;
     --tsunami-advisory: #FAF500;
+    --map-major-tsunami-warn: #B65BD2;
+    --map-tsunami-warn: #DE3329;
+    --map-tsunami-advisory: #E5A72C;
     background: var(--background-color);
 }

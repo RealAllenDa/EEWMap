@@ -23,7 +23,7 @@ def preparse_tsunami_watch(information_urls, app):
     start_preparse_time = time.perf_counter()
     app.logger.debug("Start pre-parsing tsunami watch information...")
     to_parse_response = ""
-    if information_urls != ["TEST"]:
+    if not CURRENT_CONFIG.DEBUG_TSUNAMI_WATCH:
         for i in information_urls:
             try:
                 response = make_web_request(url=i,
