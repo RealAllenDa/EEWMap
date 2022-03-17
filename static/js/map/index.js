@@ -13,6 +13,8 @@ var initializeDOM = function () {
     window.DOM.foreign_information_banner = document.getElementById("banner-text-foreign");
     window.DOM.occur_time = document.getElementById("occur-time");
     window.DOM.intensity_report_occur_time = document.getElementById("int-report-occur-time");
+    window.DOM.depth_label = document.getElementById("depth-label");
+    window.DOM.magnitude_label = document.getElementById("magnitude-label");
 
     // Earthquake Early Warning
     window.DOM.eew_banner_div = document.getElementById("eew-banner");

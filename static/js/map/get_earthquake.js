@@ -197,10 +197,10 @@ var parseEqInfo = function (result) {
             addEpicenter(resp_content["hypocenter"]["latitude"],
                 resp_content["hypocenter"]["longitude"]);
             // Manually set zoom
-            window.map.setZoom(2, {animate: false});
+            window.map.setZoom(1.5, {animate: false});
             window.map.panTo([
-                resp_content["hypocenter"]["latitude"],
-                resp_content["hypocenter"]["longitude"]
+                43.15446159960712,
+                5.314202010977068
             ], {animate: false});
         }
     }
@@ -242,7 +242,7 @@ var parseEEWInfo = function (result, only_update_map = false) {
         if (result["is_plum"]) {
             // PLUM
             window.DOM.eew_banner_div.style.background = "var(--info-background-color)";
-            window.DOM.eew_banner.innerText = "PLUM determined epicenter - No detailed information available";
+            window.DOM.eew_banner.innerText = "PLUM determined epicenter - Wait for further information";
         } else {
             if (parseInt(result["report_flag"]) == 0) {
                 // Earthquake Forecast
@@ -259,7 +259,8 @@ var parseEEWInfo = function (result, only_update_map = false) {
             window.DOM.eew_advice.innerText = "Wait for further information";
         } else if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
             window.DOM.eew_advice.style.background = "#C37807";
-            window.DOM.eew_advice.innerText = "Deep earthquake - Information may not be accurate";
+            window.DOM.eew_advice.innerText = "Deep earthquake - Intensity is not calculated";
+            window.DOM.expected_flag.style.display = "none";
         } else if (parseFloat(result["magnitude"]) >= 6.0) {
             window.DOM.eew_advice.style.background = "var(--intensity-7)";
             window.DOM.eew_advice.innerText = "Stay away from coastal areas";
@@ -291,7 +292,11 @@ var parseEEWInfo = function (result, only_update_map = false) {
             console.warn("No points exist. Check server log.");
         }
     }
-    parseMapScale();
+    if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
+        window.map.setZoom(5);
+    } else {
+        parseMapScale(true);
+    }
     window.DOM.expected_flag.style.display = "block";
 
     // S wave
@@ -337,10 +342,31 @@ var displayEarthquakeInformation = function (resp_content, is_eew) {
         setBannerContent(resp_content["tsunami_comments"]);
     }
     epicenter.innerText = resp_content["hypocenter"]["name"];
+    if (resp_content["hypocenter"]["name"].search("、") > -1) {
+        epicenter.innerText = resp_content["hypocenter"]["name"].split("、")[0];
+    }
     depth.innerText = resp_content["hypocenter"]["depth"];
     if (parseFloat(resp_content["magnitude"]) < 0) {
         magnitude.innerText = "Unknown";
+        magnitude.style.display = "none";
+        window.DOM.magnitude_label.style.display = "none";
     } else {
+        window.DOM.magnitude_label.style.display = "inline";
+        magnitude.style.display = "inline";
         magnitude.innerText = parseFloat(resp_content["magnitude"]).toFixed(1).toString();
+    }
+    if (resp_content["hypocenter"]["depth"] == "Unknown") {
+        depth.style.display = "none";
+        window.DOM.depth_label.style.display = "none";
+    } else {
+        window.DOM.depth_label.style.display = "inline";
+        depth.style.display = "inline";
+    }
+    if (is_eew) {
+        if (resp_content["is_plum"]) {
+            // Hide depth and magnitude because PLUM only determines epicenter.
+            depth.style.display = "none";
+            magnitude.style.display = "none";
+        }
     }
 };

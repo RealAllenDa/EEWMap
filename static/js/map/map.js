@@ -115,7 +115,7 @@ var initializeMap = function () {
         center: [38.272688535980976, 137],
         zoom: 5,
         maxZoom: 8,
-        minZoom: 2,
+        minZoom: 1.5,
         zoomSnap: 0.01,
         zoomDelta: 0.5
     });
@@ -244,7 +244,7 @@ var deleteAllLayers = function () {
         console.error("Failed to remove layers." + e);
     }
 };
-var parseMapScale = function () {
+var parseMapScale = function (isEEW = false) {
     var currentBounds = L.latLngBounds();
     if (window.iconGroup != undefined && window.map.hasLayer(window.iconGroup)) {
         console.log("Icon Group Bounds =>", window.iconGroup.getBounds());
@@ -259,6 +259,9 @@ var parseMapScale = function () {
         currentBounds.extend(window.epicenterGroup.getBounds());
     }
     console.log("Final Bounds =>", currentBounds);
+    if (isEEW) {
+        currentBounds = currentBounds.pad(-0.75);
+    }
     window.map.fitBounds(currentBounds, {padding: [0, 30]});
 };
 var addMapColoring = function (intensities) {

@@ -40,7 +40,7 @@ def use_svir_or_kmoni(return_dict, return_dict_svir):
         return return_dict_svir
     elif svir_on and kmoni_on:
         try:
-            if int(return_dict_svir["hypocenter"]["depth"][:-2]) >= 150:
+            if return_dict_svir["is_plum"]:
                 return return_dict_svir
             else:
                 if return_dict_svir["report_flag"] == 1:
