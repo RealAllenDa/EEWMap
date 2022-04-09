@@ -31,10 +31,20 @@ def get_shake_level(app):
     except Exception:
         app.logger.warn("Failed to fetch shake level. Exception occurred: \n" + traceback.format_exc())
         return
-    return_shake_level = ReturnShakeLevelJSON(
-        status=0,
-        shake_level=response[1].l,
-        green=response[1].g,
-        yellow=response[1].y,
-        red=response[1].r
-    )
+    if CURRENT_CONFIG.DEBUG_SHAKE_LEVEL:
+        import random
+        return_shake_level = ReturnShakeLevelJSON(
+            status=0,
+            shake_level=random.randint(50, 8000),
+            green=random.randint(100, 300),
+            yellow=random.randint(100, 300),
+            red=random.randint(100, 300)
+        )
+    else:
+        return_shake_level = ReturnShakeLevelJSON(
+            status=0,
+            shake_level=response[1].l,
+            green=response[1].g,
+            yellow=response[1].y,
+            red=response[1].r
+        )

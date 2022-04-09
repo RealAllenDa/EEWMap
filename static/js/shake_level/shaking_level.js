@@ -49,9 +49,12 @@ var shakeLevelShow = function (result) {
         } else if (result["shake_level"] >= 2000 && result["shake_level"] < 3000) {
             window.level_display_wrap.style.backgroundColor = "var(--shake-2000)";
             window.level_display_wrap.style.color = "white";
-        } else if (result["shake_level"] >= 3000) {
+        } else if (result["shake_level"] >= 3000 && result["shake_level"] < 4000) {
             window.level_display_wrap.style.backgroundColor = "var(--shake-3000)";
             window.level_display_wrap.style.color = "white";
+        } else if (result["shake_level"] >= 4000) {
+            window.level_display_wrap.style.backgroundColor = "black";
+            window.level_display_wrap.style.color = "yellow";
         } else {
             window.level_display_wrap.style.backgroundColor = "var(--info-background-color)";
             window.level_display_wrap.style.color = "white";

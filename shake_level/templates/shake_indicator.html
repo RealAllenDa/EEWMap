@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shake Indicator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font.css') }}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for('static', filename='css/shake_indicator/shake_indicator.css') }}"/>
+    <script src="https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/shake_indicator/shake_indicator.js') }}"></script>
+</head>
+<body>
+<div id="warning-indicator" class="shake-indicator">WARNING</div>
+<div id="caution-indicator" class="shake-indicator">CAUTION</div>
+</body>
+</html>

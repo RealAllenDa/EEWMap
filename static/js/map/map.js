@@ -246,22 +246,25 @@ var deleteAllLayers = function () {
 };
 var parseMapScale = function (isEEW = false) {
     var currentBounds = L.latLngBounds();
+    var isBoundsChanged = false;
     if (window.iconGroup != undefined && window.map.hasLayer(window.iconGroup)) {
         console.log("Icon Group Bounds =>", window.iconGroup.getBounds());
         currentBounds.extend(window.iconGroup.getBounds());
+        isBoundsChanged = true;
     }
     if (window.colorMapLayer != undefined && window.map.hasLayer(window.colorMapLayer)) {
         console.log("Color Map Bounds =>", window.colorMapLayer.getBounds());
         currentBounds.extend(window.colorMapLayer.getBounds());
+        isBoundsChanged = true;
+    }
+    if (isEEW && isBoundsChanged) {
+        currentBounds = currentBounds.pad(-0.85);
     }
     if (window.epicenterGroup != undefined && window.map.hasLayer(window.epicenterGroup)) {
         console.log("Epicenter Bounds =>", window.epicenterGroup.getBounds());
         currentBounds.extend(window.epicenterGroup.getBounds());
     }
     console.log("Final Bounds =>", currentBounds);
-    if (isEEW) {
-        currentBounds = currentBounds.pad(-0.75);
-    }
     window.map.fitBounds(currentBounds, {padding: [0, 30]});
 };
 var addMapColoring = function (intensities) {

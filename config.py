@@ -34,6 +34,15 @@ class _BaseConfig:
     CEIC_LIST_COUNT = 5
 
     # Debugging
+    DEBUG_WEB = False
+    DEBUG_WEB_P2P_FILES = {
+        "ScalePrompt": relpath("./debug/p2p/ScalePrompt.json"),
+        "Destination": relpath("./debug/p2p/Destination.json"),
+        "ScaleAndDestination": relpath("./debug/p2p/ScaleAndDestination.json"),
+        "DetailScale": relpath("./debug/p2p/DetailScale.json"),
+        "Foreign": relpath("./debug/p2p/Foreign.json")
+    }
+
     DEBUG_EEW = False
     DEBUG_EEW_OVRD = {
         "start_time": 20210213230800,
@@ -67,12 +76,11 @@ class _BaseConfig:
     DEBUG_CEIC_EARTHQUAKE = False
     DEBUG_CEIC_EARTHQUAKE_OVRD = None
 
+    DEBUG_SHAKE_LEVEL = False
+
 
 class DevelopmentConfig(_BaseConfig):
-    PROXY = {
-        "http": "127.0.0.1:7890",
-        "https": "127.0.0.1:7890"
-    }
+    DEBUG_WEB = True
     ENABLE_UPDATING_CENTROID = False
     ENABLE_CORS = True
 
@@ -84,7 +92,8 @@ class ProductionConfig(_BaseConfig):
 class TestingEEWConfig(DevelopmentConfig):
     DEBUG_EEW = True
     DEBUG_EEW_OVRD = {
-        "start_time": 20211209110520,
+        "start_time": 20220316233430,
+        # "start_time": 20211209110520,
         # "start_time": 20210213230800,
         "origin_timestamp": int(time.time())
     }
@@ -111,6 +120,18 @@ class TestingTsunamiConfig(DevelopmentConfig):
 
 class TestingCEICConfig(DevelopmentConfig):
     CEIC_LIST_COUNT = 0
+
+
+class TestingShakeLevelConfig(DevelopmentConfig):
+    DEBUG_SHAKE_LEVEL = True
+
+
+class TestingWebPageConfig(DevelopmentConfig):
+    ENABLE_EEW = False
+    ENABLE_P2P_TSUNAMI = False
+    ENABLE_SHAKE = False
+    ENABLE_QUAKE = False
+    ENABLE_GLOBAL_EARTHQUAKE = False
 
 
 CURRENT_CONFIG = ProductionConfig()

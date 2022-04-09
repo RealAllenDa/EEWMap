@@ -12,17 +12,17 @@
         - pswave
     Note: The station to English module isn't currently being used, so it won't be tested.
 """
-# noinspection PyUnresolvedReferences
-from app import app  # In order to pre-initialize the application
-from modules.sdk import relpath
-from .classes import DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
-    DemoAreaAbnTsunamiJson
-from config import VERSION
-
 import sys
 import unittest
 
 import HTMLReport
+
+# noinspection PyUnresolvedReferences
+from app import app  # In order to pre-initialize the application
+from config import VERSION
+from modules.sdk import relpath
+from .classes import DemoNormTsunamiJson, DemoGradeAbnTsunamiJson, \
+    DemoAreaAbnTsunamiJson
 
 sys.path.append('../')
 
@@ -104,6 +104,25 @@ class TestModules(unittest.TestCase):
 
         self.assertTrue("その他平塚ST1" in station_intensities)
         self.assertEqual(station_intensities["その他平塚ST1"]["detail_intensity"], 7.0)
+        self.assertEqual(station_intensities["その他平塚ST1"]["intensity"], "7")
+
+        self.assertTrue("石狩地方北部" in area_intensities)
+        self.assertEqual(area_intensities["石狩地方北部"]["intensity"], "7")
+
+        self.assertTrue(recommended_areas)
+
+    def test_intensity_to_color_interpolate(self):
+        from modules.intensity import intensity2color_color_interpolating
+        with open(relpath("./test_intensity_to_color.gif"), "rb") as f:
+            resp_raw = f.read()
+            f.close()
+        station_intensities, area_intensities, recommended_areas = intensity2color_color_interpolating(resp_raw)
+        print(station_intensities, area_intensities)
+        self.assertNotEqual(station_intensities, {})
+        self.assertNotEqual(area_intensities, {})
+
+        self.assertTrue("その他平塚ST1" in station_intensities)
+        self.assertAlmostEqual(station_intensities["その他平塚ST1"]["detail_intensity"], 7.03)
         self.assertEqual(station_intensities["その他平塚ST1"]["intensity"], "7")
 
         self.assertTrue("石狩地方北部" in area_intensities)

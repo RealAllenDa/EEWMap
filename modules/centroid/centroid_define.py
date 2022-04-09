@@ -5,10 +5,9 @@
 import csv
 import json
 import time
-import traceback
 
 from config import CURRENT_CONFIG
-from modules.sdk import relpath, make_web_request
+from modules.sdk import relpath
 
 
 class Centroid:
@@ -39,10 +38,10 @@ class Centroid:
     def refresh_stations(self):
         """
         Updates intensity station names using DM-S.S.S, and refreshes the stations.
-        NOTE: The refresh station information are fetched using a bad/borrowed key.
-        For commercial uses, please change the key to a self-obtained one.
+        NOTE: Abandoned for now.
         """
-        self.logger.info("Updating intensity station names...")
+        self.logger.info("Intensity station names updating paused.")
+        '''
         try:
             response = make_web_request(
                 url="https://api.dmdata.jp/v2/parameter/earthquake/station?key"
@@ -73,6 +72,7 @@ class Centroid:
             f.write(to_write)
             f.close()
         self.logger.info("Successfully updated intensity station names!")
+        '''
         self._init_station_centroid()
 
     def _init_area_centroid(self):

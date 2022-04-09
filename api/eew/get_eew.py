@@ -6,7 +6,7 @@ import time
 import traceback
 
 from config import CURRENT_CONFIG
-from modules.intensity import intensity2color
+from modules.intensity import intensity2color_color_interpolating
 from modules.pswave import parse_pswave
 from modules.sdk import make_web_request
 
@@ -94,7 +94,7 @@ def get_eew_info(app):
                 with open(CURRENT_CONFIG.DEBUG_EEW_IMAGE_OVRD, "rb") as f:
                     resp_raw = f.read()
                     f.close()
-            intensities, area_intensities, recommend_area_coloring = intensity2color(resp_raw)
+            intensities, area_intensities, recommend_area_coloring = intensity2color_color_interpolating(resp_raw)
         except Exception:
             app.logger.warn("Failed to fetch EEW image. Exception occurred: \n" + traceback.format_exc())
         try:

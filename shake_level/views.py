@@ -13,3 +13,11 @@ def shake_level_render():
     Renders shaking level display page.
     """
     return render_template("shaking_level.html")
+
+
+@shake_level_bp.route("/shake_indicator")
+def shake_indicator_render():
+    """
+    Renders shaking indicator (warning, caution).
+    """
+    return render_template("shake_indicator.html")

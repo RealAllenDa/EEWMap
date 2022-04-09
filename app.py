@@ -14,6 +14,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from api import api_bp, init_api
 from config import CURRENT_CONFIG
+from debug import debug_bp
 from index import index_bp
 from map import map_bp
 from modules.area import init_geojson_instance
@@ -68,6 +69,7 @@ app.register_blueprint(shake_level_bp)
 app.register_blueprint(index_bp)
 app.register_blueprint(map_bp)
 app.register_blueprint(tsunami_bp)
+app.register_blueprint(debug_bp)
 app.logger.info("App initialization completed successfully. Initializing modules...")
 # Initialize APIs & assets
 init_geojson_instance(app)

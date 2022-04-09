@@ -115,6 +115,98 @@ def intensity2color(raw_response):
     return intensities, parsed_area_intensities, recommend_area_coloring
 
 
+def intensity2color_color_interpolating(raw_response):
+    """
+    Parses the image into a intensity array using centroids.
+
+    :param raw_response: The raw response from requests
+    :return: A dict containing latitude, longitude and intensities
+    :rtype: dict
+    """
+    # Preparation
+    start_time = time.perf_counter()
+    logger.debug("Parsing EEW coloring...")
+    intensities = {}
+    area_intensities = {}
+    image_fp = Image.open(BytesIO(raw_response))
+    image = image_fp.convert("HSV").load()
+    from modules.centroid import centroid_instance
+    for i in centroid_instance.earthquake_station_centroid:
+        if i["Point"] is None:
+            continue
+        try:
+            pixel_color = image[int(i["Point"]["X"]), int(i["Point"]["Y"])]
+        except Exception:
+            continue
+        pixel_intensity = round(color_to_position(pixel_color) * 10 - 3, 2)
+        if pixel_intensity != 0:
+            # Have expected intensity
+            if 0.5 < pixel_intensity < 1.5:
+                parsed_intensity = "1", 1
+            elif 1.5 <= pixel_intensity < 2.5:
+                parsed_intensity = "2", 2
+            elif 2.5 <= pixel_intensity < 3.5:
+                parsed_intensity = "3", 3
+            elif 3.5 <= pixel_intensity < 4.5:
+                parsed_intensity = "4", 4
+            elif 4.5 <= pixel_intensity < 5.0:
+                parsed_intensity = "5-", 5
+            elif 5.0 <= pixel_intensity < 5.5:
+                parsed_intensity = "5+", 6
+            elif 5.5 <= pixel_intensity < 6.0:
+                parsed_intensity = "6-", 7
+            elif 6.0 <= pixel_intensity < 6.5:
+                parsed_intensity = "6+", 8
+            elif pixel_intensity >= 6.5:
+                parsed_intensity = "7", 9
+            else:
+                continue
+            # Area
+            if i["SubRegionCode"] not in area_intensities:
+                area_intensities[i["SubRegionCode"]] = 0
+            if area_intensities[i["SubRegionCode"]] < parsed_intensity[1]:
+                area_intensities[i["SubRegionCode"]] = parsed_intensity[1]
+            # Station
+            full_name = i["Region"] + i["Name"]
+            intensities[full_name] = {
+                "name": full_name,
+                "area_code": i["RegionCode"],
+                "sub_area_code": i["SubRegionCode"],
+                "latitude": i["Location"]["Latitude"],
+                "longitude": i["Location"]["Longitude"],
+                "intensity": parsed_intensity[0],
+                "detail_intensity": pixel_intensity,
+                "is_area": False
+            }
+    parsed_area_intensities, recommend_area_coloring = parse_area_intensities(area_intensities)
+    logger.debug(f"Successfully parsed EEW intensities in {(time.perf_counter() - start_time):.3f} seconds!")
+    return intensities, parsed_area_intensities, recommend_area_coloring
+
+
+def color_to_position(hsv):
+    p = 0
+    h = hsv[0] / 255
+    s = hsv[1] / 255
+    v = hsv[2] / 255
+
+    if v > 0.1 and s > 0.75:
+
+        if h > 0.1476:
+            p = 280.31 * pow(h, 6) - 916.05 * pow(h, 5) + 1142.6 * pow(h, 4) - 709.95 * pow(h, 3) \
+                + 234.65 * pow(h, 2) - 40.27 * h + 3.2217
+
+        if 0.1476 >= h > 0.001:
+            p = 151.4 * pow(h, 4) - 49.32 * pow(h, 3) + 6.753 * pow(h, 2) - 2.481 * h + 0.9033
+
+        if h <= 0.001:
+            p = -0.005171 * pow(v, 2) - 0.3282 * v + 1.2236
+
+    if p < 0:
+        p = 0
+
+    return p
+
+
 def parse_area_intensities(area_intensities):
     parsed_area_int = {}
     recommend_areas = False
