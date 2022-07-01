@@ -13,7 +13,7 @@
 
 #tsunami-show {
     box-sizing: border-box;
-    width: 600px;
+    width: 100%;
     height: 55px;
     background: var(--info-background-color);
 }

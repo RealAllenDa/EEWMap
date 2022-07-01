@@ -30,7 +30,7 @@ def get_ceic_info(app):
             return
         parse_ceic_info(response[1], app)
     else:
-        with open(CURRENT_CONFIG.DEBUG_P2P_OVRD["file"], "r", encoding="utf-8") as f:
+        with open(CURRENT_CONFIG.DEBUG_CEIC_EARTHQUAKE_OVRD, "r", encoding="utf-8") as f:
             parse_ceic_info(json.loads(f.read()), app)
 
 

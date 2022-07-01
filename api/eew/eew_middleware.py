@@ -42,6 +42,8 @@ def use_svir_or_kmoni(return_dict, return_dict_svir):
         try:
             if return_dict_svir["is_plum"]:
                 return return_dict_svir
+            elif int(return_dict_svir["hypocenter"]["depth"][:-2]) >= 150:
+                return return_dict_svir
             else:
                 if return_dict_svir["report_flag"] == 1:
                     return_dict_svir["area_coloring"]["areas"] = combine_intensity_areas(

@@ -246,19 +246,28 @@ var deleteAllLayers = function () {
 };
 var parseMapScale = function (isEEW = false) {
     var currentBounds = L.latLngBounds();
-    var isBoundsChanged = false;
     if (window.iconGroup != undefined && window.map.hasLayer(window.iconGroup)) {
         console.log("Icon Group Bounds =>", window.iconGroup.getBounds());
-        currentBounds.extend(window.iconGroup.getBounds());
-        isBoundsChanged = true;
+        try {
+            currentBounds.extend(window.iconGroup.getBounds());
+        } catch (e) {
+            console.warn("Failed to extend bounds. Bounds may be null.");
+        }
     }
     if (window.colorMapLayer != undefined && window.map.hasLayer(window.colorMapLayer)) {
         console.log("Color Map Bounds =>", window.colorMapLayer.getBounds());
-        currentBounds.extend(window.colorMapLayer.getBounds());
-        isBoundsChanged = true;
+        try {
+            currentBounds.extend(window.colorMapLayer.getBounds());
+        } catch (e) {
+            console.warn("Failed to extend bounds. Bounds may be null.");
+        }
     }
-    if (isEEW && isBoundsChanged) {
-        currentBounds = currentBounds.pad(-0.85);
+    if (isEEW) {
+        try {
+            currentBounds = currentBounds.pad(-0.85);
+        } catch (e) {
+            console.warn("Failed to pad bounds. Bounds may be null.");
+        }
     }
     if (window.epicenterGroup != undefined && window.map.hasLayer(window.epicenterGroup)) {
         console.log("Epicenter Bounds =>", window.epicenterGroup.getBounds());

@@ -175,11 +175,11 @@ var displayWatchInfo = function (array) {
                 tsunami_status.className = "rising-alert";
             }
             if (parseFloat(array[i]["height"]) >= 3) {
-                tsunami_container.className += " major-warning";
+                tsunami_height.className += " major-warning";
             } else if (parseFloat(array[i]["height"]) >= 1) {
-                tsunami_container.className += " warning";
+                tsunami_height.className += " warning";
             } else if (parseFloat(array[i]["height"]) >= 0.5) {
-                tsunami_container.className += " advisory";
+                tsunami_height.className += " advisory";
             }
             // Parse tsunami height
             var height_m = Math.floor(array[i]["height"]);

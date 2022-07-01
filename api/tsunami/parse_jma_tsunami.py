@@ -185,7 +185,7 @@ def parse_tsunami_areas(response_items, app):
                 elif max_height["@description"] == "高い":
                     area_height = "HIGH"
                 elif max_height["@description"] == "１０ｍ超":
-                    area_height = "10<span class='indicator'>m</span> ABOVE"
+                    area_height = "10<span class='indicator'>m</span> Above"
                 elif max_height["@description"] == "１０ｍ":
                     area_height = "10<span class='indicator'>m</span>"
                 elif max_height["@description"] == "５ｍ":

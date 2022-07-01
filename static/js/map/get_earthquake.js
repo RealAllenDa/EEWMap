@@ -257,7 +257,7 @@ var parseEEWInfo = function (result, only_update_map = false) {
             window.DOM.eew_advice.innerText = "Wait for further information";
         } else if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
             window.DOM.eew_advice.style.background = "#C37807";
-            window.DOM.eew_advice.innerText = "Deep earthquake - Intensity is not calculated";
+            window.DOM.eew_advice.innerText = "Deep earthquake - Intensity may be inaccurate";
             window.DOM.expected_flag.style.display = "none";
         } else if (parseFloat(result["magnitude"]) >= 6.0) {
             window.DOM.eew_advice.style.background = "var(--intensity-7)";
@@ -290,11 +290,7 @@ var parseEEWInfo = function (result, only_update_map = false) {
             console.warn("No points exist. Check server log.");
         }
     }
-    if (parseInt(result["hypocenter"]["depth"].slice(0, -2)) >= 100) {
-        window.map.setZoom(5);
-    } else {
         parseMapScale(true);
-    }
     window.DOM.expected_flag.style.display = "block";
 
     // S wave

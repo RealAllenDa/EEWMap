@@ -12,11 +12,13 @@ var shakeWarningShow = function (result) {
     } else if (result["status"] == 0) {
         if (result["red"] >= 5) {
             window.warning_indicator.className = "shake-indicator indicator-active";
+            window.caution_indicator.className = "shake-indicator";
         } else {
-            window.warning_indicator.className = "shake-indicator";
             if (result["yellow"] >= 30) {
+                window.warning_indicator.className = "shake-indicator";
                 window.caution_indicator.className = "shake-indicator indicator-active";
             } else {
+                window.warning_indicator.className = "shake-indicator";
                 window.caution_indicator.className = "shake-indicator";
             }
         }
